@@ -193,11 +193,24 @@ const Dashboard = ({ answers, setView }) => {
 
 // --- Sales Page Component ---
 const SalesPage = ({ answers, onUnlock }) => {
+  const [timeLeft, setTimeLeft] = useState(600); // 10 minutes in seconds
+
+  useEffect(() => {
+    if (timeLeft <= 0) return;
+    const timer = setInterval(() => {
+      setTimeLeft(prev => prev - 1);
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [timeLeft]);
+
+  const minutes = Math.floor(timeLeft / 60);
+  const seconds = timeLeft % 60;
+
   return (
     <div className="max-w-4xl mx-auto py-12 px-6 animate-in slide-in-from-bottom-4 duration-700">
       <div className="text-center mb-16">
-        <div className="inline-flex items-center px-4 py-1 rounded-full bg-green-500/10 border border-green-500/20 text-green-500 text-[10px] font-bold tracking-widest uppercase mb-6 animate-pulse">
-          ✓ Roadmap Sent to Your Inbox
+        <div className="inline-flex items-center px-4 py-1 rounded-full bg-red-500/10 border border-red-500/20 text-red-500 text-[10px] font-bold tracking-widest uppercase mb-6">
+          ⚠️ Special Offer Expires In: {minutes}:{seconds < 10 ? `0${seconds}` : seconds}
         </div>
         <h1 className="text-4xl md:text-6xl font-black tracking-tighter mb-6 uppercase italic">Strategy is Step 1.<br/><span className="text-gradient">Automation is Step 2.</span></h1>
         <p className="text-zinc-400 text-lg md:text-xl font-light max-w-2xl mx-auto leading-relaxed">
