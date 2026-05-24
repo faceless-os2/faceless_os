@@ -380,16 +380,32 @@ const Results = ({ answers, onEmailSubmit, onUnlock }) => {
 
       <div className="max-w-2xl mx-auto p-10 md:p-12 rounded-[3rem] bg-gradient-to-b from-brand-primary/10 to-transparent border border-brand-primary/20 text-center shadow-2xl mb-20 relative overflow-hidden group">
         <div className="absolute top-0 right-0 p-8 text-4xl opacity-10 group-hover:opacity-20 transition-opacity">🚀</div>
-        <h3 className="text-2xl font-bold italic uppercase tracking-tighter mb-4 text-white">Get the Full <span className="text-gradient">FacelessOS Bundle</span></h3>
-        <p className="text-zinc-400 text-sm mb-10 font-light leading-relaxed max-w-md mx-auto">
-          The guide is just the start. Get the actual scripts, brand guides, and the posting schedule used by top creators.
+        <h3 className="text-2xl font-bold italic uppercase tracking-tighter mb-4 text-white">Unlock the Full <span className="text-gradient">FacelessOS Bundle</span></h3>
+        <p className="text-zinc-400 text-sm mb-8 font-light leading-relaxed max-w-md mx-auto">
+          You have your niche. You have your plan. But 99% of people never start because the setup is too much work. <span className="text-white border-b border-brand-primary/30 font-medium">We did it all for you.</span>
         </p>
+        
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-10 text-left max-w-lg mx-auto bg-black/20 p-6 rounded-2xl border border-white/5">
+          {[
+            'Master Strategy',
+            '30 Viral Scripts',
+            'Starter Brand Assets',
+            '30-Day Posting Map',
+            '1k Follower Checklist'
+          ].map(item => (
+            <div key={item} className="flex items-center space-x-2 text-[10px] font-bold uppercase tracking-widest text-zinc-300">
+              <span className="text-brand-primary">✓</span>
+              <span>{item}</span>
+            </div>
+          ))}
+        </div>
+
         <div className="flex flex-col gap-4 items-center">
           <button onClick={onUnlock} className="w-full sm:w-auto px-12 py-5 bg-gradient-brand rounded-full font-black text-xs uppercase tracking-[0.2em] shadow-brand hover:scale-105 transition-all">
-            Get the Bundle Now - $27
+            Get Everything - $27
           </button>
           <button onClick={onUnlock} className="text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em] hover:text-white transition-colors py-2">
-            Learn more about what's inside →
+            Learn more about the deliverables →
           </button>
         </div>
       </div>
