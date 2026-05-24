@@ -218,7 +218,7 @@ const SalesPage = ({ answers, onUnlock }) => {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-20">
         {[
-          { icon: '📝', t: '30 Viral Scripts', d: \`Custom-tuned for the \${answers?.niche} niche. Every script includes a high-retention hook, a value-bridge, and a strategic CTA.\` },
+          { icon: '📝', t: '30 Viral Scripts', d: `Custom-tuned for the ${answers?.niche} niche. Every script includes a high-retention hook, a value-bridge, and a strategic CTA.` },
           { icon: '🎨', t: 'Visual DNA Prompt Library', d: 'The exact Midjourney and DALL-E prompts to create that "Ghost Creator" aesthetic that stops the scroll.' },
           { icon: '📅', t: 'The 30-Day Production Map', d: 'Exactly when to post, how to sequence your content, and how to use "The Gap" strategy for maximum comments.' },
           { icon: '🚀', t: 'First 1,000 Roadmap', d: 'A step-by-step checklist to take your new account from 0 to 1,000 followers in 30 days or less.' }
@@ -257,9 +257,9 @@ const Results = ({ answers, onEmailSubmit, onUnlock }) => {
 
   useEffect(() => {
     const researchSteps = [
-      { msg: \`Scanning TikTok for #\${answers?.niche?.replace(/\s/g, '')} trends...\`, delay: 1000 },
-      { msg: \`Analyzing saturation...\`, delay: 1000 },
-      { msg: \`Finalizing Viral Blueprint...\`, delay: 1000 }
+      { msg: `Scanning TikTok for #${answers?.niche?.replace(/\s/g, '')} trends...`, delay: 1000 },
+      { msg: `Analyzing saturation...`, delay: 1000 },
+      { msg: `Finalizing Viral Blueprint...`, delay: 1000 }
     ];
 
     let currentStep = 0;
@@ -364,7 +364,7 @@ export default function App() {
           <span className="font-bold text-xl md:text-2xl tracking-tighter uppercase italic cursor-pointer flex-shrink-0" onClick={() => setView('quiz')}>FACELESS<span className="text-gradient font-black">OS</span></span>
           <div className="flex items-center space-x-4">
             {(view === 'dashboard' || view === 'profile') && <span className="text-[10px] font-bold tracking-[0.4em] uppercase text-zinc-500 mr-4">Console</span>}
-            <button onClick={() => setView('profile')} className={`w-10 h-10 rounded-full border flex-shrink-0 flex items-center justify-center transition-all \${view === 'profile' ? 'border-brand-primary bg-brand-primary/10 shadow-brand' : 'border-white/10 bg-white/5 text-zinc-500'}`}>👤</button>
+            <button onClick={() => setView('profile')} className={`w-10 h-10 rounded-full border flex-shrink-0 flex items-center justify-center transition-all ${view === 'profile' ? 'border-brand-primary bg-brand-primary/10 shadow-brand' : 'border-white/10 bg-white/5 text-zinc-500'}`}>👤</button>
           </div>
         </div>
       </nav>
@@ -433,7 +433,7 @@ const Quiz = ({ onComplete }) => {
         {(currentQuestion.type === 'select' || currentQuestion.type === 'multi-select') && (
           <div className="grid grid-cols-1 gap-3">
             {currentQuestion.options.map(opt => (
-              <button key={opt} onClick={() => currentQuestion.type === 'multi-select' ? toggleOption(opt) : handleNext(opt)} className={`p-6 rounded-2xl border transition-all text-left flex justify-between items-center \${selectedOptions.includes(opt) ? 'bg-brand-primary/20 border-brand-primary/50 text-white' : 'border-white/[0.03] bg-white/[0.02] text-zinc-400 hover:bg-white/5'}`}>
+              <button key={opt} onClick={() => currentQuestion.type === 'multi-select' ? toggleOption(opt) : handleNext(opt)} className={`p-6 rounded-2xl border transition-all text-left flex justify-between items-center ${selectedOptions.includes(opt) ? 'bg-brand-primary/20 border-brand-primary/50 text-white' : 'border-white/[0.03] bg-white/[0.02] text-zinc-400 hover:bg-white/5'}`}>
                 <span className="text-sm font-medium">{opt}</span>
                 {selectedOptions.includes(opt) && <span className="text-brand-primary text-xs font-bold">✓</span>}
               </button>
