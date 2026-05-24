@@ -152,6 +152,8 @@ const Dashboard = ({ answers, setView }) => {
           { id: 'strategy', label: 'My Strategy', icon: '🎯' },
           { id: 'scripts', label: '30-Day Post Map', icon: '📅' },
           { id: 'visuals', label: 'Visual Brand', icon: '🎨' },
+          { id: 'checklist', label: '1k Checklist', icon: '🚀' },
+          { id: 'production', label: 'Daily System', icon: '⚙️' },
         ].map(tab => (
           <button key={tab.id} onClick={() => setActiveTab(tab.id)} className={`w-full flex items-center space-x-4 p-4 rounded-2xl transition-all ${activeTab === tab.id ? 'bg-gradient-brand text-white shadow-brand' : 'hover:bg-white/5 text-zinc-500'}`}>
             <span className="text-sm">{tab.icon}</span>
@@ -221,6 +223,46 @@ const Dashboard = ({ answers, setView }) => {
               </div>
             </div>
           )}
+          {activeTab === 'checklist' && (
+            <div className="animate-in fade-in slide-in-from-bottom-2 duration-500">
+              <h2 className="text-3xl font-bold italic uppercase tracking-tighter text-zinc-100 mb-8">1k Follower <span className="text-brand-primary">Checklist</span></h2>
+              <div className="space-y-4">
+                {[
+                  { t: 'Optimize Profile', d: 'Clear profile picture, keyword-rich bio, and a link in bio (even if it is just a newsletter).' },
+                  { t: 'The First 5 Posts', d: 'Focus on high-value, shareable tips in your niche to seed your account.' },
+                  { t: 'Engage with Giants', d: 'Leave thoughtful comments on the top 10 accounts in your niche every day.' },
+                  { t: 'Consistent Volume', d: 'Post 1-2 times a day for 30 days. No excuses.' },
+                  { t: 'Analyze & Pivot', d: 'After 10 posts, see which hook worked best and double down on that style.' }
+                ].map((step, i) => (
+                  <div key={i} className="flex items-center space-x-4 p-6 rounded-2xl bg-black/40 border border-white/5">
+                    <div className="w-8 h-8 rounded-full bg-brand-primary/10 flex items-center justify-center text-brand-primary font-bold">✓</div>
+                    <div>
+                      <h4 className="text-xs font-bold text-white uppercase tracking-widest">{step.t}</h4>
+                      <p className="text-zinc-500 text-sm font-light">{step.d}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+          {activeTab === 'production' && (
+            <div className="animate-in fade-in slide-in-from-bottom-2 duration-500">
+              <h2 className="text-3xl font-bold italic uppercase tracking-tighter text-zinc-100 mb-8">Daily <span className="text-brand-secondary">System</span></h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {[
+                  { t: 'The 10-Minute Edit', d: 'Use a single font, consistent colors, and 1-2 transitions maximum. Speed is king.' },
+                  { t: 'Batch Processing', d: 'Write all 7 scripts for the week on Sunday. Record them all on Monday.' },
+                  { t: 'Sound Selection', d: 'Use trending sounds but keep them at 5-10% volume so your voice/text is the focus.' },
+                  { t: 'Caption Strategy', d: 'Keep captions short. Use 3-5 niche-specific hashtags and a strong CTA.' }
+                ].map((item, i) => (
+                  <div key={i} className="p-8 rounded-[2rem] bg-zinc-900/50 border border-white/5">
+                    <h3 className="text-[10px] font-black text-brand-secondary uppercase tracking-widest mb-4">{item.t}</h3>
+                    <p className="text-zinc-400 text-sm font-light">{item.d}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>
@@ -251,17 +293,19 @@ const SalesPage = ({ answers, onUnlock }) => {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-20">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-20">
         {[
+          { icon: '🎯', t: 'Master Strategy', d: `Your unique path to growth in the ${answers?.niche} niche. No more guessing.` },
           { icon: '📝', t: '30 Ready-to-Post Scripts', d: `Done-for-you scripts specifically for the ${answers?.niche} niche. No thinking required.` },
           { icon: '🎨', t: 'Starter Brand Assets', d: 'The exact visual style and prompt settings to create a professional look in minutes.' },
           { icon: '📅', t: '30-Day Posting Map', d: 'Your entire first month planned out. Exactly what to post and when to post it.' },
-          { icon: '🚀', t: '1k Follower Checklist', d: 'The "Quick Start" steps to take your account from zero to 1,000 followers.' }
+          { icon: '🚀', t: '1k Follower Checklist', d: 'The "Quick Start" steps to take your account from zero to 1,000 followers.' },
+          { icon: '⚙️', t: 'The Production System', d: 'How to make high-quality videos in under 10 minutes a day.' }
         ].map((item, i) => (
-          <div key={i} className="p-8 rounded-[3rem] bg-zinc-900/50 border border-white/5 relative overflow-hidden group">
+          <div key={i} className="p-8 rounded-[2rem] bg-zinc-900/50 border border-white/5 relative overflow-hidden group">
             <div className="absolute top-0 right-0 p-6 text-4xl opacity-20 group-hover:opacity-100 transition-opacity">{item.icon}</div>
-            <h3 className="text-xl font-bold mb-4 uppercase tracking-tighter italic">{item.t}</h3>
-            <p className="text-zinc-500 text-sm leading-relaxed font-light">{item.d}</p>
+            <h3 className="text-lg font-bold mb-3 uppercase tracking-tighter italic">{item.t}</h3>
+            <p className="text-zinc-500 text-xs leading-relaxed font-light">{item.d}</p>
           </div>
         ))}
       </div>
@@ -391,7 +435,8 @@ const Results = ({ answers, onEmailSubmit, onUnlock }) => {
             '30 Viral Scripts',
             'Starter Brand Assets',
             '30-Day Posting Map',
-            '1k Follower Checklist'
+            '1k Follower Checklist',
+            'Production System'
           ].map(item => (
             <div key={item} className="flex items-center space-x-2 text-[10px] font-bold uppercase tracking-widest text-zinc-300">
               <span className="text-brand-primary">✓</span>
