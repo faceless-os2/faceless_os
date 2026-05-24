@@ -1,9 +1,17 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+@theme {
+  --color-brand-accent: #FF3B30;
+}
 
 body {
   background-color: #000000;
   color: #FFFFFF;
   font-family: 'Inter', sans-serif;
+}
+
+@layer base {
+  * {
+    @apply border-zinc-800;
+  }
 }
