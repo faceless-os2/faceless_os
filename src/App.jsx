@@ -346,6 +346,7 @@ export default function App() {
   const [view, setView] = useState('quiz');
   const [data, setData] = useState(null);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isPaid, setIsPaid] = useState(false);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -353,7 +354,15 @@ export default function App() {
       setIsAdmin(true);
       setView('dashboard');
     }
+    if (params.get('paid') === 'true') {
+      setIsPaid(true);
+      setView('dashboard');
+    }
   }, []);
+
+  const handleUnlock = () => {
+    window.location.href = "https://buy.stripe.com/dRm6oA2iq9Jm8z78RGeUU00";
+  };
 
   return (
     <div className="min-h-screen bg-black text-white font-sans antialiased selection:bg-brand-primary pb-10">
@@ -368,7 +377,7 @@ export default function App() {
             FACELESS<span className="text-gradient font-black">OS</span>
           </span>
           <div className="flex items-center space-x-4">
-            {view === 'dashboard' && <span className="text-[10px] font-bold tracking-[0.4em] uppercase text-zinc-500 mr-4">Console</span>}
+            {(view === 'dashboard' || view === 'profile') && <span className="text-[10px] font-bold tracking-[0.4em] uppercase text-zinc-500 mr-4">Console</span>}
             <button onClick={() => setView('profile')} className={`w-10 h-10 rounded-full border flex-shrink-0 flex items-center justify-center transition-all ${view === 'profile' ? 'border-brand-primary bg-brand-primary/10 shadow-brand' : 'border-white/10 bg-white/5 text-zinc-500'}`}>👤</button>
           </div>
         </div>
@@ -377,8 +386,8 @@ export default function App() {
       <main className="relative z-10">
         {view === 'quiz' && <Quiz onComplete={(ans) => { setData(ans); setView('results'); }} />}
         {view === 'results' && <Results answers={data} onEmailSubmit={() => setView('sales')} />}
-        {view === 'sales' && <SalesPage answers={data} onUnlock={() => setView('dashboard')} />}
-        {view === 'dashboard' && <Dashboard answers={data} setView={setView} />}
+        {view === 'sales' && <SalesPage answers={data} onUnlock={handleUnlock} />}
+        {view === 'dashboard' && (isPaid || isAdmin ? <Dashboard answers={data} setView={setView} /> : <SalesPage answers={data} onUnlock={handleUnlock} />)}
         {view === 'profile' && <Profile data={data} setData={setData} onBack={() => setView('dashboard')} onRequiz={() => setView('quiz')} />}
       </main>
     </div>
