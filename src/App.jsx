@@ -390,10 +390,23 @@ const Quiz = ({ onComplete }) => {
     { id: 'vibe', text: 'The Vibe?', type: 'select', options: ['Aesthetic/Minimalist', 'Dark/Moody', 'Fast/Hype', 'Educational', 'Other'] },
   ];
 
+  const suggestedNiches = [
+    'AI News & Tools',
+    'Stoic Philosophy',
+    'Digital Wealth / SaaS',
+    'Health & Biohacking',
+    'Travel Aesthetics',
+    'Motivation & Success',
+    'True Crime / Mysteries',
+    'Daily Facts & Trivia',
+    'Gaming News'
+  ];
+
   const [currentStep, setCurrentStep] = useState(0);
   const [answers, setAnswers] = useState({});
   const [inputValue, setInputValue] = useState('');
   const [selectedOptions, setSelectedOptions] = useState([]);
+  const [showNicheSuggestions, setShowNicheSuggestions] = useState(false);
 
   const currentQuestion = questions[currentStep];
 
@@ -410,9 +423,15 @@ const Quiz = ({ onComplete }) => {
     setAnswers(newAnswers);
     setInputValue('');
     setSelectedOptions([]);
+    setShowNicheSuggestions(false);
     
     if (currentStep < questions.length - 1) setCurrentStep(currentStep + 1);
     else onComplete(newAnswers);
+  };
+
+  const selectSuggestedNiche = (niche) => {
+    setInputValue(niche);
+    handleNext(niche);
   };
 
   const toggleOption = (opt) => {
@@ -427,9 +446,34 @@ const Quiz = ({ onComplete }) => {
             <span className="text-[10px] font-bold tracking-widest text-zinc-500 uppercase">Phase {currentStep + 1} of {questions.length}</span>
         </div>
         <h2 className="text-2xl md:text-3xl font-medium mb-10 tracking-tight text-zinc-100">{currentQuestion.text}</h2>
-        {currentQuestion.type === 'text' && (
-          <input autoFocus className="w-full bg-transparent border-b border-zinc-800 py-4 text-xl outline-none focus:border-brand-primary placeholder:text-zinc-800 font-light" value={inputValue} onChange={(e) => setInputValue(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && handleNext()} />
+        
+        {currentQuestion.type === 'text' && !showNicheSuggestions && (
+          <div className="space-y-6">
+            <input autoFocus className="w-full bg-transparent border-b border-zinc-800 py-4 text-xl outline-none focus:border-brand-primary placeholder:text-zinc-800 font-light" value={inputValue} onChange={(e) => setInputValue(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && handleNext()} />
+            {currentQuestion.id === 'niche' && (
+              <button onClick={() => setShowNicheSuggestions(true)} className="text-[10px] font-bold text-brand-primary uppercase tracking-widest hover:text-white transition-colors">
+                Don't have one? Suggest a niche →
+              </button>
+            )}
+          </div>
         )}
+
+        {currentQuestion.id === 'niche' && showNicheSuggestions && (
+          <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
+            <p className="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-6">High Potential Faceless Niches</p>
+            <div className="grid grid-cols-1 gap-3 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
+              {suggestedNiches.map(niche => (
+                <button key={niche} onClick={() => selectSuggestedNiche(niche)} className="p-5 rounded-2xl border border-white/5 bg-white/5 text-left text-sm font-medium text-zinc-300 hover:border-brand-primary/50 hover:bg-brand-primary/10 hover:text-white transition-all">
+                  {niche}
+                </button>
+              ))}
+              <button onClick={() => setShowNicheSuggestions(false)} className="p-4 text-[10px] font-bold text-zinc-600 uppercase tracking-widest hover:text-zinc-400 text-center">
+                ← Go back
+              </button>
+            </div>
+          </div>
+        )}
+
         {(currentQuestion.type === 'select' || currentQuestion.type === 'multi-select') && (
           <div className="grid grid-cols-1 gap-3">
             {currentQuestion.options.map(opt => (
@@ -440,7 +484,10 @@ const Quiz = ({ onComplete }) => {
             ))}
           </div>
         )}
-        <button onClick={() => handleNext()} className="w-full mt-12 py-5 rounded-2xl bg-gradient-brand font-black text-xs uppercase tracking-[0.2em] shadow-brand hover:opacity-90 active:scale-95 transition-all">Continue</button>
+        
+        {!showNicheSuggestions && (
+          <button onClick={() => handleNext()} className="w-full mt-12 py-5 rounded-2xl bg-gradient-brand font-black text-xs uppercase tracking-[0.2em] shadow-brand hover:opacity-90 active:scale-95 transition-all">Continue</button>
+        )}
       </div>
     </div>
   );
