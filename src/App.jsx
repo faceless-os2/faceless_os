@@ -165,7 +165,7 @@ const Dashboard = ({ answers, setView }) => {
             <div className="animate-in fade-in slide-in-from-bottom-2 duration-500">
               <div className="flex justify-between items-start mb-8">
                 <h2 className="text-3xl font-bold italic uppercase tracking-tighter text-zinc-100">Growth <span className="text-brand-primary">Plan</span></h2>
-                <button onClick={() => setView('quiz')} className="text-[9px] font-black border border-zinc-800 px-4 py-2 rounded-full uppercase tracking-[0.2em] text-zinc-500 hover:text-white transition-colors">Change Details</button>
+                <button onClick={() => setView('quiz')} className="text-[9px] font-black border border-zinc-800 px-4 py-2 rounded-full uppercase tracking-[0.2em] text-zinc-500 hover:text-white transition-colors">Edit Niche</button>
               </div>
               
               <div className="p-8 rounded-[2rem] bg-brand-primary/5 border border-white/5 mb-8">
@@ -245,18 +245,18 @@ const SalesPage = ({ answers, onUnlock }) => {
         <div className="inline-flex items-center px-4 py-1 rounded-full bg-red-500/10 border border-red-500/20 text-red-500 text-[10px] font-bold tracking-widest uppercase mb-6">
           ⚠️ Offer Expires In: {minutes}:{seconds < 10 ? `0${seconds}` : seconds}
         </div>
-        <h1 className="text-4xl md:text-6xl font-black tracking-tighter mb-6 uppercase italic">The Plan is Step 1.<br/><span className="text-gradient">Automation is Step 2.</span></h1>
+        <h1 className="text-4xl md:text-6xl font-black tracking-tighter mb-6 uppercase italic">Skip the legwork.<br/><span className="text-gradient">Get your starter deliverables.</span></h1>
         <p className="text-zinc-400 text-lg md:text-xl font-light max-w-2xl mx-auto leading-relaxed">
-          You have your niche. You have your plan. But most new creators quit because writing and making videos takes too much time. <span className="text-white border-b border-brand-primary">We solved that for you.</span>
+          You have your niche. You have your plan. But 99% of people never start because the setup is too much work. <span className="text-white border-b border-brand-primary">We did it all for you.</span>
         </p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-20">
         {[
-          { icon: '📝', t: '30 Easy-to-Use Scripts', d: `Pre-written for the ${answers?.niche} niche. Just copy, paste, and post.` },
-          { icon: '🎨', t: 'Visual Brand Guide', d: 'Get the exact instructions to create amazing videos that look professional without showing your face.' },
-          { icon: '📅', t: 'The 30-Day Post Map', d: 'Know exactly when to post and what to say for the next 30 days.' },
-          { icon: '🚀', t: 'First 1,000 Followers', d: 'A simple checklist to help you get your first 1,000 followers fast.' }
+          { icon: '📝', t: '30 Ready-to-Post Scripts', d: `Done-for-you scripts specifically for the ${answers?.niche} niche. No thinking required.` },
+          { icon: '🎨', t: 'Starter Brand Assets', d: 'The exact visual style and prompt settings to create a professional look in minutes.' },
+          { icon: '📅', t: '30-Day Posting Map', d: 'Your entire first month planned out. Exactly what to post and when to post it.' },
+          { icon: '🚀', t: '1k Follower Checklist', d: 'The "Quick Start" steps to take your account from zero to 1,000 followers.' }
         ].map((item, i) => (
           <div key={i} className="p-8 rounded-[3rem] bg-zinc-900/50 border border-white/5 relative overflow-hidden group">
             <div className="absolute top-0 right-0 p-6 text-4xl opacity-20 group-hover:opacity-100 transition-opacity">{item.icon}</div>
