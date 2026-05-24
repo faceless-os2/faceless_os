@@ -129,14 +129,28 @@ const Dashboard = ({ answers, setView }) => {
     return () => clearTimeout(timer);
   }, [answers]);
 
-  const handleDownload = () => {
+  const handleDownload = async () => {
     setIsDownloading(true);
-    setTimeout(() => {
+    try {
+      await fetch('/api/send-roadmap', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: answers?.email,
+          niche: answers?.niche,
+          name: answers?.name
+        })
+      });
       setIsDownloading(false);
       setDownloadSuccess(true);
       setTimeout(() => setDownloadSuccess(false), 5000);
       window.print();
-    }, 2000);
+    } catch (err) {
+      console.error(err);
+      setIsDownloading(false);
+      // Fallback to print if email fails
+      window.print();
+    }
   };
 
   if (isGenerating) {
@@ -519,7 +533,28 @@ export default function App() {
 
       <main className="relative z-10">
         {view === 'quiz' && <Quiz onComplete={(ans) => { setData(ans); setView('results'); }} />}
-        {view === 'results' && <Results answers={data} onEmailSubmit={(email) => { setData({ ...data, email }); setView('sales'); }} onUnlock={() => setView('sales')} />}
+        {view === 'results' && (
+          <Results 
+            answers={data} 
+            onEmailSubmit={async (email) => { 
+              setData({ ...data, email }); 
+              setView('sales'); 
+              // Trigger email immediately
+              try {
+                await fetch('/api/send-roadmap', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({
+                    email: email,
+                    niche: data?.niche,
+                    name: data?.name
+                  })
+                });
+              } catch (err) { console.error(err); }
+            }} 
+            onUnlock={() => setView('sales')} 
+          />
+        )}
         {view === 'sales' && <SalesPage answers={data} onUnlock={handleUnlock} />}
         {view === 'dashboard' && (isPaid || isAdmin ? <Dashboard answers={data} setView={setView} /> : <SalesPage answers={data} onUnlock={handleUnlock} />)}
         {view === 'profile' && <Profile data={data} setData={setData} onBack={() => setView('dashboard')} onRequiz={() => setView('quiz')} />}
@@ -603,3 +638,15 @@ const Quiz = ({ onComplete }) => {
     </div>
   );
 };
+/home/engine/.bashrc: line 1: syntax error near unexpected token `('
+/home/engine/.bashrc: line 1: `. /etc/profile.d/workload-containment.shn# ~/.bashrc: executed by bash(1) for non-login shells.'
+/home/engine/.bashrc: line 1: syntax error near unexpected token `('
+/home/engine/.bashrc: line 1: `. /etc/profile.d/workload-containment.shn# ~/.bashrc: executed by bash(1) for non-login shells.'
+/home/engine/.bashrc: line 1: syntax error near unexpected token `('
+/home/engine/.bashrc: line 1: `. /etc/profile.d/workload-containment.shn# ~/.bashrc: executed by bash(1) for non-login shells.'
+/home/engine/.bashrc: line 1: syntax error near unexpected token `('
+/home/engine/.bashrc: line 1: `. /etc/profile.d/workload-containment.shn# ~/.bashrc: executed by bash(1) for non-login shells.'
+/home/engine/.bashrc: line 1: syntax error near unexpected token `('
+/home/engine/.bashrc: line 1: `. /etc/profile.d/workload-containment.shn# ~/.bashrc: executed by bash(1) for non-login shells.'
+/home/engine/.bashrc: line 1: syntax error near unexpected token `('
+/home/engine/.bashrc: line 1: `. /etc/profile.d/workload-containment.shn# ~/.bashrc: executed by bash(1) for non-login shells.'
