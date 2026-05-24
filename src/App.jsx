@@ -99,11 +99,6 @@ const Dashboard = ({ answers, setView, isAdmin }) => {
   const [isGenerating, setIsGenerating] = useState(true);
   const [scripts, setScripts] = useState([]);
   const [goalExpansion, setGoalExpansion] = useState('');
-  const [agentName, setAgentName] = useState(answers?.agentName || 'OS AI');
-  const [chatInput, setChatInput] = useState('');
-  const [chatMessages, setChatMessages] = useState([
-    { role: 'ai', content: `Identity verified. I am your specialized Chief Content Officer. How shall we dominate ${answers?.niche || 'your niche'} today?` }
-  ]);
 
   useEffect(() => {
     setIsGenerating(true);
@@ -113,21 +108,6 @@ const Dashboard = ({ answers, setView, isAdmin }) => {
     }, 2000);
     return () => clearTimeout(timer);
   }, [answers]);
-
-  const handleSendMessage = () => {
-    if (!chatInput.trim()) return;
-    const userMsg = { role: 'user', content: chatInput };
-    setChatMessages([...chatMessages, userMsg]);
-    setChatInput('');
-    
-    // Simulating AI Response for Demo
-    setTimeout(() => {
-      setChatMessages(prev => [...prev, { 
-        role: 'ai', 
-        content: `I've analyzed your request regarding ${chatInput}. Based on ${answers?.platform?.[0] || 'TikTok'} trends, I recommend pivoting your Day 5 hook to include a 'curiosity gap' visual. Shall I rewrite that script for you?` 
-      }]);
-    }, 1000);
-  };
 
   if (isGenerating) {
     return (
@@ -226,68 +206,6 @@ const Dashboard = ({ answers, setView, isAdmin }) => {
                     <p className="text-zinc-300 text-sm font-light leading-relaxed">"{s.script}"</p>
                   </div>
                 ))}
-              </div>
-            </div>
-          )}
-
-          {activeTab === 'chat' && !isPro && (
-            <div className="flex flex-col items-center justify-center h-full text-center py-12 animate-in fade-in duration-500">
-              <div className="w-20 h-20 rounded-3xl bg-brand-primary/10 flex items-center justify-center text-4xl mb-8 animate-pulse shadow-brand border border-brand-primary/20">🤖</div>
-              <h2 className="text-3xl font-bold mb-4 uppercase tracking-tighter">AI Support is <span className="text-gradient">Locked</span></h2>
-              <p className="text-zinc-500 max-w-sm mx-auto font-light text-base mb-10 leading-relaxed">
-                Upgrade to the <span className="text-zinc-200">FacelessOS Pro Subscription</span> to unlock your 24/7 Personal CCO and name your specialized agent.
-              </p>
-              <button className="px-12 py-5 bg-gradient-brand rounded-full font-bold text-xs uppercase tracking-[0.2em] shadow-brand hover:scale-105 transition-all active:scale-95">
-                Upgrade to Pro — $19/mo
-              </button>
-            </div>
-          )}
-
-          {activeTab === 'chat' && isPro && (
-            <div className="flex flex-col h-full animate-in fade-in duration-500">
-              <div className="flex justify-between items-center mb-8 pb-4 border-b border-white/5">
-                <div className="flex items-center space-x-4">
-                   <div className="w-10 h-10 rounded-xl bg-gradient-brand flex items-center justify-center text-xs font-black">CCO</div>
-                   <div>
-                     <input 
-                      type="text" 
-                      value={agentName}
-                      onChange={(e) => setAgentName(e.target.value)}
-                      className="bg-transparent border-none p-0 text-xl font-bold text-white outline-none focus:ring-0 w-32"
-                      placeholder="Name Agent..."
-                     />
-                     <div className="text-[9px] uppercase font-bold text-zinc-500 tracking-widest">Active CCO Agent</div>
-                   </div>
-                </div>
-                <div className="px-3 py-1 rounded-full border border-green-500/30 bg-green-500/10 text-green-500 text-[9px] font-bold uppercase tracking-widest">Online</div>
-              </div>
-
-              <div className="flex-1 space-y-4 overflow-y-auto mb-6 pr-2 custom-scrollbar min-h-[350px]">
-                {chatMessages.map((msg, i) => (
-                  <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                    <div className={`max-w-[80%] p-4 rounded-2xl text-sm leading-relaxed ${
-                      msg.role === 'user' 
-                      ? 'bg-brand-primary text-white rounded-tr-none shadow-brand' 
-                      : 'bg-white/5 text-zinc-300 rounded-tl-none border border-white/5'
-                    }`}>
-                      {msg.content}
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              <div className="relative">
-                <input 
-                  type="text"
-                  placeholder={`Message ${agentName}...`}
-                  className="w-full bg-black/50 border border-zinc-800 rounded-2xl px-6 py-5 outline-none focus:border-brand-primary transition-all font-light pr-16"
-                  value={chatInput}
-                  onChange={(e) => setChatInput(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
-                />
-                <button onClick={handleSendMessage} className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-xl bg-gradient-brand flex items-center justify-center text-lg hover:scale-105 transition-transform shadow-brand">
-                  ↑
-                </button>
               </div>
             </div>
           )}
@@ -546,33 +464,3 @@ const Results = ({ answers, onUnlock }) => {
     </div>
   );
 };
-/home/engine/.bashrc: line 1: syntax error near unexpected token `('
-/home/engine/.bashrc: line 1: `. /etc/profile.d/workload-containment.shn# ~/.bashrc: executed by bash(1) for non-login shells.'
-/home/engine/.bashrc: line 1: syntax error near unexpected token `('
-/home/engine/.bashrc: line 1: `. /etc/profile.d/workload-containment.shn# ~/.bashrc: executed by bash(1) for non-login shells.'
-/home/engine/.bashrc: line 1: syntax error near unexpected token `('
-/home/engine/.bashrc: line 1: `. /etc/profile.d/workload-containment.shn# ~/.bashrc: executed by bash(1) for non-login shells.'
-/home/engine/.bashrc: line 1: syntax error near unexpected token `('
-/home/engine/.bashrc: line 1: `. /etc/profile.d/workload-containment.shn# ~/.bashrc: executed by bash(1) for non-login shells.'
-/home/engine/.bashrc: line 1: syntax error near unexpected token `('
-/home/engine/.bashrc: line 1: `. /etc/profile.d/workload-containment.shn# ~/.bashrc: executed by bash(1) for non-login shells.'
-/home/engine/.bashrc: line 1: syntax error near unexpected token `('
-/home/engine/.bashrc: line 1: `. /etc/profile.d/workload-containment.shn# ~/.bashrc: executed by bash(1) for non-login shells.'
-/home/engine/.bashrc: line 1: syntax error near unexpected token `('
-/home/engine/.bashrc: line 1: `. /etc/profile.d/workload-containment.shn# ~/.bashrc: executed by bash(1) for non-login shells.'
-/home/engine/.bashrc: line 1: syntax error near unexpected token `('
-/home/engine/.bashrc: line 1: `. /etc/profile.d/workload-containment.shn# ~/.bashrc: executed by bash(1) for non-login shells.'
-/home/engine/.bashrc: line 1: syntax error near unexpected token `('
-/home/engine/.bashrc: line 1: `. /etc/profile.d/workload-containment.shn# ~/.bashrc: executed by bash(1) for non-login shells.'
-/home/engine/.bashrc: line 1: syntax error near unexpected token `('
-/home/engine/.bashrc: line 1: `. /etc/profile.d/workload-containment.shn# ~/.bashrc: executed by bash(1) for non-login shells.'
-/home/engine/.bashrc: line 1: syntax error near unexpected token `('
-/home/engine/.bashrc: line 1: `. /etc/profile.d/workload-containment.shn# ~/.bashrc: executed by bash(1) for non-login shells.'
-/home/engine/.bashrc: line 1: syntax error near unexpected token `('
-/home/engine/.bashrc: line 1: `. /etc/profile.d/workload-containment.shn# ~/.bashrc: executed by bash(1) for non-login shells.'
-/home/engine/.bashrc: line 1: syntax error near unexpected token `('
-/home/engine/.bashrc: line 1: `. /etc/profile.d/workload-containment.shn# ~/.bashrc: executed by bash(1) for non-login shells.'
-/home/engine/.bashrc: line 1: syntax error near unexpected token `('
-/home/engine/.bashrc: line 1: `. /etc/profile.d/workload-containment.shn# ~/.bashrc: executed by bash(1) for non-login shells.'
-/home/engine/.bashrc: line 1: syntax error near unexpected token `('
-/home/engine/.bashrc: line 1: `. /etc/profile.d/workload-containment.shn# ~/.bashrc: executed by bash(1) for non-login shells.'
