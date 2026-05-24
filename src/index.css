@@ -1,17 +1,32 @@
 @import "tailwindcss";
 
 @theme {
-  --color-brand-accent: #FF3B30;
+  --color-brand-primary: #8B5CF6; /* Purple */
+  --color-brand-secondary: #3B82F6; /* Blue */
+  --color-brand-accent: #A78BFA; /* Lighter Purple for accents */
 }
 
 body {
   background-color: #000000;
   color: #FFFFFF;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  letter-spacing: -0.01em;
 }
 
 @layer base {
   * {
     @apply border-zinc-800;
   }
+}
+
+.text-gradient {
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-brand-primary to-brand-secondary;
+}
+
+.bg-gradient-brand {
+  @apply bg-gradient-to-r from-brand-primary to-brand-secondary;
+}
+
+.shadow-brand {
+  box-shadow: 0 0 20px rgba(139, 92, 246, 0.3);
 }
