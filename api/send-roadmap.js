@@ -81,7 +81,8 @@ export default async function handler(req, res) {
     : `<p style="font-size: 12px; color: #666;">Note: This is your summary. Unlock the full bundle for all 30 scripts and assets.</p>`;
 
   try {
-    await resend.emails.send({
+    console.log('Attempting to send email to:', email);
+    const result = await resend.emails.send({
       from: 'FacelessOS <hello@facelessos.app>',
       to: [email],
       subject: isFullBundle ? `[COMPLETED] Your Full FacelessOS Bundle: ${niche}` : `Your Faceless Roadmap: ${niche}`,
@@ -123,14 +124,14 @@ export default async function handler(req, res) {
         </div>
       `,
     });
-    res.status(200).json({ success: true });
+    console.log('Resend response:', result);
+    if (result.error) {
+      console.error('Resend Error:', result.error);
+      return res.status(400).json({ error: result.error });
+    }
+    res.status(200).json({ success: true, id: result.data?.id });
   } catch (err) {
+    console.error('Catch Error:', err);
     res.status(500).json({ error: err.message });
   }
 }
-/home/engine/.bashrc: line 1: syntax error near unexpected token `('
-/home/engine/.bashrc: line 1: `. /etc/profile.d/workload-containment.shn# ~/.bashrc: executed by bash(1) for non-login shells.'
-/home/engine/.bashrc: line 1: syntax error near unexpected token `('
-/home/engine/.bashrc: line 1: `. /etc/profile.d/workload-containment.shn# ~/.bashrc: executed by bash(1) for non-login shells.'
-/home/engine/.bashrc: line 1: syntax error near unexpected token `('
-/home/engine/.bashrc: line 1: `. /etc/profile.d/workload-containment.shn# ~/.bashrc: executed by bash(1) for non-login shells.'
