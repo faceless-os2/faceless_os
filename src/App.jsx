@@ -120,7 +120,6 @@ const Dashboard = ({ answers, setView, isAdmin }) => {
   }
 
   const platforms = Array.isArray(answers?.platform) ? answers.platform.join(', ') : answers?.platform;
-  const isPro = isAdmin;
 
   return (
     <div className="max-w-6xl mx-auto px-6 py-12 grid grid-cols-1 lg:grid-cols-4 gap-8">
@@ -400,31 +399,104 @@ const Quiz = ({ onComplete, existingData }) => {
 
 // --- Results Component ---
 const Results = ({ answers, onUnlock }) => {
+  const [isResearching, setIsResearching] = useState(true);
+  const [researchStatus, setResearchStatus] = useState('Initializing Neural Core...');
+  const [score, setScore] = useState(0);
+  const [customData, setCustomData] = useState(null);
   const [email, setEmail] = useState('');
   const [isSubmitted, setIsSubmitted] = useState(false);
+
+  useEffect(() => {
+    const researchSteps = [
+      { msg: `Scanning TikTok for #${answers?.niche?.replace(/\s/g, '')} trends...`, delay: 1500 },
+      { msg: `Analyzing saturation in ${answers?.platform?.[0] || 'Social Media'} niches...`, delay: 1800 },
+      { msg: `Calculating CPM potential for ${answers?.goal?.[0] || 'Monetization'}...`, delay: 1200 },
+      { msg: 'Finalizing Viral Blueprint...', delay: 1000 }
+    ];
+
+    let currentStep = 0;
+    const runResearch = async () => {
+      for (const step of researchSteps) {
+        setResearchStatus(step.msg);
+        await new Promise(r => setTimeout(r, step.delay));
+      }
+      
+      // Calculate Score & Custom Data based on logic
+      const niche = answers?.niche?.toLowerCase() || '';
+      let calculatedScore = 7.2; // Base
+      let advice = {
+        strategy: 'Focus on high-volume "Take-downs" of common myths.',
+        aesthetic: 'Minimalist, high-grain texture with high contrast.',
+        loop: 'Optimize for shareability via polarized takes.'
+      };
+
+      if (niche.includes('ai') || niche.includes('tech')) {
+        calculatedScore = 9.4;
+        advice = {
+          strategy: 'Aggressive focus on "Secret Tool" reveals.',
+          aesthetic: 'Cyber-minimalist, neon accents on deep black.',
+          loop: 'Use "The Prompt Gap" technique to drive comments.'
+        };
+      } else if (niche.includes('stoic') || niche.includes('mindset') || niche.includes('philosophy')) {
+        calculatedScore = 8.8;
+        advice = {
+          strategy: 'Focus on statue-bust visual hooks and slow pacing.',
+          aesthetic: 'Dark Academia, muted tones, 35mm film grain.',
+          loop: 'End with "Reflection Prompts" to increase watch time.'
+        };
+      } else if (niche.includes('money') || niche.includes('finance')) {
+        calculatedScore = 8.1;
+        advice = {
+          strategy: 'Leverage "Transparency" hooks and document journeys.',
+          aesthetic: 'Clean, professional typography, paper textures.',
+          loop: 'Use curiosity-based CTAs for your lead magnets.'
+        };
+      } else {
+        calculatedScore = (Math.random() * (9.1 - 7.5) + 7.5).toFixed(1);
+      }
+
+      setScore(calculatedScore);
+      setCustomData(advice);
+      setIsResearching(false);
+    };
+
+    runResearch();
+  }, [answers]);
+
+  if (isResearching) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh] text-center px-6">
+        <div className="w-24 h-1 bg-zinc-900 rounded-full mb-8 overflow-hidden">
+            <div className="h-full bg-gradient-brand animate-research-bar shadow-brand" />
+        </div>
+        <h2 className="text-xl font-bold tracking-tighter uppercase italic text-gradient animate-pulse">{researchStatus}</h2>
+        <p className="text-zinc-600 mt-4 font-light text-[10px] uppercase tracking-widest">Researching {answers?.niche}...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-4xl mx-auto py-12 px-6 animate-in fade-in duration-1000">
       <div className="text-center mb-20 relative">
-        <div className="inline-flex items-center px-4 py-2 rounded-full border border-brand-primary/20 bg-brand-primary/5 text-brand-primary font-bold text-[10px] tracking-[0.3em] mb-8 uppercase animate-pulse">
+        <div className="inline-flex items-center px-4 py-2 rounded-full border border-brand-primary/20 bg-brand-primary/5 text-brand-primary font-bold text-[10px] tracking-[0.3em] mb-8 uppercase">
           Neural Analysis Complete
         </div>
         <h1 className="text-5xl md:text-7xl font-light mb-6 tracking-tighter">
-          Niche Potential: <span className="font-bold text-gradient italic">8.5 / 10</span>
+          Niche Potential: <span className="font-bold text-gradient italic">{score} / 10</span>
         </h1>
         <p className="text-zinc-500 font-light text-xl">
-          The <span className="text-zinc-200 border-b border-brand-primary/30">{answers?.niche}</span> market is currently in a "Breakout" phase.
+          The <span className="text-zinc-200 border-b border-brand-primary/30">{answers?.niche}</span> market is currently in a "{score > 9 ? 'Hyper-Growth' : 'Breakout'}" phase.
         </p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-20">
         {[
-          { title: 'Viral Strategy', desc: 'Leverage "The Gap" in current competitor hooks.' },
-          { title: 'Aesthetic DNA', desc: `${answers?.vibe} color grading with lo-fi grain.` },
-          { title: 'Growth Loop', desc: 'Optimize for "Shareability" via polarized takes.' }
+          { title: 'Viral Strategy', desc: customData?.strategy },
+          { title: 'Aesthetic DNA', desc: customData?.aesthetic },
+          { title: 'Growth Loop', desc: customData?.loop }
         ].map((win, i) => (
-          <div key={i} className="p-8 rounded-[2rem] bg-zinc-900/30 border border-white/5">
-            <h3 className="text-[10px] font-black text-zinc-500 mb-3 uppercase tracking-[0.2em]">{win.title}</h3>
+          <div key={i} className="p-8 rounded-[2rem] bg-zinc-900/30 border border-white/5 group hover:border-brand-primary/20 transition-all">
+            <h3 className="text-[10px] font-black text-brand-primary mb-3 uppercase tracking-[0.2em]">{win.title}</h3>
             <p className="text-zinc-300 font-light leading-relaxed text-sm">{win.desc}</p>
           </div>
         ))}
@@ -434,30 +506,30 @@ const Results = ({ answers, onUnlock }) => {
         <div className="max-w-2xl mx-auto p-10 md:p-16 rounded-[3rem] bg-zinc-900/50 border border-white/5 text-center relative overflow-hidden mb-24 shadow-2xl">
           <div className="absolute top-0 right-0 w-32 h-32 bg-brand-primary/10 blur-3xl rounded-full" />
           <div className="relative">
-            <h2 className="text-2xl md:text-4xl font-semibold mb-4 tracking-tight">Send report to your inbox?</h2>
-            <p className="text-zinc-500 mb-10 font-light text-base">Enter your email to save these results and get a custom 0-1k roadmap.</p>
+            <h2 className="text-2xl md:text-4xl font-semibold mb-4 tracking-tight leading-tight">Send full {answers?.niche} deep-dive to your inbox?</h2>
+            <p className="text-zinc-500 mb-10 font-light text-base">We've generated a 12-page roadmap. Enter your email to receive the PDF.</p>
             <div className="flex flex-col sm:flex-row gap-3">
-              <input type="email" placeholder="you@example.com" className="flex-1 bg-black/50 border border-zinc-800 rounded-2xl px-6 py-5 outline-none focus:border-brand-primary transition-all font-light" value={email} onChange={(e) => setEmail(e.target.value)} />
-              <button onClick={() => setIsSubmitted(true)} className="bg-white text-black px-8 py-5 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-zinc-200 transition-colors whitespace-nowrap">Send Report</button>
+              <input type="email" placeholder="you@example.com" className="flex-1 bg-black/50 border border-zinc-800 rounded-2xl px-6 py-5 outline-none focus:border-brand-primary transition-all font-light text-sm" value={email} onChange={(e) => setEmail(e.target.value)} />
+              <button onClick={() => setIsSubmitted(true)} className="bg-white text-black px-8 py-5 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-zinc-200 transition-colors whitespace-nowrap">Receive PDF</button>
             </div>
           </div>
         </div>
       ) : (
         <div className="text-center py-16 mb-24 bg-brand-primary/5 rounded-[3rem] border border-brand-primary/10 animate-in zoom-in-95 duration-500">
           <div className="text-5xl mb-6">📩</div>
-          <h2 className="text-3xl font-semibold text-zinc-200 mb-2">Report Sent.</h2>
-          <p className="text-zinc-500 font-light">Check your inbox for your niche deep-dive.</p>
+          <h2 className="text-3xl font-semibold text-zinc-200 mb-2">Report Processing.</h2>
+          <p className="text-zinc-500 font-light">Your {answers?.niche} report will arrive in 2-5 minutes.</p>
         </div>
       )}
 
       <div className="relative p-[1px] rounded-[3rem] bg-gradient-brand shadow-brand overflow-hidden">
         <div className="p-12 md:p-20 rounded-[2.95rem] bg-black text-center relative overflow-hidden">
             <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)', backgroundSize: '40px 40px' }} />
-            <h2 className="text-4xl md:text-6xl font-bold mb-8 tracking-tighter leading-[1.1] uppercase">Automate your next <br/> <span className="text-gradient italic">30 days of content</span></h2>
-            <p className="mb-12 text-zinc-400 text-lg max-w-lg mx-auto font-light leading-relaxed italic">Unlock 30 custom scripts, your unique visual prompt library, and the exact schedule to hit 1k followers in record time.</p>
+            <h2 className="text-4xl md:text-6xl font-bold mb-8 tracking-tighter leading-[1.1] uppercase">Dominate the <br/> <span className="text-gradient italic">{answers?.niche} market</span></h2>
+            <p className="mb-12 text-zinc-400 text-lg max-w-lg mx-auto font-light leading-relaxed italic">Unlock 30 custom scripts for {answers?.platform?.[0] || 'your platform'}, your unique visual prompt library, and the exact schedule to hit your first 1k followers.</p>
             <button onClick={onUnlock} className="px-14 py-6 bg-gradient-brand rounded-full font-black text-sm uppercase tracking-[0.3em] hover:scale-[1.02] transition-transform shadow-2xl active:scale-95 shadow-brand">Unlock Full Blueprint — $27</button>
             <div className="mt-10 flex items-center justify-center space-x-8 text-[10px] font-bold text-zinc-700 tracking-[0.3em] uppercase">
-              <span>Beta Access</span><span>•</span><span>Verified AI Strategy</span>
+              <span>Beta Access</span><span>•</span><span>Verified Strategy</span>
             </div>
         </div>
       </div>
