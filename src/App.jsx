@@ -391,6 +391,7 @@ const Results = ({ answers, onEmailSubmit, onUnlock }) => {
   const [customData, setCustomData] = useState(null);
   const [email, setEmail] = useState('');
   const [error, setError] = useState(null);
+  const [emailStatus, setEmailStatus] = useState('idle'); // idle, sending, success, error
 
   useEffect(() => {
     const isValidNiche = (n) => {
@@ -506,9 +507,32 @@ const Results = ({ answers, onEmailSubmit, onUnlock }) => {
         <h2 className="text-2xl md:text-4xl font-semibold mb-4 tracking-tight leading-tight">Send your {answers?.niche} roadmap to your inbox?</h2>
         <p className="text-zinc-500 mb-10 font-light text-base">We wrote a 12-page guide for you. Enter your email to get it.</p>
         <div className="flex flex-col sm:flex-row gap-3">
-          <input type="email" placeholder="you@example.com" className="flex-1 bg-black/50 border border-zinc-800 rounded-2xl px-6 py-5 outline-none focus:border-brand-primary text-sm font-light" value={email} onChange={(e) => setEmail(e.target.value)} />
-          <button onClick={() => onEmailSubmit(email)} className="bg-white text-black px-8 py-5 rounded-2xl font-black text-xs uppercase tracking-widest whitespace-nowrap">Get My Guide</button>
+          <input 
+            type="email" 
+            placeholder="you@example.com" 
+            className="flex-1 bg-black/50 border border-zinc-800 rounded-2xl px-6 py-5 outline-none focus:border-brand-primary text-sm font-light disabled:opacity-50" 
+            value={email} 
+            onChange={(e) => setEmail(e.target.value)} 
+            disabled={emailStatus === 'sending'}
+          />
+          <button 
+            onClick={async () => {
+              if (!email || !email.includes('@')) return;
+              setEmailStatus('sending');
+              try {
+                await onEmailSubmit(email);
+                setEmailStatus('success');
+              } catch (err) {
+                setEmailStatus('error');
+              }
+            }} 
+            disabled={emailStatus === 'sending'}
+            className="bg-white text-black px-8 py-5 rounded-2xl font-black text-xs uppercase tracking-widest whitespace-nowrap hover:scale-105 transition-all disabled:opacity-50"
+          >
+            {emailStatus === 'sending' ? 'Sending...' : emailStatus === 'success' ? 'Sent! ✓' : 'Get My Guide'}
+          </button>
         </div>
+        {emailStatus === 'error' && <p className="text-red-500 text-[10px] mt-4 font-bold uppercase tracking-widest">Failed to send. Please try again.</p>}
       </div>
 
       <div className="max-w-2xl mx-auto p-10 md:p-12 rounded-[3rem] bg-gradient-to-b from-brand-primary/10 to-transparent border border-brand-primary/20 text-center shadow-2xl mb-20 relative overflow-hidden group">
