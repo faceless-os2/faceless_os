@@ -116,6 +116,8 @@ const Dashboard = ({ answers, setView }) => {
   const [isGenerating, setIsGenerating] = useState(true);
   const [postMap, setPostMap] = useState([]);
   const [strategy, setStrategy] = useState(null);
+  const [isDownloading, setIsDownloading] = useState(false);
+  const [downloadSuccess, setDownloadSuccess] = useState(false);
 
   useEffect(() => {
     setIsGenerating(true);
@@ -126,6 +128,16 @@ const Dashboard = ({ answers, setView }) => {
     }, 2000);
     return () => clearTimeout(timer);
   }, [answers]);
+
+  const handleDownload = () => {
+    setIsDownloading(true);
+    setTimeout(() => {
+      setIsDownloading(false);
+      setDownloadSuccess(true);
+      setTimeout(() => setDownloadSuccess(false), 5000);
+      window.print();
+    }, 2000);
+  };
 
   if (isGenerating) {
     return (
@@ -263,6 +275,20 @@ const Dashboard = ({ answers, setView }) => {
               </div>
             </div>
           )}
+        </div>
+
+        <div className="p-8 rounded-[3rem] bg-zinc-900/50 border border-white/5 flex flex-col md:flex-row items-center justify-between gap-6 group">
+          <div>
+            <h4 className="text-xl font-bold text-white uppercase italic tracking-tighter mb-1">Get your offline copy</h4>
+            <p className="text-zinc-500 text-sm font-light">We've generated a custom PDF roadmap for the <span className="text-white font-medium">{answers?.niche}</span> niche. Sent to: <span className="text-brand-primary">{answers?.email || 'your email'}</span></p>
+          </div>
+          <button 
+            onClick={handleDownload} 
+            disabled={isDownloading}
+            className={`px-8 py-4 rounded-2xl font-black text-xs uppercase tracking-widest transition-all shadow-brand ${downloadSuccess ? 'bg-green-500 text-white' : 'bg-white text-black hover:scale-105 active:scale-95'}`}
+          >
+            {isDownloading ? 'Processing...' : downloadSuccess ? 'Sent to Email! ✓' : 'Download PDF Roadmap'}
+          </button>
         </div>
       </div>
     </div>
@@ -492,7 +518,7 @@ export default function App() {
 
       <main className="relative z-10">
         {view === 'quiz' && <Quiz onComplete={(ans) => { setData(ans); setView('results'); }} />}
-        {view === 'results' && <Results answers={data} onEmailSubmit={() => setView('sales')} onUnlock={() => setView('sales')} />}
+        {view === 'results' && <Results answers={data} onEmailSubmit={(email) => { setData({ ...data, email }); setView('sales'); }} onUnlock={() => setView('sales')} />}
         {view === 'sales' && <SalesPage answers={data} onUnlock={handleUnlock} />}
         {view === 'dashboard' && (isPaid || isAdmin ? <Dashboard answers={data} setView={setView} /> : <SalesPage answers={data} onUnlock={handleUnlock} />)}
         {view === 'profile' && <Profile data={data} setData={setData} onBack={() => setView('dashboard')} onRequiz={() => setView('quiz')} />}
