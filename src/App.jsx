@@ -1,85 +1,137 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
-const Quiz = ({ onComplete }) => {
-  const questions = [
-    { id: 'niche', text: 'What is your niche?', type: 'text', placeholder: 'e.g. AI Tools, Stoicism...' },
-    { id: 'goal', text: 'Primary goal?', type: 'select', options: ['Affiliate Sales', 'Digital Product', 'Brand Deals', 'Followers Only'] },
-    { id: 'platform', text: 'Target Platform?', type: 'select', options: ['TikTok', 'Instagram', 'Pinterest', 'YouTube'] },
-    { id: 'vibe', text: 'The Vibe?', type: 'select', options: ['Aesthetic/Minimalist', 'Dark/Moody', 'Fast/Hype', 'Educational'] },
-  ];
+// --- Dashboard Component ---
+const Dashboard = ({ answers }) => {
+  const [activeTab, setActiveTab] = useState('strategy');
+  const [chatMessage, setChatMessage] = useState('');
+  const [isGenerating, setIsGenerating] = useState(true);
 
-  const [currentStep, setCurrentStep] = useState(0);
-  const [answers, setAnswers] = useState({});
-  const [inputValue, setInputValue] = useState('');
+  useEffect(() => {
+    const timer = setTimeout(() => setIsGenerating(false), 3000);
+    return () => clearTimeout(timer);
+  }, []);
 
-  const handleNext = (val) => {
-    const value = val || inputValue;
-    if (!value && questions[currentStep].type === 'text') return;
-    
-    const newAnswers = { ...answers, [questions[currentStep].id]: value };
-    setAnswers(newAnswers);
-    setInputValue('');
-    
-    if (currentStep < questions.length - 1) {
-      setCurrentStep(currentStep + 1);
-    } else {
-      onComplete(newAnswers);
-    }
-  };
+  if (isGenerating) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh] text-center">
+        <div className="w-20 h-20 border-4 border-brand-primary/20 border-t-brand-primary rounded-full animate-spin mb-8" />
+        <h2 className="text-2xl font-bold tracking-tighter uppercase italic">Initializing Your <span className="text-gradient">Personal CCO</span></h2>
+        <p className="text-zinc-500 mt-2 font-light">Analyzing {answers.niche} algorithm data and tailoring your 30-day roadmap...</p>
+      </div>
+    );
+  }
 
   return (
-    <div className="max-w-xl mx-auto mt-12 md:mt-24 px-4">
-      <div className="relative p-8 md:p-10 rounded-3xl bg-zinc-900/40 border border-white/5 backdrop-blur-2xl overflow-hidden shadow-2xl">
-        {/* Ombre Glows */}
-        <div className="absolute -top-24 -right-24 w-64 h-64 bg-brand-primary/10 blur-[100px] rounded-full" />
-        <div className="absolute -bottom-24 -left-24 w-64 h-64 bg-brand-secondary/10 blur-[100px] rounded-full" />
+    <div className="max-w-6xl mx-auto px-6 py-12 grid grid-cols-1 lg:grid-cols-4 gap-8">
+      {/* Sidebar Navigation */}
+      <div className="lg:col-span-1 space-y-2">
+        <div className="p-6 rounded-2xl bg-zinc-900/50 border border-white/5 mb-8">
+          <div className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-4">Active Profile</div>
+          <div className="text-lg font-bold text-gradient">{answers.niche}</div>
+          <div className="text-xs text-zinc-400 mt-1 uppercase">{answers.platform} • {answers.vibe}</div>
+        </div>
+        
+        {[
+          { id: 'strategy', label: 'Master Strategy', icon: '🎯' },
+          { id: 'scripts', label: '30-Day Scripts', icon: '📝' },
+          { id: 'visuals', label: 'Visual Library', icon: '🎨' },
+          { id: 'chat', label: 'CCO Chat', icon: '🤖' },
+        ].map(tab => (
+          <button
+            key={tab.id}
+            onClick={() => setActiveTab(tab.id)}
+            className={`w-full flex items-center space-x-4 p-4 rounded-xl transition-all ${
+              activeTab === tab.id ? 'bg-gradient-brand text-white shadow-brand' : 'hover:bg-white/5 text-zinc-400'
+            }`}
+          >
+            <span>{tab.icon}</span>
+            <span className="font-bold text-sm uppercase tracking-tight">{tab.label}</span>
+          </button>
+        ))}
+      </div>
 
-        <div className="relative">
-          <div className="flex items-center justify-between mb-10">
-            <span className="text-[10px] font-bold tracking-[0.3em] text-zinc-500 uppercase">Phase {currentStep + 1} of {questions.length}</span>
-            <div className="w-24 h-1 bg-zinc-800 rounded-full overflow-hidden">
-              <div 
-                className="h-full bg-gradient-brand transition-all duration-700 ease-out" 
-                style={{ width: `${((currentStep + 1) / questions.length) * 100}%` }}
-              />
+      {/* Main Content Area */}
+      <div className="lg:col-span-3 space-y-6">
+        <div className="p-8 md:p-10 rounded-[2.5rem] bg-zinc-900/30 border border-white/5 backdrop-blur-xl min-h-[600px] relative overflow-hidden">
+          {activeTab === 'strategy' && (
+            <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+              <h2 className="text-3xl font-bold mb-6 italic uppercase tracking-tighter">Your <span className="text-brand-primary">Growth Engine</span></h2>
+              <div className="prose prose-invert max-w-none">
+                <div className="p-6 rounded-2xl bg-brand-primary/5 border border-brand-primary/10 mb-8">
+                  <h3 className="text-brand-primary font-bold text-sm uppercase mb-2">The North Star</h3>
+                  <p className="text-lg text-zinc-200 italic">"Dominate the {answers.niche} space by positioning yourself as the only transparent, data-driven authority for {answers.platform} users."</p>
+                </div>
+                <h4 className="text-white font-bold mb-4">Phase 1: Authority Building (Days 1-10)</h4>
+                <p className="text-zinc-400 mb-6 font-light">Focus on high-value "Take-downs" of common myths in the {answers.niche} niche. Use high-contrast text overlays and minimal lo-fi backgrounds.</p>
+                <h4 className="text-white font-bold mb-4">Phase 2: Viral Velocity (Days 11-20)</h4>
+                <p className="text-zinc-400 font-light">Introduce "The Gap" hooks. Purposefully leave out one minor detail to drive comments and engagement.</p>
+              </div>
             </div>
-          </div>
-          
-          <h2 className="text-2xl md:text-3xl font-medium mb-8 tracking-tight text-zinc-100">{questions[currentStep].text}</h2>
-          
-          {questions[currentStep].type === 'text' ? (
-            <div className="space-y-6">
-              <input 
-                autoFocus
-                className="w-full bg-transparent border-b border-zinc-700 py-4 text-xl outline-none focus:border-brand-primary transition-all duration-300 placeholder:text-zinc-800 font-light"
-                placeholder={questions[currentStep].placeholder}
-                value={inputValue}
-                onChange={(e) => setInputValue(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') handleNext();
-                }}
-              />
-              <button 
-                onClick={() => handleNext()}
-                className="w-full py-4 rounded-xl bg-gradient-brand font-semibold text-sm tracking-wider uppercase hover:opacity-90 transition-opacity shadow-brand"
-              >
-                Continue
-              </button>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 gap-3">
-              {questions[currentStep].options.map(opt => (
-                <button 
-                  key={opt}
-                  onClick={() => handleNext(opt)}
-                  className="group flex items-center justify-between p-5 rounded-xl border border-white/[0.03] bg-white/[0.02] hover:bg-white/[0.05] hover:border-brand-primary/30 transition-all duration-200 text-left"
-                >
-                  <span className="font-medium text-zinc-300 group-hover:text-white">{opt}</span>
-                  <div className="w-5 h-5 rounded-full border border-zinc-700 group-hover:border-brand-primary flex items-center justify-center transition-colors">
-                    <div className="w-2 h-2 rounded-full bg-brand-primary opacity-0 group-hover:opacity-100 transition-opacity" />
+          )}
+
+          {activeTab === 'scripts' && (
+            <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+              <div className="flex justify-between items-center mb-8">
+                <h2 className="text-3xl font-bold italic uppercase tracking-tighter">Script <span className="text-brand-secondary">Bank</span></h2>
+                <button className="text-[10px] font-bold border border-zinc-700 px-4 py-2 rounded-full hover:bg-white/5 transition-colors uppercase tracking-widest text-zinc-500">Download All (.CSV)</button>
+              </div>
+              <div className="space-y-4">
+                {[1, 2, 3].map(i => (
+                  <div key={i} className="p-6 rounded-2xl bg-black/40 border border-white/5 hover:border-brand-secondary/30 transition-colors">
+                    <div className="flex justify-between mb-4">
+                      <span className="text-xs font-bold text-zinc-500">Day {i} • Hook: Negative Constraint</span>
+                      <button className="text-brand-secondary text-xs font-bold uppercase hover:underline">Edit</button>
+                    </div>
+                    <p className="text-zinc-300 font-medium">"Stop doing [Common Mistake] if you want to scale your {answers.niche} profile in 2024. Most creators tell you to..."</p>
                   </div>
+                ))}
+                <div className="text-center py-8">
+                  <p className="text-zinc-600 text-sm italic">+ 27 more scripts generated...</p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'chat' && (
+            <div className="flex flex-col h-full animate-in fade-in duration-500">
+              <div className="flex-1 space-y-6 overflow-y-auto mb-6 pr-2">
+                <div className="flex space-x-4">
+                  <div className="w-8 h-8 rounded-lg bg-gradient-brand flex items-center justify-center text-xs font-black italic">OS</div>
+                  <div className="flex-1 bg-white/5 p-4 rounded-2xl rounded-tl-none border border-white/5">
+                    <p className="text-zinc-300 text-sm leading-relaxed">I've finalized your {answers.niche} roadmap. How can I help you refine your first batch of scripts today?</p>
+                  </div>
+                </div>
+              </div>
+              <div className="relative">
+                <input 
+                  type="text"
+                  placeholder="Ask your CCO anything..."
+                  className="w-full bg-black/50 border border-zinc-800 rounded-2xl px-6 py-5 outline-none focus:border-brand-primary transition-all font-light pr-16"
+                  value={chatMessage}
+                  onChange={(e) => setChatMessage(e.target.value)}
+                />
+                <button className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-xl bg-gradient-brand flex items-center justify-center text-lg hover:scale-105 transition-transform shadow-brand">
+                  ↑
                 </button>
-              ))}
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'visuals' && (
+            <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+              <h2 className="text-3xl font-bold mb-8 italic uppercase tracking-tighter">Aesthetic <span className="text-brand-primary">Assets</span></h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {[
+                  { t: 'Midjourney Base', p: `Cinematic 4k, ${answers.vibe} lighting, minimal desk setup, macro lens --ar 9:16` },
+                  { t: 'Color Grading', p: `Teal & Orange highlights, crushed shadows, 35mm film grain texture.` },
+                ].map((v, i) => (
+                  <div key={i} className="p-6 rounded-2xl bg-zinc-900 border border-white/5">
+                    <h3 className="text-xs font-bold text-brand-primary uppercase tracking-widest mb-3">{v.t}</h3>
+                    <p className="text-zinc-300 text-sm font-light italic bg-black/50 p-4 rounded-xl border border-zinc-800">"{v.p}"</p>
+                    <button className="mt-4 text-[10px] font-bold text-zinc-500 hover:text-white uppercase tracking-widest">Copy Prompt</button>
+                  </div>
+                ))}
+              </div>
             </div>
           )}
         </div>
@@ -88,7 +140,48 @@ const Quiz = ({ onComplete }) => {
   );
 };
 
-const Results = ({ answers }) => {
+export default function App() {
+  const [view, setView] = useState('quiz');
+  const [data, setData] = useState(null);
+
+  const handlePurchase = () => {
+    // In production, this would happen after Stripe redirect
+    setView('dashboard');
+  };
+
+  return (
+    <div className="min-h-screen bg-black text-white font-sans antialiased selection:bg-brand-primary selection:text-white">
+      {/* Background Ombre Effect */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-brand-primary/5 blur-[120px] rounded-full" />
+        <div className="absolute bottom-[-20%] right-[-10%] w-[50%] h-[50%] bg-brand-secondary/5 blur-[120px] rounded-full" />
+      </div>
+
+      <nav className="relative z-10 p-8 flex justify-between items-center max-w-7xl mx-auto">
+        <span className="font-bold text-2xl tracking-tighter uppercase italic cursor-pointer" onClick={() => setView('quiz')}>
+          FACELESS<span className="text-gradient not-italic uppercase font-black">OS</span>
+        </span>
+        <div className="hidden md:flex space-x-10 text-[10px] font-bold tracking-[0.4em] uppercase text-zinc-500">
+          <span className={`${view === 'dashboard' ? 'text-white underline decoration-brand-primary underline-offset-8' : ''} cursor-pointer`} onClick={() => setView('dashboard')}>Console</span>
+          <span className="hover:text-zinc-200 transition-colors cursor-pointer">Science</span>
+          <span className="hover:text-zinc-200 transition-colors cursor-pointer">Access</span>
+        </div>
+      </nav>
+
+      <main className="relative z-10">
+        {view === 'quiz' && <Quiz onComplete={(ans) => { setData(ans); setView('results'); }} />}
+        {view === 'results' && <Results answers={data} onUnlock={handlePurchase} />}
+        {view === 'dashboard' && <Dashboard answers={data || { niche: 'Demo Niche', platform: 'TikTok', vibe: 'Aesthetic' }} />}
+      </main>
+
+      <footer className="relative z-10 py-16 text-center text-zinc-700 text-[9px] font-bold tracking-[0.5em] uppercase">
+        © 2024 FacelessOS Research Division
+      </footer>
+    </div>
+  );
+}
+
+const Results = ({ answers, onUnlock }) => {
   const [email, setEmail] = useState('');
   const [isSubmitted, setIsSubmitted] = useState(false);
 
@@ -160,7 +253,10 @@ const Results = ({ answers }) => {
             <p className="mb-10 text-zinc-400 text-lg max-w-lg mx-auto font-light leading-relaxed italic">
               Unlock 30 custom scripts, your unique visual prompt library, and the exact schedule to hit 1k followers in record time.
             </p>
-            <button className="px-12 py-5 bg-gradient-brand rounded-full font-bold text-lg tracking-tight hover:scale-[1.02] transition-transform shadow-2xl active:scale-95">
+            <button 
+              onClick={onUnlock}
+              className="px-12 py-5 bg-gradient-brand rounded-full font-bold text-lg tracking-tight hover:scale-[1.02] transition-transform shadow-2xl active:scale-95"
+            >
               Unlock Full Blueprint — $47
             </button>
             <div className="mt-8 flex items-center justify-center space-x-6 text-[10px] font-bold text-zinc-600 tracking-[0.2em] uppercase">
@@ -174,38 +270,3 @@ const Results = ({ answers }) => {
   );
 };
 
-export default function App() {
-  const [view, setView] = useState('quiz');
-  const [data, setData] = useState(null);
-
-  return (
-    <div className="min-h-screen bg-black text-white font-sans antialiased selection:bg-brand-primary selection:text-white">
-      {/* Background Ombre Effect */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-brand-primary/5 blur-[120px] rounded-full" />
-        <div className="absolute bottom-[-20%] right-[-10%] w-[50%] h-[50%] bg-brand-secondary/5 blur-[120px] rounded-full" />
-      </div>
-
-      <nav className="relative z-10 p-8 flex justify-between items-center max-w-7xl mx-auto">
-        <span className="font-bold text-2xl tracking-tighter uppercase italic">FACELESS<span className="text-gradient not-italic">OS</span></span>
-        <div className="hidden md:flex space-x-10 text-[10px] font-bold tracking-[0.4em] uppercase text-zinc-500">
-          <span className="text-zinc-200 cursor-pointer">Engine</span>
-          <span className="hover:text-zinc-200 transition-colors cursor-pointer">Science</span>
-          <span className="hover:text-zinc-200 transition-colors cursor-pointer">Access</span>
-        </div>
-      </nav>
-
-      <main className="relative z-10">
-        {view === 'quiz' ? (
-          <Quiz onComplete={(ans) => { setData(ans); setView('results'); }} />
-        ) : (
-          <Results answers={data} />
-        )}
-      </main>
-
-      <footer className="relative z-10 py-16 text-center text-zinc-700 text-[9px] font-bold tracking-[0.5em] uppercase">
-        © 2024 FacelessOS Research Division
-      </footer>
-    </div>
-  );
-}
