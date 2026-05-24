@@ -265,7 +265,8 @@ const Dashboard = ({ answers, setView }) => {
                   { t: 'The 10-Minute Edit', d: 'Use a single font, consistent colors, and 1-2 transitions maximum. Speed is king.' },
                   { t: 'Batch Processing', d: 'Write all 7 scripts for the week on Sunday. Record them all on Monday.' },
                   { t: 'Sound Selection', d: 'Use trending sounds but keep them at 5-10% volume so your voice/text is the focus.' },
-                  { t: 'Caption Strategy', d: 'Keep captions short. Use 3-5 niche-specific hashtags and a strong CTA.' }
+                  { t: 'Caption Strategy', d: 'Use Claude or ChatGPT to turn your video scripts into daily captions. Keep them short and use 3-5 niche-specific hashtags.' },
+                  { t: 'B-Roll Library', d: 'Find high-quality faceless footage on Canva, Pexels, or Pixabay. Search for "aesthetic," "minimalist," or your specific niche.' }
                 ].map((item, i) => (
                   <div key={i} className="p-8 rounded-[2rem] bg-zinc-900/50 border border-white/5">
                     <h3 className="text-[10px] font-black text-brand-secondary uppercase tracking-widest mb-4">{item.t}</h3>
