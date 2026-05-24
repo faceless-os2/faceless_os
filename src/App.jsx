@@ -10,8 +10,6 @@ const generate30DayScripts = (niche, platform) => {
     { type: 'Sales: The Soft Sell', template: 'If you are struggling with {{niche}}, I built this tool to save you 10 hours a week.' }
   ];
   
-  const selectedPlatform = Array.isArray(platform) ? platform[0] : platform;
-
   return Array.from({ length: 30 }, (_, i) => {
     const cat = categories[i % categories.length];
     return {
@@ -40,7 +38,6 @@ const Profile = ({ data, setData, onBack, onRequiz }) => {
       <h2 className="text-3xl font-bold mb-8 italic uppercase tracking-tighter text-zinc-100">Profile <span className="text-gradient">& Settings</span></h2>
       
       <div className="space-y-6">
-        {/* Identity Section */}
         <div className="p-8 rounded-[2rem] bg-zinc-900 border border-white/5 space-y-6">
           <h3 className="text-xs font-bold text-zinc-500 uppercase tracking-widest">Creator Identity</h3>
           <div className="space-y-4">
@@ -74,7 +71,7 @@ const Profile = ({ data, setData, onBack, onRequiz }) => {
           <div className="flex justify-between items-center">
             <div>
               <div className="text-lg font-bold">Standard Bundle</div>
-              <div className="text-xs text-zinc-500">One-time purchase ($47)</div>
+              <div className="text-xs text-zinc-500">One-time purchase ($27)</div>
             </div>
             <button className="px-4 py-2 rounded-lg bg-brand-primary/10 text-brand-primary text-xs font-bold border border-brand-primary/20">Active</button>
           </div>
@@ -97,11 +94,16 @@ const Profile = ({ data, setData, onBack, onRequiz }) => {
 };
 
 // --- Dashboard Component ---
-const Dashboard = ({ answers, setView }) => {
+const Dashboard = ({ answers, setView, isAdmin }) => {
   const [activeTab, setActiveTab] = useState('strategy');
   const [isGenerating, setIsGenerating] = useState(true);
   const [scripts, setScripts] = useState([]);
   const [goalExpansion, setGoalExpansion] = useState('');
+  const [agentName, setAgentName] = useState(answers?.agentName || 'OS AI');
+  const [chatInput, setChatInput] = useState('');
+  const [chatMessages, setChatMessages] = useState([
+    { role: 'ai', content: `Identity verified. I am your specialized Chief Content Officer. How shall we dominate ${answers?.niche || 'your niche'} today?` }
+  ]);
 
   useEffect(() => {
     setIsGenerating(true);
@@ -111,6 +113,21 @@ const Dashboard = ({ answers, setView }) => {
     }, 2000);
     return () => clearTimeout(timer);
   }, [answers]);
+
+  const handleSendMessage = () => {
+    if (!chatInput.trim()) return;
+    const userMsg = { role: 'user', content: chatInput };
+    setChatMessages([...chatMessages, userMsg]);
+    setChatInput('');
+    
+    // Simulating AI Response for Demo
+    setTimeout(() => {
+      setChatMessages(prev => [...prev, { 
+        role: 'ai', 
+        content: `I've analyzed your request regarding ${chatInput}. Based on ${answers?.platform?.[0] || 'TikTok'} trends, I recommend pivoting your Day 5 hook to include a 'curiosity gap' visual. Shall I rewrite that script for you?` 
+      }]);
+    }, 1000);
+  };
 
   if (isGenerating) {
     return (
@@ -123,15 +140,13 @@ const Dashboard = ({ answers, setView }) => {
   }
 
   const platforms = Array.isArray(answers?.platform) ? answers.platform.join(', ') : answers?.platform;
+  const isPro = isAdmin;
 
   return (
     <div className="max-w-6xl mx-auto px-6 py-12 grid grid-cols-1 lg:grid-cols-4 gap-8">
       {/* Sidebar */}
       <div className="lg:col-span-1 space-y-2">
         <div className="p-6 rounded-[2rem] bg-zinc-900/50 border border-white/5 mb-6 relative overflow-hidden group">
-          <div className="absolute top-0 right-0 p-3 opacity-0 group-hover:opacity-100 transition-opacity">
-            <button onClick={() => setView('profile')} className="text-zinc-500 hover:text-white">⚙️</button>
-          </div>
           <div className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-4">Active Profile</div>
           <div className="text-lg font-bold text-zinc-100 truncate mb-1">{answers?.name || 'Creator'}</div>
           <div className="text-[10px] text-zinc-500 uppercase tracking-widest font-bold">{answers?.niche}</div>
@@ -142,7 +157,6 @@ const Dashboard = ({ answers, setView }) => {
           { id: 'strategy', label: 'Master Strategy', icon: '🎯' },
           { id: 'scripts', label: '30-Day Scripts', icon: '📝' },
           { id: 'visuals', label: 'Visual DNA', icon: '🎨' },
-          { id: 'pro', label: 'AI Support (PRO)', icon: '⚡' },
         ].map(tab => (
           <button
             key={tab.id}
@@ -168,19 +182,18 @@ const Dashboard = ({ answers, setView }) => {
                 <button onClick={() => setView('quiz')} className="text-[9px] font-black border border-zinc-800 px-4 py-2 rounded-full uppercase tracking-[0.2em] text-zinc-500 hover:text-white transition-colors">Edit Parameters</button>
               </div>
               
-              {/* Goal Expander Section */}
               <div className="mb-10 p-8 rounded-[2rem] bg-brand-primary/5 border border-brand-primary/10">
                 <h3 className="text-xs font-bold text-brand-primary uppercase mb-4 tracking-widest">Refine Your Strategy</h3>
                 <p className="text-sm text-zinc-400 mb-6 font-light leading-relaxed italic">"Describe your deep goals (e.g. 'I want to reach 10k followers in 30 days selling an AI course')."</p>
-                <div className="flex gap-2">
+                <div className="flex flex-col gap-4">
                   <input 
                     type="text" 
                     placeholder="Type your target mission..." 
-                    className="flex-1 bg-black/40 border border-zinc-800 rounded-xl px-4 py-4 text-sm outline-none focus:border-brand-primary transition-all font-light"
+                    className="w-full bg-black/40 border border-zinc-800 rounded-xl px-4 py-4 text-sm outline-none focus:border-brand-primary transition-all font-light"
                     value={goalExpansion}
                     onChange={(e) => setGoalExpansion(e.target.value)}
                   />
-                  <button className="bg-white text-black px-6 py-4 rounded-xl text-[10px] font-black uppercase hover:bg-zinc-200 transition-all shadow-xl">Recalibrate</button>
+                  <button className="w-full bg-white text-black px-6 py-4 rounded-xl text-[10px] font-black uppercase hover:bg-zinc-200 transition-all shadow-xl">Recalibrate</button>
                 </div>
               </div>
 
@@ -217,12 +230,12 @@ const Dashboard = ({ answers, setView }) => {
             </div>
           )}
 
-          {activeTab === 'pro' && (
-            <div className="flex flex-col items-center justify-center h-full text-center py-12">
+          {activeTab === 'chat' && !isPro && (
+            <div className="flex flex-col items-center justify-center h-full text-center py-12 animate-in fade-in duration-500">
               <div className="w-20 h-20 rounded-3xl bg-brand-primary/10 flex items-center justify-center text-4xl mb-8 animate-pulse shadow-brand border border-brand-primary/20">🤖</div>
               <h2 className="text-3xl font-bold mb-4 uppercase tracking-tighter">AI Support is <span className="text-gradient">Locked</span></h2>
               <p className="text-zinc-500 max-w-sm mx-auto font-light text-base mb-10 leading-relaxed">
-                Upgrade to the <span className="text-zinc-200">FacelessOS Pro Subscription</span> to unlock your 24/7 Personal CCO and weekly strategy re-calibrations.
+                Upgrade to the <span className="text-zinc-200">FacelessOS Pro Subscription</span> to unlock your 24/7 Personal CCO and name your specialized agent.
               </p>
               <button className="px-12 py-5 bg-gradient-brand rounded-full font-bold text-xs uppercase tracking-[0.2em] shadow-brand hover:scale-105 transition-all active:scale-95">
                 Upgrade to Pro — $19/mo
@@ -230,14 +243,63 @@ const Dashboard = ({ answers, setView }) => {
             </div>
           )}
 
+          {activeTab === 'chat' && isPro && (
+            <div className="flex flex-col h-full animate-in fade-in duration-500">
+              <div className="flex justify-between items-center mb-8 pb-4 border-b border-white/5">
+                <div className="flex items-center space-x-4">
+                   <div className="w-10 h-10 rounded-xl bg-gradient-brand flex items-center justify-center text-xs font-black">CCO</div>
+                   <div>
+                     <input 
+                      type="text" 
+                      value={agentName}
+                      onChange={(e) => setAgentName(e.target.value)}
+                      className="bg-transparent border-none p-0 text-xl font-bold text-white outline-none focus:ring-0 w-32"
+                      placeholder="Name Agent..."
+                     />
+                     <div className="text-[9px] uppercase font-bold text-zinc-500 tracking-widest">Active CCO Agent</div>
+                   </div>
+                </div>
+                <div className="px-3 py-1 rounded-full border border-green-500/30 bg-green-500/10 text-green-500 text-[9px] font-bold uppercase tracking-widest">Online</div>
+              </div>
+
+              <div className="flex-1 space-y-4 overflow-y-auto mb-6 pr-2 custom-scrollbar min-h-[350px]">
+                {chatMessages.map((msg, i) => (
+                  <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                    <div className={`max-w-[80%] p-4 rounded-2xl text-sm leading-relaxed ${
+                      msg.role === 'user' 
+                      ? 'bg-brand-primary text-white rounded-tr-none shadow-brand' 
+                      : 'bg-white/5 text-zinc-300 rounded-tl-none border border-white/5'
+                    }`}>
+                      {msg.content}
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <div className="relative">
+                <input 
+                  type="text"
+                  placeholder={`Message ${agentName}...`}
+                  className="w-full bg-black/50 border border-zinc-800 rounded-2xl px-6 py-5 outline-none focus:border-brand-primary transition-all font-light pr-16"
+                  value={chatInput}
+                  onChange={(e) => setChatInput(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
+                />
+                <button onClick={handleSendMessage} className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-xl bg-gradient-brand flex items-center justify-center text-lg hover:scale-105 transition-transform shadow-brand">
+                  ↑
+                </button>
+              </div>
+            </div>
+          )}
+
           {activeTab === 'visuals' && (
             <div className="animate-in fade-in slide-in-from-bottom-2 duration-500">
-              <h2 className="text-3xl font-bold mb-10 italic uppercase tracking-tighter text-zinc-100">Visual <span className="text-brand-primary">Assets</span></h2>
+              <h2 className="text-2xl font-bold mb-10 italic uppercase tracking-tighter text-zinc-100">Visual <span className="text-brand-primary">Assets</span></h2>
               <div className="grid grid-cols-1 gap-8">
                 {[
                   { t: 'The "Ghost" Aesthetic', p: `Minimalist desk, high-grain 35mm film texture, focused shadows, ${answers?.vibe} color grade.` },
                   { t: 'Dynamic Typography', p: `Bold Helvetica, tracking -5%, white on high-contrast black backgrounds.` },
-                  { t: 'Color Palette', p: `Dominant Hex: #000000, Accent Hex: ${answers?.vibe.includes('Dark') ? '#8B5CF6' : '#3B82F6'}, Tertiary: #FFFFFF` }
+                  { t: 'Color Palette', p: `Dominant Hex: #000000, Accent Hex: ${answers?.vibe?.includes('Dark') ? '#8B5CF6' : '#3B82F6'}, Tertiary: #FFFFFF` }
                 ].map((v, i) => (
                   <div key={i} className="p-8 rounded-[2rem] bg-zinc-900/50 border border-white/5 group hover:border-brand-primary/30 transition-all">
                     <h3 className="text-[10px] font-black text-brand-primary uppercase tracking-widest mb-4">{v.t}</h3>
@@ -258,36 +320,53 @@ const Dashboard = ({ answers, setView }) => {
 export default function App() {
   const [view, setView] = useState('quiz');
   const [data, setData] = useState(null);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     if (params.get('admin') === 'true') {
+      setIsAdmin(true);
       setView('dashboard');
     }
   }, []);
 
   return (
-    <div className="min-h-screen bg-black text-white font-sans antialiased selection:bg-brand-primary selection:text-white">
+    <div className="min-h-screen bg-black text-white font-sans antialiased selection:bg-brand-primary selection:text-white pb-10">
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-brand-primary/5 blur-[120px] rounded-full" />
         <div className="absolute bottom-[-20%] right-[-10%] w-[50%] h-[50%] bg-brand-secondary/5 blur-[120px] rounded-full" />
       </div>
 
-      <nav className="relative z-10 p-8 flex justify-between items-center max-w-7xl mx-auto">
-        <span className="font-bold text-2xl tracking-tighter uppercase italic cursor-pointer" onClick={() => setView('quiz')}>
-          FACELESS<span className="text-gradient not-italic uppercase font-black">OS</span>
-        </span>
-        <div className="hidden md:flex space-x-12 text-[10px] font-bold tracking-[0.4em] uppercase text-zinc-500">
-          <span className={`${view === 'dashboard' ? 'text-white' : 'hover:text-zinc-200'} transition-colors cursor-pointer`} onClick={() => setView('dashboard')}>Console</span>
-          <span className={`${view === 'profile' ? 'text-white' : 'hover:text-zinc-200'} transition-colors cursor-pointer`} onClick={() => setView('profile')}>Account</span>
-          <span className="hover:text-zinc-200 transition-colors cursor-pointer">Archive</span>
+      <nav className="sticky top-0 z-[100] w-full bg-black/80 backdrop-blur-md border-b border-white/5">
+        <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+          <span className="font-bold text-xl md:text-2xl tracking-tighter uppercase italic cursor-pointer flex-shrink-0" onClick={() => setView('quiz')}>
+            FACELESS<span className="text-gradient not-italic uppercase font-black">OS</span>
+          </span>
+          
+          <div className="flex items-center space-x-4 md:space-x-12">
+            <div className="hidden md:flex space-x-12 text-[10px] font-bold tracking-[0.4em] uppercase text-zinc-500">
+              <span className={`${view === 'dashboard' ? 'text-white underline decoration-brand-primary underline-offset-8' : ''} transition-colors cursor-pointer`} onClick={() => setView('dashboard')}>Console</span>
+              <span className="hover:text-zinc-200 transition-colors cursor-pointer">Network</span>
+            </div>
+            
+            <button 
+              onClick={() => setView('profile')}
+              className={`w-10 h-10 rounded-full border flex-shrink-0 flex items-center justify-center transition-all duration-300 ${
+                view === 'profile' 
+                ? 'border-brand-primary bg-brand-primary/10 text-white shadow-brand' 
+                : 'border-white/10 bg-white/5 text-zinc-500 hover:border-white/20 hover:text-white'
+              }`}
+            >
+              <span className="text-xs">👤</span>
+            </button>
+          </div>
         </div>
       </nav>
 
       <main className="relative z-10">
         {view === 'quiz' && <Quiz onComplete={(ans) => { setData(ans); setView('results'); }} existingData={data} />}
         {view === 'results' && <Results answers={data} onUnlock={() => setView('dashboard')} />}
-        {view === 'dashboard' && <Dashboard setView={setView} answers={data} />}
+        {view === 'dashboard' && <Dashboard setView={setView} answers={data} isAdmin={isAdmin} />}
         {view === 'profile' && <Profile data={data} setData={setData} onBack={() => setView('dashboard')} onRequiz={() => setView('quiz')} />}
       </main>
 
@@ -458,7 +537,7 @@ const Results = ({ answers, onUnlock }) => {
             <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)', backgroundSize: '40px 40px' }} />
             <h2 className="text-4xl md:text-6xl font-bold mb-8 tracking-tighter leading-[1.1] uppercase">Automate your next <br/> <span className="text-gradient italic">30 days of content</span></h2>
             <p className="mb-12 text-zinc-400 text-lg max-w-lg mx-auto font-light leading-relaxed italic">Unlock 30 custom scripts, your unique visual prompt library, and the exact schedule to hit 1k followers in record time.</p>
-            <button onClick={onUnlock} className="px-14 py-6 bg-gradient-brand rounded-full font-black text-sm uppercase tracking-[0.3em] hover:scale-[1.02] transition-transform shadow-2xl active:scale-95 shadow-brand">Unlock Full Blueprint — $47</button>
+            <button onClick={onUnlock} className="px-14 py-6 bg-gradient-brand rounded-full font-black text-sm uppercase tracking-[0.3em] hover:scale-[1.02] transition-transform shadow-2xl active:scale-95 shadow-brand">Unlock Full Blueprint — $27</button>
             <div className="mt-10 flex items-center justify-center space-x-8 text-[10px] font-bold text-zinc-700 tracking-[0.3em] uppercase">
               <span>Beta Access</span><span>•</span><span>Verified AI Strategy</span>
             </div>
@@ -467,3 +546,33 @@ const Results = ({ answers, onUnlock }) => {
     </div>
   );
 };
+/home/engine/.bashrc: line 1: syntax error near unexpected token `('
+/home/engine/.bashrc: line 1: `. /etc/profile.d/workload-containment.shn# ~/.bashrc: executed by bash(1) for non-login shells.'
+/home/engine/.bashrc: line 1: syntax error near unexpected token `('
+/home/engine/.bashrc: line 1: `. /etc/profile.d/workload-containment.shn# ~/.bashrc: executed by bash(1) for non-login shells.'
+/home/engine/.bashrc: line 1: syntax error near unexpected token `('
+/home/engine/.bashrc: line 1: `. /etc/profile.d/workload-containment.shn# ~/.bashrc: executed by bash(1) for non-login shells.'
+/home/engine/.bashrc: line 1: syntax error near unexpected token `('
+/home/engine/.bashrc: line 1: `. /etc/profile.d/workload-containment.shn# ~/.bashrc: executed by bash(1) for non-login shells.'
+/home/engine/.bashrc: line 1: syntax error near unexpected token `('
+/home/engine/.bashrc: line 1: `. /etc/profile.d/workload-containment.shn# ~/.bashrc: executed by bash(1) for non-login shells.'
+/home/engine/.bashrc: line 1: syntax error near unexpected token `('
+/home/engine/.bashrc: line 1: `. /etc/profile.d/workload-containment.shn# ~/.bashrc: executed by bash(1) for non-login shells.'
+/home/engine/.bashrc: line 1: syntax error near unexpected token `('
+/home/engine/.bashrc: line 1: `. /etc/profile.d/workload-containment.shn# ~/.bashrc: executed by bash(1) for non-login shells.'
+/home/engine/.bashrc: line 1: syntax error near unexpected token `('
+/home/engine/.bashrc: line 1: `. /etc/profile.d/workload-containment.shn# ~/.bashrc: executed by bash(1) for non-login shells.'
+/home/engine/.bashrc: line 1: syntax error near unexpected token `('
+/home/engine/.bashrc: line 1: `. /etc/profile.d/workload-containment.shn# ~/.bashrc: executed by bash(1) for non-login shells.'
+/home/engine/.bashrc: line 1: syntax error near unexpected token `('
+/home/engine/.bashrc: line 1: `. /etc/profile.d/workload-containment.shn# ~/.bashrc: executed by bash(1) for non-login shells.'
+/home/engine/.bashrc: line 1: syntax error near unexpected token `('
+/home/engine/.bashrc: line 1: `. /etc/profile.d/workload-containment.shn# ~/.bashrc: executed by bash(1) for non-login shells.'
+/home/engine/.bashrc: line 1: syntax error near unexpected token `('
+/home/engine/.bashrc: line 1: `. /etc/profile.d/workload-containment.shn# ~/.bashrc: executed by bash(1) for non-login shells.'
+/home/engine/.bashrc: line 1: syntax error near unexpected token `('
+/home/engine/.bashrc: line 1: `. /etc/profile.d/workload-containment.shn# ~/.bashrc: executed by bash(1) for non-login shells.'
+/home/engine/.bashrc: line 1: syntax error near unexpected token `('
+/home/engine/.bashrc: line 1: `. /etc/profile.d/workload-containment.shn# ~/.bashrc: executed by bash(1) for non-login shells.'
+/home/engine/.bashrc: line 1: syntax error near unexpected token `('
+/home/engine/.bashrc: line 1: `. /etc/profile.d/workload-containment.shn# ~/.bashrc: executed by bash(1) for non-login shells.'
