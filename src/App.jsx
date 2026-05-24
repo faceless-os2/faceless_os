@@ -373,8 +373,17 @@ const Results = ({ answers, onEmailSubmit, onUnlock }) => {
   const [score, setScore] = useState(0);
   const [customData, setCustomData] = useState(null);
   const [email, setEmail] = useState('');
+  const [error, setError] = useState(null);
 
   useEffect(() => {
+    const isValidNiche = (n) => {
+      if (!n || n.trim().length < 3) return false;
+      // Basic check for vowels or common letters to avoid "ghjkl" gibberish
+      const hasVowels = /[aeiouy]/i.test(n);
+      if (!hasVowels) return false;
+      return true;
+    };
+
     const researchSteps = [
       { msg: `Looking at #${answers?.niche?.replace(/\s/g, '')} on TikTok...`, delay: 1000 },
       { msg: `Checking the competition...`, delay: 1000 },
@@ -383,12 +392,20 @@ const Results = ({ answers, onEmailSubmit, onUnlock }) => {
 
     let currentStep = 0;
     const runResearch = async () => {
+      const niche = answers?.niche?.toLowerCase() || '';
+      
+      if (!isValidNiche(niche)) {
+        setResearchStatus(`Sorry, I couldn't generate a score for "${answers?.niche}" niche. It doesn't seem to be a valid growth category. Please try a more specific niche like "AI Tools" or "Motivation".`);
+        setError(true);
+        setIsResearching(false);
+        return;
+      }
+
       for (const step of researchSteps) {
         setResearchStatus(step.msg);
         await new Promise(r => setTimeout(r, step.delay));
       }
       
-      const niche = answers?.niche?.toLowerCase() || '';
       let calculatedScore = parseFloat((Math.random() * (9.8 - 7.2) + 7.2).toFixed(1));
       if (niche.includes('ai') || niche.includes('tech') || niche.includes('wealth')) {
         calculatedScore = Math.max(calculatedScore, 9.2);
@@ -429,6 +446,20 @@ const Results = ({ answers, onEmailSubmit, onUnlock }) => {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] text-center px-6">
         <h2 className="text-xl font-bold tracking-tighter uppercase italic text-gradient animate-pulse">{researchStatus}</h2>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh] text-center px-6 animate-in fade-in duration-500">
+        <h2 className="text-xl font-bold tracking-tighter uppercase italic text-red-500 mb-6">{researchStatus}</h2>
+        <button 
+          onClick={() => window.location.reload()} 
+          className="px-8 py-4 bg-white text-black rounded-2xl font-black text-xs uppercase tracking-widest hover:scale-105 transition-all"
+        >
+          Try Again
+        </button>
       </div>
     );
   }
