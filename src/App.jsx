@@ -125,6 +125,23 @@ const Dashboard = ({ answers, setView }) => {
       setPostMap(generate30DayMap(answers?.niche));
       setStrategy(getNicheStrategy(answers?.niche));
       setIsGenerating(false);
+
+      // Automated Email Delivery for paid users
+      const hasSentEmail = sessionStorage.getItem(`sent_full_bundle_${answers?.email}`);
+      if (answers?.email && !hasSentEmail) {
+        fetch('/api/send-roadmap', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email: answers?.email,
+            niche: answers?.niche,
+            name: answers?.name,
+            isFullBundle: true
+          })
+        }).then(() => {
+          sessionStorage.setItem(`sent_full_bundle_${answers?.email}`, 'true');
+        }).catch(err => console.error('Auto-email error:', err));
+      }
     }, 2000);
     return () => clearTimeout(timer);
   }, [answers]);
