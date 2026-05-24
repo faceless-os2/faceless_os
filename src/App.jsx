@@ -193,13 +193,11 @@ const Dashboard = ({ answers, setView }) => {
 
 // --- Sales Page Component ---
 const SalesPage = ({ answers, onUnlock }) => {
-  const [timeLeft, setTimeLeft] = useState(600); // 10 minutes in seconds
+  const [timeLeft, setTimeLeft] = useState(600);
 
   useEffect(() => {
     if (timeLeft <= 0) return;
-    const timer = setInterval(() => {
-      setTimeLeft(prev => prev - 1);
-    }, 1000);
+    const timer = setInterval(() => setTimeLeft(prev => prev - 1), 1000);
     return () => clearInterval(timer);
   }, [timeLeft]);
 
@@ -219,26 +217,18 @@ const SalesPage = ({ answers, onUnlock }) => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-20">
-        <div className="p-8 rounded-[3rem] bg-zinc-900/50 border border-white/5 relative overflow-hidden group">
-            <div className="absolute top-0 right-0 p-6 text-4xl opacity-20 group-hover:opacity-100 transition-opacity">📝</div>
-            <h3 className="text-xl font-bold mb-4 uppercase tracking-tighter italic">30 Viral Scripts</h3>
-            <p className="text-zinc-500 text-sm leading-relaxed font-light">Custom-tuned for the {answers?.niche} niche. Every script includes a high-retention hook, a value-bridge, and a strategic CTA.</p>
-        </div>
-        <div className="p-8 rounded-[3rem] bg-zinc-900/50 border border-white/5 relative overflow-hidden group">
-            <div className="absolute top-0 right-0 p-6 text-4xl opacity-20 group-hover:opacity-100 transition-opacity">🎨</div>
-            <h3 className="text-xl font-bold mb-4 uppercase tracking-tighter italic">Visual DNA Prompt Library</h3>
-            <p className="text-zinc-500 text-sm leading-relaxed font-light">The exact Midjourney and DALL-E prompts to create that "Ghost Creator" aesthetic that stops the scroll.</p>
-        </div>
-        <div className="p-8 rounded-[3rem] bg-zinc-900/50 border border-white/5 relative overflow-hidden group">
-            <div className="absolute top-0 right-0 p-6 text-4xl opacity-20 group-hover:opacity-100 transition-opacity">📅</div>
-            <h3 className="text-xl font-bold mb-4 uppercase tracking-tighter italic">The 30-Day Production Map</h3>
-            <p className="text-zinc-500 text-sm leading-relaxed font-light">Exactly when to post, how to sequence your content, and how to use "The Gap" strategy for maximum comments.</p>
-        </div>
-        <div className="p-8 rounded-[3rem] bg-zinc-900/50 border border-white/5 relative overflow-hidden group">
-            <div className="absolute top-0 right-0 p-6 text-4xl opacity-20 group-hover:opacity-100 transition-opacity">🚀</div>
-            <h3 className="text-xl font-bold mb-4 uppercase tracking-tighter italic">First 1,000 Roadmap</h3>
-            <p className="text-zinc-500 text-sm leading-relaxed font-light">A step-by-step checklist to take your new account from 0 to 1,000 followers in 30 days or less.</p>
-        </div>
+        {[
+          { icon: '📝', t: '30 Viral Scripts', d: \`Custom-tuned for the \${answers?.niche} niche. Every script includes a high-retention hook, a value-bridge, and a strategic CTA.\` },
+          { icon: '🎨', t: 'Visual DNA Prompt Library', d: 'The exact Midjourney and DALL-E prompts to create that "Ghost Creator" aesthetic that stops the scroll.' },
+          { icon: '📅', t: 'The 30-Day Production Map', d: 'Exactly when to post, how to sequence your content, and how to use "The Gap" strategy for maximum comments.' },
+          { icon: '🚀', t: 'First 1,000 Roadmap', d: 'A step-by-step checklist to take your new account from 0 to 1,000 followers in 30 days or less.' }
+        ].map((item, i) => (
+          <div key={i} className="p-8 rounded-[3rem] bg-zinc-900/50 border border-white/5 relative overflow-hidden group">
+            <div className="absolute top-0 right-0 p-6 text-4xl opacity-20 group-hover:opacity-100 transition-opacity">{item.icon}</div>
+            <h3 className="text-xl font-bold mb-4 uppercase tracking-tighter italic">{item.t}</h3>
+            <p className="text-zinc-500 text-sm leading-relaxed font-light">{item.d}</p>
+          </div>
+        ))}
       </div>
 
       <div className="relative p-10 md:p-20 rounded-[4rem] bg-zinc-900 border border-brand-primary shadow-brand text-center overflow-hidden">
@@ -258,7 +248,7 @@ const SalesPage = ({ answers, onUnlock }) => {
 };
 
 // --- Results Component ---
-const Results = ({ answers, onEmailSubmit }) => {
+const Results = ({ answers, onEmailSubmit, onUnlock }) => {
   const [isResearching, setIsResearching] = useState(true);
   const [researchStatus, setResearchStatus] = useState('Initializing Neural Core...');
   const [score, setScore] = useState(0);
@@ -267,9 +257,9 @@ const Results = ({ answers, onEmailSubmit }) => {
 
   useEffect(() => {
     const researchSteps = [
-      { msg: `Scanning TikTok for #${answers?.niche?.replace(/\s/g, '')} trends...`, delay: 1000 },
-      { msg: `Analyzing saturation...`, delay: 1000 },
-      { msg: `Finalizing Viral Blueprint...`, delay: 1000 }
+      { msg: \`Scanning TikTok for #\${answers?.niche?.replace(/\s/g, '')} trends...\`, delay: 1000 },
+      { msg: \`Analyzing saturation...\`, delay: 1000 },
+      { msg: \`Finalizing Viral Blueprint...\`, delay: 1000 }
     ];
 
     let currentStep = 0;
@@ -329,13 +319,19 @@ const Results = ({ answers, onEmailSubmit }) => {
         ))}
       </div>
 
-      <div className="max-w-2xl mx-auto p-10 md:p-16 rounded-[3rem] bg-zinc-900/50 border border-white/5 text-center relative overflow-hidden shadow-2xl">
+      <div className="max-w-2xl mx-auto p-10 md:p-16 rounded-[3rem] bg-zinc-900/50 border border-white/5 text-center relative overflow-hidden shadow-2xl mb-12">
         <h2 className="text-2xl md:text-4xl font-semibold mb-4 tracking-tight leading-tight">Send full {answers?.niche} roadmap to your inbox?</h2>
         <p className="text-zinc-500 mb-10 font-light text-base">We've generated a 12-page PDF. Enter your email to receive it.</p>
         <div className="flex flex-col sm:flex-row gap-3">
           <input type="email" placeholder="you@example.com" className="flex-1 bg-black/50 border border-zinc-800 rounded-2xl px-6 py-5 outline-none focus:border-brand-primary text-sm font-light" value={email} onChange={(e) => setEmail(e.target.value)} />
           <button onClick={() => onEmailSubmit(email)} className="bg-white text-black px-8 py-5 rounded-2xl font-black text-xs uppercase tracking-widest whitespace-nowrap">Receive PDF</button>
         </div>
+      </div>
+
+      <div className="text-center">
+        <button onClick={onUnlock} className="text-brand-primary font-bold text-xs uppercase tracking-widest hover:underline underline-offset-8">
+          Skip to Full 30-Day Blueprint →
+        </button>
       </div>
     </div>
   );
@@ -350,19 +346,11 @@ export default function App() {
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    if (params.get('admin') === 'true') {
-      setIsAdmin(true);
-      setView('dashboard');
-    }
-    if (params.get('paid') === 'true') {
-      setIsPaid(true);
-      setView('dashboard');
-    }
+    if (params.get('admin') === 'true') { setIsAdmin(true); setView('dashboard'); }
+    if (params.get('paid') === 'true') { setIsPaid(true); setView('dashboard'); }
   }, []);
 
-  const handleUnlock = () => {
-    window.location.href = "https://buy.stripe.com/dRm6oA2iq9Jm8z78RGeUU00";
-  };
+  const handleUnlock = () => { window.location.href = "https://buy.stripe.com/dRm6oA2iq9Jm8z78RGeUU00"; };
 
   return (
     <div className="min-h-screen bg-black text-white font-sans antialiased selection:bg-brand-primary pb-10">
@@ -373,19 +361,17 @@ export default function App() {
 
       <nav className="sticky top-0 z-[100] w-full bg-black/80 backdrop-blur-md border-b border-white/5">
         <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
-          <span className="font-bold text-xl md:text-2xl tracking-tighter uppercase italic cursor-pointer flex-shrink-0" onClick={() => setView('quiz')}>
-            FACELESS<span className="text-gradient font-black">OS</span>
-          </span>
+          <span className="font-bold text-xl md:text-2xl tracking-tighter uppercase italic cursor-pointer flex-shrink-0" onClick={() => setView('quiz')}>FACELESS<span className="text-gradient font-black">OS</span></span>
           <div className="flex items-center space-x-4">
             {(view === 'dashboard' || view === 'profile') && <span className="text-[10px] font-bold tracking-[0.4em] uppercase text-zinc-500 mr-4">Console</span>}
-            <button onClick={() => setView('profile')} className={`w-10 h-10 rounded-full border flex-shrink-0 flex items-center justify-center transition-all ${view === 'profile' ? 'border-brand-primary bg-brand-primary/10 shadow-brand' : 'border-white/10 bg-white/5 text-zinc-500'}`}>👤</button>
+            <button onClick={() => setView('profile')} className={`w-10 h-10 rounded-full border flex-shrink-0 flex items-center justify-center transition-all \${view === 'profile' ? 'border-brand-primary bg-brand-primary/10 shadow-brand' : 'border-white/10 bg-white/5 text-zinc-500'}`}>👤</button>
           </div>
         </div>
       </nav>
 
       <main className="relative z-10">
         {view === 'quiz' && <Quiz onComplete={(ans) => { setData(ans); setView('results'); }} />}
-        {view === 'results' && <Results answers={data} onEmailSubmit={() => setView('sales')} />}
+        {view === 'results' && <Results answers={data} onEmailSubmit={() => setView('sales')} onUnlock={() => setView('sales')} />}
         {view === 'sales' && <SalesPage answers={data} onUnlock={handleUnlock} />}
         {view === 'dashboard' && (isPaid || isAdmin ? <Dashboard answers={data} setView={setView} /> : <SalesPage answers={data} onUnlock={handleUnlock} />)}
         {view === 'profile' && <Profile data={data} setData={setData} onBack={() => setView('dashboard')} onRequiz={() => setView('quiz')} />}
@@ -399,9 +385,9 @@ const Quiz = ({ onComplete }) => {
   const questions = [
     { id: 'name', text: 'What is your creator name?', type: 'text', placeholder: 'e.g. Stoic Soul...' },
     { id: 'niche', text: 'What is your niche?', type: 'text', placeholder: 'e.g. AI Tools, Stoicism...' },
-    { id: 'goal', text: 'Primary goal?', type: 'multi-select', options: ['Affiliate Sales', 'Digital Product', 'Brand Deals'] },
-    { id: 'platform', text: 'Target Platforms?', type: 'multi-select', options: ['TikTok', 'Instagram', 'YouTube'] },
-    { id: 'vibe', text: 'The Vibe?', type: 'select', options: ['Aesthetic/Minimalist', 'Dark/Moody', 'Fast/Hype'] },
+    { id: 'goal', text: 'Primary goal?', type: 'multi-select', options: ['Affiliate Sales', 'Digital Product', 'Brand Deals', 'Followers Only', 'Other'] },
+    { id: 'platform', text: 'Target Platforms?', type: 'multi-select', options: ['TikTok', 'Instagram', 'YouTube', 'Pinterest', 'Other'] },
+    { id: 'vibe', text: 'The Vibe?', type: 'select', options: ['Aesthetic/Minimalist', 'Dark/Moody', 'Fast/Hype', 'Educational', 'Other'] },
   ];
 
   const [currentStep, setCurrentStep] = useState(0);
@@ -416,7 +402,9 @@ const Quiz = ({ onComplete }) => {
     if (currentQuestion.type === 'text') finalValue = inputValue;
     else if (currentQuestion.type === 'multi-select') finalValue = [...selectedOptions];
 
-    if (!finalValue || (Array.isArray(finalValue) && finalValue.length === 0)) return;
+    if (!finalValue || (Array.isArray(finalValue) && finalValue.length === 0)) {
+        if (currentQuestion.type !== 'text' || !inputValue) return;
+    }
     
     const newAnswers = { ...answers, [currentQuestion.id]: finalValue };
     setAnswers(newAnswers);
@@ -434,21 +422,25 @@ const Quiz = ({ onComplete }) => {
 
   return (
     <div className="max-w-xl mx-auto mt-12 md:mt-24 px-4 pb-20">
-      <div className="relative p-10 md:p-12 rounded-[3rem] bg-zinc-900/40 border border-white/5 backdrop-blur-2xl shadow-2xl">
+      <div className="relative p-10 md:p-12 rounded-[3rem] bg-zinc-900/40 border border-white/5 backdrop-blur-2xl shadow-2xl overflow-hidden">
+        <div className="flex items-center justify-between mb-8">
+            <span className="text-[10px] font-bold tracking-widest text-zinc-500 uppercase">Phase {currentStep + 1} of {questions.length}</span>
+        </div>
         <h2 className="text-2xl md:text-3xl font-medium mb-10 tracking-tight text-zinc-100">{currentQuestion.text}</h2>
         {currentQuestion.type === 'text' && (
-          <input className="w-full bg-transparent border-b border-zinc-800 py-4 text-xl outline-none focus:border-brand-primary placeholder:text-zinc-800 font-light" value={inputValue} onChange={(e) => setInputValue(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && handleNext()} />
+          <input autoFocus className="w-full bg-transparent border-b border-zinc-800 py-4 text-xl outline-none focus:border-brand-primary placeholder:text-zinc-800 font-light" value={inputValue} onChange={(e) => setInputValue(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && handleNext()} />
         )}
         {(currentQuestion.type === 'select' || currentQuestion.type === 'multi-select') && (
           <div className="grid grid-cols-1 gap-3">
             {currentQuestion.options.map(opt => (
-              <button key={opt} onClick={() => currentQuestion.type === 'multi-select' ? toggleOption(opt) : handleNext(opt)} className={`p-6 rounded-2xl border transition-all text-left ${selectedOptions.includes(opt) ? 'bg-brand-primary/20 border-brand-primary/50 text-white' : 'border-white/[0.03] bg-white/[0.02] text-zinc-400'}`}>
-                {opt}
+              <button key={opt} onClick={() => currentQuestion.type === 'multi-select' ? toggleOption(opt) : handleNext(opt)} className={`p-6 rounded-2xl border transition-all text-left flex justify-between items-center \${selectedOptions.includes(opt) ? 'bg-brand-primary/20 border-brand-primary/50 text-white' : 'border-white/[0.03] bg-white/[0.02] text-zinc-400 hover:bg-white/5'}`}>
+                <span className="text-sm font-medium">{opt}</span>
+                {selectedOptions.includes(opt) && <span className="text-brand-primary text-xs font-bold">✓</span>}
               </button>
             ))}
           </div>
         )}
-        <button onClick={() => handleNext()} className="w-full mt-12 py-5 rounded-2xl bg-gradient-brand font-black text-xs uppercase tracking-[0.2em] shadow-brand">Continue</button>
+        <button onClick={() => handleNext()} className="w-full mt-12 py-5 rounded-2xl bg-gradient-brand font-black text-xs uppercase tracking-[0.2em] shadow-brand hover:opacity-90 active:scale-95 transition-all">Continue</button>
       </div>
     </div>
   );
