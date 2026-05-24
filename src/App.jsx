@@ -270,16 +270,34 @@ const Results = ({ answers, onEmailSubmit, onUnlock }) => {
       }
       
       const niche = answers?.niche?.toLowerCase() || '';
-      let calculatedScore = (Math.random() * (9.1 - 7.5) + 7.5).toFixed(1);
+      let calculatedScore = parseFloat((Math.random() * (9.8 - 7.2) + 7.2).toFixed(1));
+      
+      if (niche.includes('ai') || niche.includes('tech') || niche.includes('wealth')) {
+        calculatedScore = Math.max(calculatedScore, 9.2);
+      }
+
       let advice = {
-        strategy: 'Focus on high-volume "Take-downs" of common myths.',
-        aesthetic: 'Minimalist, high-grain texture with high contrast.',
-        loop: 'Optimize for shareability via polarized takes.'
+        subheading: '',
+        strategy: '',
+        aesthetic: '',
+        loop: ''
       };
 
-      if (niche.includes('ai') || niche.includes('tech')) {
-        calculatedScore = 9.4;
-        advice.strategy = 'Aggressive focus on "Secret Tool" reveals.';
+      if (calculatedScore >= 9.0) {
+        advice.subheading = `The ${answers?.niche} market is currently in a "Breakout" phase. Your profile is primed for rapid scale.`;
+        advice.strategy = niche.includes('ai') ? 'Aggressive focus on "Secret Tool" reveals.' : 'Polarizing "Counter-Culture" takes that challenge the status quo.';
+        advice.aesthetic = 'Ultra-minimalist, high-contrast, "Ghost" DNA.';
+        advice.loop = 'Frictionless sharing via "Save for later" authority hooks.';
+      } else if (calculatedScore >= 8.0) {
+        advice.subheading = `The ${answers?.niche} market is highly competitive but scalable. Visual authority is your key differentiator.`;
+        advice.strategy = 'Systematic myth-busting and high-frequency production maps.';
+        advice.aesthetic = 'Dark, moody, high-grain texture with serif accents.';
+        advice.loop = 'Comment-driven engagement via "The Gap" strategy.';
+      } else {
+        advice.subheading = `The ${answers?.niche} market requires precision. Authority-building in this micro-niche is your path to 10k.`;
+        advice.strategy = 'Deep-dive case studies and personality-led authority without a face.';
+        advice.aesthetic = 'Clean, professional, heavy focus on bold typography.';
+        advice.loop = 'Trust-building via community-centric CTAs and "DM for access" loops.';
       }
 
       setScore(calculatedScore);
@@ -303,7 +321,7 @@ const Results = ({ answers, onEmailSubmit, onUnlock }) => {
       <div className="text-center mb-16 relative">
         <div className="inline-flex items-center px-4 py-2 rounded-full border border-brand-primary/20 bg-brand-primary/5 text-brand-primary font-bold text-[10px] tracking-[0.3em] mb-8 uppercase">Neural Analysis Complete</div>
         <h1 className="text-5xl md:text-7xl font-light mb-6 tracking-tighter">Niche Potential: <span className="font-bold text-gradient italic">{score} / 10</span></h1>
-        <p className="text-zinc-500 font-light text-xl">The <span className="text-zinc-200 border-b">{answers?.niche}</span> market is currently in a "Breakout" phase.</p>
+        <p className="text-zinc-500 font-light text-xl">{customData?.subheading}</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-20">
@@ -328,10 +346,20 @@ const Results = ({ answers, onEmailSubmit, onUnlock }) => {
         </div>
       </div>
 
-      <div className="text-center">
-        <button onClick={onUnlock} className="text-brand-primary font-bold text-xs uppercase tracking-widest hover:underline underline-offset-8">
-          Skip to Full 30-Day Blueprint →
-        </button>
+      <div className="max-w-2xl mx-auto p-10 md:p-12 rounded-[3rem] bg-gradient-to-b from-brand-primary/10 to-transparent border border-brand-primary/20 text-center shadow-2xl mb-20 relative overflow-hidden group">
+        <div className="absolute top-0 right-0 p-8 text-4xl opacity-10 group-hover:opacity-20 transition-opacity">🚀</div>
+        <h3 className="text-2xl font-bold italic uppercase tracking-tighter mb-4 text-white">Unlock the Full <span className="text-gradient">FacelessOS Bundle</span></h3>
+        <p className="text-zinc-400 text-sm mb-10 font-light leading-relaxed max-w-md mx-auto">
+          The PDF roadmap is just the beginning. Get the actual viral scripts, visual DNA prompts, and the production system used by the world's top ghost creators.
+        </p>
+        <div className="flex flex-col gap-4 items-center">
+          <button onClick={onUnlock} className="w-full sm:w-auto px-12 py-5 bg-gradient-brand rounded-full font-black text-xs uppercase tracking-[0.2em] shadow-brand hover:scale-105 transition-all">
+            Get the Bundle Now - $27
+          </button>
+          <button onClick={onUnlock} className="text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em] hover:text-white transition-colors py-2">
+            Learn more about what's inside →
+          </button>
+        </div>
       </div>
     </div>
   );
