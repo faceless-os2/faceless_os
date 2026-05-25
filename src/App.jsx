@@ -790,14 +790,20 @@ const Quiz = ({ onComplete }) => {
   ];
 
   const suggestedNiches = ['AI News & Tools', 'Stoic Philosophy', 'Digital Wealth / SaaS', 'Health & Biohacking', 'Travel Aesthetics', 'Motivation & Success', 'True Crime / Mysteries', 'Daily Facts & Trivia', 'Gaming News'];
-  const [currentStep, setCurrentStep] = useState(0);
+  const [currentStep, setCurrentStep] = useState(-1);
   const [answers, setAnswers] = useState({});
   const [inputValue, setInputValue] = useState('');
   const [selectedOptions, setSelectedOptions] = useState([]);
   const [showNicheSuggestions, setShowNicheSuggestions] = useState(false);
-  const currentQuestion = questions[currentStep];
+  
+  // Prevent index error during intro state
+  const currentQuestion = currentStep >= 0 ? questions[currentStep] : null;
 
   const handleNext = (val) => {
+    if (currentStep === -1) {
+      setCurrentStep(0);
+      return;
+    }
     let finalValue = val;
     if (currentQuestion.type === 'text') finalValue = inputValue;
     else if (currentQuestion.type === 'multi-select') finalValue = [...selectedOptions];
@@ -813,44 +819,100 @@ const Quiz = ({ onComplete }) => {
 
   return (
     <div className="max-w-xl mx-auto mt-12 md:mt-24 px-4 pb-20">
-      <div className="relative p-10 md:p-12 rounded-[3rem] bg-zinc-900/40 border border-white/5 backdrop-blur-2xl shadow-2xl overflow-hidden">
-        <div className="flex items-center justify-between mb-8">
-            <span className="text-[10px] font-bold tracking-widest text-zinc-500 uppercase">Step {currentStep + 1} of {questions.length}</span>
-        </div>
-        <h2 className="text-2xl md:text-3xl font-medium mb-10 tracking-tight text-zinc-100">{currentQuestion.text}</h2>
-        {currentQuestion.type === 'text' && !showNicheSuggestions && (
-          <div className="space-y-6">
-            <input autoFocus className="w-full bg-transparent border-b border-zinc-800 py-4 text-xl outline-none focus:border-brand-primary placeholder:text-zinc-800 font-light" value={inputValue} onChange={(e) => setInputValue(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && handleNext()} />
-            {currentQuestion.id === 'niche' && (
-              <button onClick={() => setShowNicheSuggestions(true)} className="text-[10px] font-bold text-brand-primary uppercase tracking-widest hover:text-white transition-colors">Don't have one? Suggest a niche →</button>
-            )}
+      {currentStep === -1 ? (
+        <div className="relative p-10 md:p-12 rounded-[3.5rem] bg-zinc-900/40 border border-white/5 backdrop-blur-3xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-700">
+          <div className="absolute top-0 right-0 p-8">
+            <div className="w-20 h-20 bg-brand-primary/10 rounded-full blur-3xl animate-pulse"></div>
           </div>
-        )}
-        {currentQuestion.id === 'niche' && showNicheSuggestions && (
-          <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
-            <p className="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-6">Best niches to start with:</p>
-            <div className="grid grid-cols-1 gap-3 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
-              {suggestedNiches.map(niche => (
-                <button key={niche} onClick={() => { setInputValue(niche); handleNext(niche); }} className="p-5 rounded-2xl border border-white/5 bg-white/5 text-left text-sm font-medium text-zinc-300 hover:border-brand-primary/50 hover:bg-brand-primary/10 hover:text-white transition-all">{niche}</button>
+          
+          <div className="relative z-10">
+            <span className="inline-block px-4 py-1.5 rounded-full bg-brand-primary/10 border border-brand-primary/20 text-[10px] font-black text-brand-primary uppercase tracking-[0.2em] mb-8">
+              Creator Assessment
+            </span>
+            
+            <h1 className="text-4xl md:text-5xl font-black mb-6 tracking-tighter leading-[0.95] text-white">
+              The OS for <br />
+              <span className="text-zinc-500">Faceless Creators.</span>
+            </h1>
+            
+            <p className="text-zinc-400 text-lg md:text-xl font-medium leading-relaxed mb-10 max-w-sm">
+              Stop guessing. Score your niche idea and generate a custom 30-day roadmap to your first 10,000 followers.
+            </p>
+
+            <div className="space-y-4 mb-12">
+              {[
+                'Get a Niche Viability Score',
+                'Custom Content Strategy',
+                '30-Day Growth Roadmap'
+              ].map(item => (
+                <div key={item} className="flex items-center space-x-3 text-sm font-bold text-zinc-300">
+                  <div className="w-5 h-5 rounded-full bg-brand-primary/20 flex items-center justify-center">
+                    <span className="text-brand-primary text-[10px]">✓</span>
+                  </div>
+                  <span>{item}</span>
+                </div>
               ))}
-              <button onClick={() => setShowNicheSuggestions(false)} className="p-4 text-[10px] font-bold text-zinc-600 uppercase tracking-widest hover:text-zinc-400 text-center">← Go back</button>
             </div>
+
+            <button 
+              onClick={() => setCurrentStep(0)}
+              className="group relative w-full py-6 bg-gradient-brand rounded-3xl font-black text-sm uppercase tracking-[0.2em] shadow-2xl transition-all hover:scale-[1.02] active:scale-[0.98]"
+            >
+              <span className="relative z-10">Start Free Assessment</span>
+              <div className="absolute inset-0 bg-white/20 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            </button>
+            
+            <p className="text-center mt-6 text-[10px] font-bold text-zinc-600 uppercase tracking-widest">
+              Takes less than 60 seconds
+            </p>
           </div>
-        )}
-        {(currentQuestion.type === 'select' || currentQuestion.type === 'multi-select') && (
-          <div className="grid grid-cols-1 gap-3">
-            {currentQuestion.options.map(opt => (
-              <button key={opt} onClick={() => currentQuestion.type === 'multi-select' ? (selectedOptions.includes(opt) ? setSelectedOptions(selectedOptions.filter(o => o !== opt)) : setSelectedOptions([...selectedOptions, opt])) : handleNext(opt)} className={`p-6 rounded-2xl border transition-all text-left flex justify-between items-center ${selectedOptions.includes(opt) ? 'bg-brand-primary/20 border-brand-primary/50 text-white' : 'border-white/[0.03] bg-white/[0.02] text-zinc-400 hover:bg-white/5'}`}>
-                <span className="text-sm font-medium">{opt}</span>
-                {selectedOptions.includes(opt) && <span className="text-brand-primary text-xs font-bold">✓</span>}
+        </div>
+      ) : (
+        <div className="relative p-10 md:p-12 rounded-[3rem] bg-zinc-900/40 border border-white/5 backdrop-blur-2xl shadow-2xl overflow-hidden">
+          <div className="flex items-center justify-between mb-8">
+              <span className="text-[10px] font-bold tracking-widest text-zinc-500 uppercase">Step {currentStep + 1} of {questions.length}</span>
+              <button onClick={() => setCurrentStep(currentStep - 1)} className="text-[10px] font-bold tracking-widest text-zinc-600 hover:text-white uppercase transition-colors">← Back</button>
+          </div>
+          <h2 className="text-2xl md:text-3xl font-medium mb-10 tracking-tight text-zinc-100">{currentQuestion.text}</h2>
+          {currentQuestion.type === 'text' && !showNicheSuggestions && (
+            <div className="space-y-6">
+              <input autoFocus className="w-full bg-transparent border-b border-zinc-800 py-4 text-xl outline-none focus:border-brand-primary placeholder:text-zinc-800 font-light" value={inputValue} onChange={(e) => setInputValue(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && handleNext()} />
+              {currentQuestion.id === 'niche' && (
+                <button onClick={() => setShowNicheSuggestions(true)} className="text-[10px] font-bold text-brand-primary uppercase tracking-widest hover:text-white transition-colors">Don't have one? Suggest a niche →</button>
+              )}
+            </div>
+          )}
+          {currentQuestion.id === 'niche' && showNicheSuggestions && (
+            <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
+              <p className="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-6">Best niches to start with:</p>
+              <div className="grid grid-cols-1 gap-3 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
+                {suggestedNiches.map(niche => (
+                  <button key={niche} onClick={() => { setInputValue(niche); handleNext(niche); }} className="p-5 rounded-2xl border border-white/5 bg-white/5 text-left text-sm font-medium text-zinc-300 hover:border-brand-primary/50 hover:bg-brand-primary/10 hover:text-white transition-all">{niche}</button>
+                ))}
+                <button onClick={() => setShowNicheSuggestions(false)} className="p-4 text-[10px] font-bold text-zinc-600 uppercase tracking-widest hover:text-zinc-400 text-center">← Go back</button>
+              </div>
+            </div>
+          )}
+          {(currentQuestion.type === 'select' || currentQuestion.type === 'multi-select') && (
+            <div className="grid grid-cols-1 gap-3">
+              {currentQuestion.options.map(opt => (
+                <button key={opt} onClick={() => currentQuestion.type === 'multi-select' ? (selectedOptions.includes(opt) ? setSelectedOptions(selectedOptions.filter(o => o !== opt)) : setSelectedOptions([...selectedOptions, opt])) : handleNext(opt)} className={`p-6 rounded-2xl border transition-all text-left flex justify-between items-center ${selectedOptions.includes(opt) ? 'bg-brand-primary/20 border-brand-primary/50 text-white' : 'border-white/[0.03] bg-white/[0.02] text-zinc-400 hover:bg-white/5'}`}>
+                  <span className="text-sm font-medium">{opt}</span>
+                  {selectedOptions.includes(opt) && <span className="text-brand-primary text-xs font-bold">✓</span>}
+                </button>
+              ))}
+            </div>
+          )}
+          
+          {currentQuestion.type !== 'select' && !showNicheSuggestions && (
+            <div className="mt-12">
+              <button onClick={handleNext} className="w-full py-5 bg-zinc-100 text-zinc-900 rounded-2xl font-bold text-xs uppercase tracking-widest hover:bg-white transition-all shadow-xl shadow-white/5">
+                {currentStep === questions.length - 1 ? 'Finish' : 'Next Step'}
               </button>
-            ))}
-          </div>
-        )}
-        {!showNicheSuggestions && (
-          <button onClick={() => handleNext()} className="w-full mt-12 py-5 rounded-2xl bg-gradient-brand font-black text-xs uppercase tracking-[0.2em] shadow-brand hover:opacity-90 active:scale-95 transition-all">Continue</button>
-        )}
-      </div>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 };
