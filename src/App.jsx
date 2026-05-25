@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 
 // --- Helper: Strategy Content by Niche ---
 const getNicheStrategy = (niche) => {
@@ -116,8 +116,6 @@ const Dashboard = ({ answers, setView, setData }) => {
   const [isGenerating, setIsGenerating] = useState(true);
   const [postMap, setPostMap] = useState([]);
   const [strategy, setStrategy] = useState(null);
-  const [isDownloading, setIsDownloading] = useState(false);
-  const [downloadSuccess, setDownloadSuccess] = useState(false);
   const [emailInput, setEmailInput] = useState('');
   const [emailStatus, setEmailStatus] = useState('idle');
 
@@ -150,33 +148,11 @@ const Dashboard = ({ answers, setView, setData }) => {
     return () => clearTimeout(timer);
   }, [answers]);
 
-  const handleDownload = async () => {
-    if (!answers?.email) return;
-    setIsDownloading(true);
-    try {
-      await fetch('/api/send-roadmap', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          email: answers?.email,
-          niche: answers?.niche,
-          name: answers?.name,
-          isFullBundle: true
-        })
-      });
-      setIsDownloading(false);
-      setDownloadSuccess(true);
-      setTimeout(() => setDownloadSuccess(false), 5000);
-      window.print();
-    } catch (err) {
-      console.error(err);
-      setIsDownloading(false);
-      window.print();
-    }
-  };
-
   const submitManualEmail = async () => {
-    if (!emailInput || !emailInput.includes('@')) return;
+    if (!emailInput || !emailInput.includes('@')) {
+      alert('Please enter a valid email.');
+      return;
+    }
     setEmailStatus('sending');
     try {
       const response = await fetch('/api/send-roadmap', {
@@ -184,9 +160,9 @@ const Dashboard = ({ answers, setView, setData }) => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           email: emailInput,
-          niche: answers?.niche,
-          name: answers?.name,
-          isFullBundle: true
+          niche: answers?.niche || 'Creator', // Fallback if data was lost
+          name: answers?.name || 'Creator',
+          isFullBundle: true // Since they are on the dashboard, they likely paid or are testing
         })
       });
       if (response.ok) {
@@ -194,9 +170,12 @@ const Dashboard = ({ answers, setView, setData }) => {
         setEmailStatus('success');
         sessionStorage.setItem(`sent_full_bundle_${emailInput}`, 'true');
       } else {
+        const errData = await response.json();
+        console.error('Manual claim error:', errData);
         setEmailStatus('error');
       }
     } catch (err) {
+      console.error('Network error during manual claim:', err);
       setEmailStatus('error');
     }
   };
@@ -207,6 +186,34 @@ const Dashboard = ({ answers, setView, setData }) => {
         <div className="w-16 h-16 border-4 border-brand-primary/10 border-t-brand-primary rounded-full animate-spin mb-8 shadow-brand" />
         <h2 className="text-xl font-bold tracking-tighter uppercase italic">Setting up your <span className="text-gradient">Plan</span></h2>
         <p className="text-zinc-500 mt-2 font-light text-sm max-w-xs mx-auto">Building your 30-day map and visual brand...</p>
+      </div>
+    );
+  }
+
+  if (!answers?.niche) {
+    return (
+      <div className="max-w-2xl mx-auto py-20 px-6 text-center">
+        <h2 className="text-3xl font-black italic uppercase tracking-tighter mb-4">Rescue your <span className="text-gradient">Bundle</span></h2>
+        <p className="text-zinc-500 mb-10 font-light">It looks like you're on a new device. Enter your niche below to regenerate your full bundle instantly.</p>
+        <div className="flex flex-col gap-4">
+          <input 
+            type="text" 
+            placeholder="e.g. AI Tools, Stoicism..." 
+            className="bg-zinc-900 border border-zinc-800 rounded-2xl px-6 py-5 outline-none focus:border-brand-primary"
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') setData({ ...answers, niche: e.currentTarget.value });
+            }}
+          />
+          <button 
+            onClick={(e) => {
+              const input = e.currentTarget.previousSibling;
+              setData({ ...answers, niche: input.value });
+            }}
+            className="bg-white text-black py-5 rounded-2xl font-black uppercase tracking-widest text-xs"
+          >
+            Access My Bundle
+          </button>
+        </div>
       </div>
     );
   }
@@ -369,6 +376,31 @@ const Dashboard = ({ answers, setView, setData }) => {
                   {emailStatus === 'sending' ? 'Sending...' : 'Deliver My Bundle'}
                 </button>
               </div>
+              <div className="mt-6 pt-6 border-t border-white/5 w-full text-center">
+                <p className="text-[10px] text-zinc-600 mb-3 uppercase font-bold">Already paid but no email?</p>
+                <button 
+                  onClick={() => {
+                    if (!emailInput || !emailInput.includes('@')) {
+                      alert('Please enter your email above first.');
+                      return;
+                    }
+                    setEmailStatus('sending');
+                    fetch('/api/send-roadmap', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({
+                        email: emailInput,
+                        niche: answers?.niche,
+                        name: answers?.name,
+                        isFullBundle: true
+                      })
+                    }).then(r => r.ok ? setEmailStatus('success') : setEmailStatus('error'));
+                  }}
+                  className="text-[10px] text-brand-primary/60 hover:text-brand-primary uppercase font-bold tracking-widest transition-colors"
+                >
+                  Try Force-Resending Bundle →
+                </button>
+              </div>
               {emailStatus === 'success' && <p className="text-green-500 text-[10px] mt-4 text-center font-bold uppercase tracking-widest">Sent! Check your inbox. ✓</p>}
               {emailStatus === 'error' && <p className="text-red-500 text-[10px] mt-4 text-center font-bold uppercase tracking-widest">Failed to send. Please try again.</p>}
             </div>
@@ -461,7 +493,6 @@ const Results = ({ answers, onEmailSubmit, onUnlock }) => {
       { msg: `Finalizing your growth plan...`, delay: 1000 }
     ];
 
-    let currentStep = 0;
     const runResearch = async () => {
       const niche = answers?.niche?.toLowerCase() || '';
       
@@ -633,20 +664,31 @@ const Results = ({ answers, onEmailSubmit, onUnlock }) => {
 
 // --- Main App Component ---
 export default function App() {
-  const [view, setView] = useState('quiz');
-  const [data, setData] = useState(null);
-  const [isAdmin, setIsAdmin] = useState(false);
-  const [isPaid, setIsPaid] = useState(false);
+  const [view, setView] = useState(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('paid') === 'true' || params.get('admin') === 'true') return 'dashboard';
+    return 'quiz';
+  });
+  const [data, setData] = useState(() => {
+    const savedData = localStorage.getItem('faceless_os_data');
+    try {
+      return savedData ? JSON.parse(savedData) : null;
+    } catch (e) { return null; }
+  });
+  const [isAdmin, setIsAdmin] = useState(() => {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('admin') === 'true';
+  });
+  const [isPaid, setIsPaid] = useState(() => {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('paid') === 'true';
+  });
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    if (params.get('admin') === 'true') { setIsAdmin(true); setView('dashboard'); }
-    if (params.get('paid') === 'true') { setIsPaid(true); setView('dashboard'); }
-
-    // Load persisted data
-    const savedData = localStorage.getItem('faceless_os_data');
-    if (savedData && !data) {
-      setData(JSON.parse(savedData));
+    if (params.get('paid') === 'true') { 
+      // Clear the URL so refreshing doesn't keep triggering this if they navigate away
+      window.history.replaceState({}, document.title, window.location.pathname);
     }
   }, []);
 
@@ -656,7 +698,11 @@ export default function App() {
     }
   }, [data]);
 
-  const handleUnlock = () => { window.location.href = "https://buy.stripe.com/dRm6oA2iq9Jm8z78RGeUU00"; };
+  const handleUnlock = () => { 
+    // UPDATE THIS URL with your actual Stan Store product link
+    const stanStoreUrl = "https://stan.store/yourusername"; 
+    window.location.href = stanStoreUrl; 
+  };
 
   return (
     <div className="min-h-screen bg-black text-white font-sans antialiased selection:bg-brand-primary pb-10">
