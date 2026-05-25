@@ -764,6 +764,17 @@ export default function App() {
         {view === 'dashboard' && (isPaid || isAdmin ? <Dashboard answers={data} setView={setView} setData={setData} /> : <SalesPage answers={data} onUnlock={handleUnlock} />)}
         {view === 'profile' && <Profile data={data} setData={setData} onBack={() => setView('dashboard')} onRequiz={() => setView('quiz')} />}
       </main>
+
+      <footer className="relative z-10 max-w-7xl mx-auto px-6 py-12 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6">
+        <div className="text-[10px] font-bold tracking-widest text-zinc-600 uppercase">
+          &copy; 2026 FacelessOS. All rights reserved.
+        </div>
+        <div className="flex items-center space-x-8">
+          <a href="mailto:hello@facelessos.app" className="text-[10px] font-bold tracking-widest text-zinc-500 hover:text-white uppercase transition-colors">
+            Need Help? hello@facelessos.app
+          </a>
+        </div>
+      </footer>
     </div>
   );
 }
