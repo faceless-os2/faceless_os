@@ -244,7 +244,7 @@ const Dashboard = ({ answers, setView, setData }) => {
 
         <div className="mt-8 pt-8 border-t border-white/5">
           <p className="text-[10px] font-bold text-zinc-600 uppercase tracking-widest mb-3 px-4">Support</p>
-          <a href="mailto:hello@facelessos.app" className="w-full flex items-center space-x-4 p-4 rounded-2xl text-zinc-500 hover:bg-white/5 hover:text-brand-primary transition-all">
+          <a href="mailto:Facelessos.app@gmail.com" className="w-full flex items-center space-x-4 p-4 rounded-2xl text-zinc-500 hover:bg-white/5 hover:text-brand-primary transition-all">
             <span className="text-sm">✉️</span>
             <span className="font-bold text-[11px] uppercase tracking-widest">Need Help?</span>
           </a>
@@ -770,8 +770,8 @@ export default function App() {
           &copy; 2026 FacelessOS. All rights reserved.
         </div>
         <div className="flex items-center space-x-8">
-          <a href="mailto:hello@facelessos.app" className="text-[10px] font-bold tracking-widest text-zinc-500 hover:text-white uppercase transition-colors">
-            Need Help? hello@facelessos.app
+          <a href="mailto:Facelessos.app@gmail.com" className="text-[10px] font-bold tracking-widest text-zinc-500 hover:text-white uppercase transition-colors">
+            Need Help? Facelessos.app@gmail.com
           </a>
         </div>
       </footer>
