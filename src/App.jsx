@@ -342,18 +342,10 @@ const Dashboard = ({ answers, setView, setData }) => {
 
         <div className="p-8 rounded-[3rem] bg-zinc-900/50 border border-white/5 flex flex-col items-center justify-between gap-6 group">
           {answers?.email ? (
-            <div className="flex flex-col md:flex-row items-center justify-between w-full gap-6">
-              <div>
-                <h4 className="text-xl font-bold text-white uppercase italic tracking-tighter mb-1">Get your offline copy</h4>
-                <p className="text-zinc-500 text-sm font-light">We've generated a custom PDF roadmap for the <span className="text-white font-medium">{answers?.niche}</span> niche. Sent to: <span className="text-brand-primary">{answers?.email}</span></p>
-              </div>
-              <button 
-                onClick={handleDownload} 
-                disabled={isDownloading}
-                className={`px-8 py-4 rounded-2xl font-black text-xs uppercase tracking-widest transition-all shadow-brand ${downloadSuccess ? 'bg-green-500 text-white' : 'bg-white text-black hover:scale-105 active:scale-95'}`}
-              >
-                {isDownloading ? 'Processing...' : downloadSuccess ? 'Sent to Email! ✓' : 'Download PDF Roadmap'}
-              </button>
+            <div className="text-center w-full py-4 animate-in fade-in zoom-in duration-700">
+              <div className="w-12 h-12 bg-green-500/20 text-green-500 rounded-full flex items-center justify-center mx-auto mb-4 text-xl shadow-[0_0_20px_rgba(34,197,94,0.2)]">✓</div>
+              <h4 className="text-xl font-bold text-white uppercase italic tracking-tighter mb-1">Bundle Delivered!</h4>
+              <p className="text-zinc-500 text-sm font-light italic">Your full digital assets have been sent to <span className="text-brand-primary font-medium">{answers?.email}</span>. Check your inbox (and spam just in case).</p>
             </div>
           ) : (
             <div className="w-full">
@@ -799,3 +791,9 @@ const Quiz = ({ onComplete }) => {
     </div>
   );
 };
+/home/engine/.bashrc: line 1: syntax error near unexpected token `('
+/home/engine/.bashrc: line 1: `. /etc/profile.d/workload-containment.shn# ~/.bashrc: executed by bash(1) for non-login shells.'
+/home/engine/.bashrc: line 1: syntax error near unexpected token `('
+/home/engine/.bashrc: line 1: `. /etc/profile.d/workload-containment.shn# ~/.bashrc: executed by bash(1) for non-login shells.'
+/home/engine/.bashrc: line 1: syntax error near unexpected token `('
+/home/engine/.bashrc: line 1: `. /etc/profile.d/workload-containment.shn# ~/.bashrc: executed by bash(1) for non-login shells.'
