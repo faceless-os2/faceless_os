@@ -202,9 +202,7 @@ export default function App() {
   };
 
   const handleUnlock = () => {
-    setIsPaid(true);
-    localStorage.setItem('faceless_creator_data', JSON.stringify(data));
-    setView('dashboard');
+    window.location.href = "https://stan.store/Facelessosapp/p/facelessos-bundle";
   };
 
   return (
