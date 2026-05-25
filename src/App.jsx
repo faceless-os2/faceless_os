@@ -825,8 +825,8 @@ const Quiz = ({ onComplete }) => {
             </span>
             
             <h1 className="text-4xl md:text-5xl font-black mb-6 tracking-tighter leading-[0.95] text-white">
-              The OS for <br />
-              <span className="text-zinc-500">Faceless Creators.</span>
+              Take the quiz for your <br />
+              <span className="text-brand-primary">viral niche score.</span>
             </h1>
             
             <p className="text-zinc-400 text-lg md:text-xl font-medium leading-relaxed mb-10 max-w-sm">
@@ -849,6 +849,7 @@ const Quiz = ({ onComplete }) => {
             </div>
 
             <div className="pt-8 border-t border-white/5">
+              <p className="text-[10px] font-black text-zinc-500 uppercase tracking-[0.2em] mb-4">Let's get started</p>
               <h2 className="text-xl font-bold mb-6 text-white">{currentQuestion.text}</h2>
               <input 
                 autoFocus 
