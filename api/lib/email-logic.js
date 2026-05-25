@@ -88,7 +88,7 @@ export async function sendBundleEmail({ email, niche, name, isFullBundle }) {
 
   const productionSystemHtml = isFullBundle ? `
     <div style="margin-top: 30px; padding: 25px; background: #fafafa; border-radius: 20px;">
-      <h2 style="font-size: 12px; text-transform: uppercase; color: #8b5cf6; letter-spacing: 1px; margin-bottom: 15px;">Daily Production System</h2>
+      <h2 style="font-size: 12px; text-transform: uppercase; color: #8b5cf6; letter-spacing: 1px; margin-bottom: 15px;">The Production System</h2>
       <div style="font-size: 13px; color: #444; line-height: 1.6;">
         <p><strong>1. Batch Scripts:</strong> Write all 7 scripts on Sunday using the map below.</p>
         <p><strong>2. Source B-Roll:</strong> Use Pexels or Canva to find "Aesthetic" and "Minimalist" footage.</p>
@@ -100,7 +100,7 @@ export async function sendBundleEmail({ email, niche, name, isFullBundle }) {
 
   const brandAssetsHtml = isFullBundle ? `
     <div style="margin-top: 30px; padding: 25px; background: #fafafa; border-radius: 20px;">
-      <h2 style="font-size: 12px; text-transform: uppercase; color: #8b5cf6; letter-spacing: 1px; margin-bottom: 15px;">Your Brand Style</h2>
+      <h2 style="font-size: 12px; text-transform: uppercase; color: #8b5cf6; letter-spacing: 1px; margin-bottom: 15px;">Starter Brand Assets</h2>
       <p style="font-size: 13px; color: #444; font-style: italic;">"Dark & Moody: High contrast, deep shadows, white bold serif text."</p>
     </div>
   ` : '';
@@ -141,13 +141,13 @@ export async function sendBundleEmail({ email, niche, name, isFullBundle }) {
         ${brandAssetsHtml}
 
         <div style="margin-top: 30px; padding: 25px; background: #fafafa; border-radius: 20px;">
-          <h2 style="font-size: 12px; text-transform: uppercase; color: #8b5cf6; letter-spacing: 1px; margin-bottom: 15px;">${isFullBundle ? 'Complete 30-Day Posting Map' : 'Week 1 Posting Plan'}</h2>
+          <h2 style="font-size: 12px; text-transform: uppercase; color: #8b5cf6; letter-spacing: 1px; margin-bottom: 15px;">${isFullBundle ? '30-Day Posting Map & Scripts' : 'Week 1 Posting Plan'}</h2>
           ${postMapHtml}
           ${!isFullBundle ? '<p style="font-size: 11px; color: #999; margin-top: 15px;">+ 23 more days in your bundle.</p>' : ''}
         </div>
 
         <div style="margin-top: 30px; padding: 25px; background: #fafafa; border-radius: 20px;">
-          <h2 style="font-size: 12px; text-transform: uppercase; color: #8b5cf6; letter-spacing: 1px; margin-bottom: 15px;">The 1k Checklist</h2>
+          <h2 style="font-size: 12px; text-transform: uppercase; color: #8b5cf6; letter-spacing: 1px; margin-bottom: 15px;">1k Follower Checklist</h2>
           <ul style="font-size: 13px; color: #444; line-height: 1.8; padding-left: 20px;">
             <li>Optimize Profile (Bio & Link)</li>
             <li>Post 1-2x Daily</li>

@@ -230,11 +230,11 @@ const Dashboard = ({ answers, setView, setData }) => {
           <div className="text-[9px] text-brand-secondary mt-1 uppercase font-black">{platforms}</div>
         </div>
         {[
-          { id: 'strategy', label: 'My Strategy', icon: '🎯' },
-          { id: 'scripts', label: '30-Day Post Map', icon: '📅' },
-          { id: 'visuals', label: 'Visual Brand', icon: '🎨' },
-          { id: 'checklist', label: '1k Checklist', icon: '🚀' },
-          { id: 'production', label: 'Daily System', icon: '⚙️' },
+          { id: 'strategy', label: 'Master Strategy', icon: '🎯' },
+          { id: 'scripts', label: '30-Day Map & Scripts', icon: '📅' },
+          { id: 'visuals', label: 'Starter Brand Assets', icon: '🎨' },
+          { id: 'checklist', label: '1k Follower Checklist', icon: '🚀' },
+          { id: 'production', label: 'The Production System', icon: '⚙️' },
         ].map(tab => (
           <button key={tab.id} onClick={() => setActiveTab(tab.id)} className={`w-full flex items-center space-x-4 p-4 rounded-2xl transition-all ${activeTab === tab.id ? 'bg-gradient-brand text-white shadow-brand' : 'hover:bg-white/5 text-zinc-500'}`}>
             <span className="text-sm">{tab.icon}</span>
@@ -255,7 +255,7 @@ const Dashboard = ({ answers, setView, setData }) => {
           {activeTab === 'strategy' && (
             <div className="animate-in fade-in slide-in-from-bottom-2 duration-500">
               <div className="flex justify-between items-start mb-8">
-                <h2 className="text-3xl font-bold italic uppercase tracking-tighter text-zinc-100">Growth <span className="text-brand-primary">Plan</span></h2>
+                <h2 className="text-3xl font-bold italic uppercase tracking-tighter text-zinc-100">Master <span className="text-brand-primary">Strategy</span></h2>
               </div>
               
               <div className="p-8 rounded-[2rem] bg-brand-primary/5 border border-white/5 mb-8">
@@ -277,7 +277,7 @@ const Dashboard = ({ answers, setView, setData }) => {
           )}
           {activeTab === 'scripts' && (
             <div className="animate-in fade-in slide-in-from-bottom-2 duration-500">
-              <h2 className="text-3xl font-bold italic uppercase tracking-tighter text-zinc-100 mb-8">30-Day <span className="text-brand-secondary">Post Map</span></h2>
+              <h2 className="text-3xl font-bold italic uppercase tracking-tighter text-zinc-100 mb-8">30-Day <span className="text-brand-secondary">Posting Map & Scripts</span></h2>
               <div className="grid grid-cols-1 gap-4 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar">
                 {postMap.map(s => (
                   <div key={s.day} className="p-6 rounded-2xl bg-black/40 border border-white/5 hover:border-brand-secondary/20 transition-all group relative overflow-hidden">
@@ -297,7 +297,7 @@ const Dashboard = ({ answers, setView, setData }) => {
           )}
           {activeTab === 'visuals' && (
             <div className="animate-in fade-in slide-in-from-bottom-2 duration-500">
-              <h2 className="text-2xl font-bold mb-10 italic uppercase tracking-tighter text-zinc-100">Visual <span className="text-brand-primary">Brand</span></h2>
+              <h2 className="text-2xl font-bold mb-10 italic uppercase tracking-tighter text-zinc-100">Starter <span className="text-brand-primary">Brand Assets</span></h2>
               <div className="grid grid-cols-1 gap-8">
                 {[
                   { t: 'The "Ghost" Look', p: `Use simple visuals with deep shadows. Use your color preference.` },
@@ -335,7 +335,7 @@ const Dashboard = ({ answers, setView, setData }) => {
           )}
           {activeTab === 'production' && (
             <div className="animate-in fade-in slide-in-from-bottom-2 duration-500">
-              <h2 className="text-3xl font-bold italic uppercase tracking-tighter text-zinc-100 mb-8">Daily <span className="text-brand-secondary">System</span></h2>
+              <h2 className="text-3xl font-bold italic uppercase tracking-tighter text-zinc-100 mb-8">The <span className="text-brand-secondary">Production System</span></h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {[
                   { t: 'The 10-Minute Edit', d: 'Use a single font, consistent colors, and 1-2 transitions maximum. Speed is king.' },
@@ -604,11 +604,11 @@ const Results = ({ answers, onEmailSubmit, onUnlock }) => {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-10 text-left max-w-lg mx-auto bg-black/20 p-6 rounded-2xl border border-white/5">
           {[
             'Master Strategy',
-            '30 Viral Scripts',
+            '30 Ready-to-Post Scripts',
             'Starter Brand Assets',
             '30-Day Posting Map',
             '1k Follower Checklist',
-            'Production System'
+            'The Production System'
           ].map(item => (
             <div key={item} className="flex items-center space-x-2 text-[10px] font-bold uppercase tracking-widest text-zinc-300">
               <span className="text-brand-primary">✓</span>
