@@ -109,7 +109,7 @@ export async function sendBundleEmail({ email, niche, name, isFullBundle }) {
     <div style="margin-top: 40px; padding: 30px; background: #EEF2FF; border: 1px solid #C7D2FE; border-radius: 25px; text-align: center;">
       <h3 style="font-size: 20px; font-weight: 800; text-transform: uppercase; font-style: italic; letter-spacing: -1px; margin-bottom: 10px; color: #1e1b4b;">Unlock the Full Bundle</h3>
       <p style="font-size: 14px; color: #4338ca; margin-bottom: 25px; font-weight: 400; line-height: 1.4;">Don't spend weeks figuring out the setup. We built the scripts, the visual brand, and the posting plan for you.</p>
-      <a href="https://facelessos.app/?paid=true" style="display: inline-block; background: #6366f1; color: white; text-align: center; padding: 18px 35px; border-radius: 100px; text-decoration: none; font-weight: bold; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; box-shadow: 0 10px 20px rgba(99, 102, 241, 0.3);">Get My Full Bundle Now</a>
+      <a href="https://stan.store/Facelessosapp/p/facelessos-bundle" style="display: inline-block; background: #6366f1; color: white; text-align: center; padding: 18px 35px; border-radius: 100px; text-decoration: none; font-weight: bold; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; box-shadow: 0 10px 20px rgba(99, 102, 241, 0.3);">Get My Full Bundle Now</a>
       <p style="font-size: 10px; color: #6366f1; margin-top: 15px; text-transform: uppercase; font-weight: bold; letter-spacing: 1px;">Instant Access • One-time Payment</p>
     </div>
   ` : `

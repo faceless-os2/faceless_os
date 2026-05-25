@@ -692,6 +692,10 @@ export default function App() {
   });
 
   useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [view]);
+
+  useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     if (params.get('paid') === 'true') { 
       // Clear the URL so refreshing doesn't keep triggering this if they navigate away
