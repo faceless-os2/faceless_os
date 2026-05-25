@@ -73,29 +73,67 @@ export default async function handler(req, res) {
     </div>
   `).join('');
 
-  const postMapHtml = postMap.slice(0, 7).map(d => `
+  // Show all 30 days for full bundle, otherwise just 7
+  const displayScripts = isFullBundle ? postMap : postMap.slice(0, 7);
+  const postMapHtml = displayScripts.map(d => `
     <div style="padding: 10px; border-bottom: 1px solid #eee; font-size: 12px;">
       <strong>Day ${d.day} (${d.type}):</strong> "${d.script}"
     </div>
   `).join('');
 
-  const fullBundleNote = isFullBundle 
-    ? `<p style="background: #e6fffa; color: #2c7a7b; padding: 10px; border-radius: 8px; font-size: 12px; font-weight: bold;">✓ Full Bundle Contents Included Below</p>`
-    : `<p style="font-size: 12px; color: #666;">Note: This is your summary. Unlock the full bundle for all 30 scripts and assets.</p>`;
+  const fullBundleHeader = isFullBundle 
+    ? `<div style="background: #e0e7ff; color: #4338ca; padding: 15px; border-radius: 12px; font-size: 14px; font-weight: bold; text-align: center; margin-bottom: 30px;">
+        ✓ PURCHASE CONFIRMED: Your Complete FacelessOS Bundle is Below
+       </div>`
+    : `<p style="font-size: 12px; color: #666;">Note: This is your summary roadmap. Unlock the full bundle for all 30 scripts and assets.</p>`;
+
+  const productionSystemHtml = isFullBundle ? `
+    <div style="margin-top: 30px; padding: 25px; background: #fafafa; border-radius: 20px;">
+      <h2 style="font-size: 12px; text-transform: uppercase; color: #8b5cf6; letter-spacing: 1px; margin-bottom: 15px;">Daily Production System</h2>
+      <div style="font-size: 13px; color: #444; line-height: 1.6;">
+        <p><strong>1. Batch Scripts:</strong> Write all 7 scripts on Sunday using the map below.</p>
+        <p><strong>2. Source B-Roll:</strong> Use Pexels or Canva to find "Aesthetic" and "Minimalist" footage.</p>
+        <p><strong>3. The 10-Min Edit:</strong> One font, one transition, trending sound at 5% volume.</p>
+        <p><strong>4. AI Captions:</strong> Use Claude to turn your scripts into engaging captions + 3 niche hashtags.</p>
+      </div>
+    </div>
+  ` : '';
+
+  const brandAssetsHtml = isFullBundle ? `
+    <div style="margin-top: 30px; padding: 25px; background: #fafafa; border-radius: 20px;">
+      <h2 style="font-size: 12px; text-transform: uppercase; color: #8b5cf6; letter-spacing: 1px; margin-bottom: 15px;">Your Brand Style</h2>
+      <p style="font-size: 13px; color: #444; font-style: italic;">"Dark & Moody: High contrast, deep shadows, white bold serif text."</p>
+    </div>
+  ` : '';
+
+  // Only show the upsell CTA if it's NOT the full bundle
+  const upsellCta = !isFullBundle ? `
+    <div style="margin-top: 40px; padding: 30px; background: #EEF2FF; border: 1px solid #C7D2FE; border-radius: 25px; text-align: center;">
+      <h3 style="font-size: 20px; font-weight: 800; text-transform: uppercase; font-style: italic; letter-spacing: -1px; margin-bottom: 10px; color: #1e1b4b;">Unlock the Full Bundle</h3>
+      <p style="font-size: 14px; color: #4338ca; margin-bottom: 25px; font-weight: 400; line-height: 1.4;">Don't spend weeks figuring out the setup. We built the scripts, the visual brand, and the posting plan for you.</p>
+      <a href="https://facelessos.app/dashboard?paid=true" style="display: inline-block; background: #6366f1; color: white; text-align: center; padding: 18px 35px; border-radius: 100px; text-decoration: none; font-weight: bold; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; box-shadow: 0 10px 20px rgba(99, 102, 241, 0.3);">Get My Full Bundle Now</a>
+      <p style="font-size: 10px; color: #6366f1; margin-top: 15px; text-transform: uppercase; font-weight: bold; letter-spacing: 1px;">Instant Access • One-time Payment</p>
+    </div>
+  ` : `
+    <div style="margin-top: 40px; text-align: center;">
+      <a href="https://facelessos.app/dashboard?paid=true" style="display: inline-block; background: #6366f1; color: white; text-align: center; padding: 20px 40px; border-radius: 100px; text-decoration: none; font-weight: bold; font-size: 16px; text-transform: uppercase; letter-spacing: 1px; box-shadow: 0 10px 20px rgba(99, 102, 241, 0.3);">Open Creator Console</a>
+      <p style="font-size: 11px; color: #999; margin-top: 15px;">Use the console to manage your 30-day progress and access future updates.</p>
+    </div>
+  `;
 
   try {
     const result = await resend.emails.send({
       from: 'FacelessOS <hello@facelessos.app>',
       to: [email],
-      subject: isFullBundle ? `[COMPLETED] Your Full FacelessOS Bundle: ${niche}` : `Your Faceless Roadmap: ${niche}`,
+      subject: isFullBundle ? `[DELIVERED] Your Full FacelessOS Bundle: ${niche}` : `Your Faceless Roadmap: ${niche}`,
       html: `
         <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 30px; border: 1px solid #eee; border-radius: 30px; color: #111;">
           <h1 style="font-style: italic; text-transform: uppercase; letter-spacing: -2px; margin-bottom: 30px;">FACELESS<span style="color: #6366f1;">OS</span></h1>
           
           <p style="font-size: 16px; line-height: 1.6;">Hi ${name || 'Creator'},</p>
-          <p style="font-size: 16px; line-height: 1.6;">Your <strong>${niche}</strong> growth engine is ready. ${isFullBundle ? "Below is your full 30-day posting plan and master strategy." : "Here is your starter roadmap."}</p>
+          <p style="font-size: 16px; line-height: 1.6;">Your <strong>${niche}</strong> growth engine is ready. ${isFullBundle ? "Your full bundle deliverables are detailed below." : "Here is your starter roadmap."}</p>
           
-          ${fullBundleNote}
+          ${fullBundleHeader}
 
           <div style="margin-top: 40px; padding: 25px; background: #fafafa; border-radius: 20px;">
             <h2 style="font-size: 12px; text-transform: uppercase; color: #8b5cf6; letter-spacing: 1px; margin-bottom: 15px;">Master Strategy: ${strategy.title}</h2>
@@ -103,10 +141,12 @@ export default async function handler(req, res) {
             ${roadmapHtml}
           </div>
 
+          ${brandAssetsHtml}
+
           <div style="margin-top: 30px; padding: 25px; background: #fafafa; border-radius: 20px;">
-            <h2 style="font-size: 12px; text-transform: uppercase; color: #8b5cf6; letter-spacing: 1px; margin-bottom: 15px;">Week 1 Posting Plan</h2>
+            <h2 style="font-size: 12px; text-transform: uppercase; color: #8b5cf6; letter-spacing: 1px; margin-bottom: 15px;">${isFullBundle ? 'Complete 30-Day Posting Map' : 'Week 1 Posting Plan'}</h2>
             ${postMapHtml}
-            <p style="font-size: 11px; color: #999; margin-top: 15px;">+ 23 more days in your dashboard.</p>
+            ${!isFullBundle ? '<p style="font-size: 11px; color: #999; margin-top: 15px;">+ 23 more days in your bundle.</p>' : ''}
           </div>
 
           <div style="margin-top: 30px; padding: 25px; background: #fafafa; border-radius: 20px;">
@@ -119,12 +159,9 @@ export default async function handler(req, res) {
             </ul>
           </div>
 
-          <div style="margin-top: 40px; padding: 30px; background: #EEF2FF; border: 1px solid #C7D2FE; border-radius: 25px; text-align: center;">
-            <h3 style="font-size: 20px; font-weight: 800; text-transform: uppercase; font-style: italic; letter-spacing: -1px; margin-bottom: 10px; color: #1e1b4b;">Unlock the Full Bundle</h3>
-            <p style="font-size: 14px; color: #4338ca; margin-bottom: 25px; font-weight: 400; line-height: 1.4;">Don't spend weeks figuring out the setup. We built the scripts, the visual brand, and the posting plan for you.</p>
-            <a href="https://facelessos.app/dashboard?paid=true" style="display: inline-block; background: #6366f1; color: white; text-align: center; padding: 18px 35px; border-radius: 100px; text-decoration: none; font-weight: bold; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; box-shadow: 0 10px 20px rgba(99, 102, 241, 0.3);">Get My Full Bundle Now</a>
-            <p style="font-size: 10px; color: #6366f1; margin-top: 15px; text-transform: uppercase; font-weight: bold; letter-spacing: 1px;">Instant Access • One-time Payment</p>
-          </div>
+          ${productionSystemHtml}
+
+          ${upsellCta}
           
           <hr style="border: none; border-top: 1px solid #eee; margin: 40px 0;" />
           <p style="font-size: 10px; color: #bbb; text-align: center;">&copy; 2026 FacelessOS. All rights reserved. Delivered to ${email}.</p>
