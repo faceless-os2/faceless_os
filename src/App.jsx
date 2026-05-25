@@ -757,7 +757,7 @@ export default function App() {
                 return { error: err.message };
               }
             }} 
-            onUnlock={() => setView('sales')} 
+            onUnlock={handleUnlock} 
           />
         )}
         {view === 'sales' && <SalesPage answers={data} onUnlock={handleUnlock} />}
