@@ -699,8 +699,7 @@ export default function App() {
   }, [data]);
 
   const handleUnlock = () => { 
-    // UPDATE THIS URL with your actual Stan Store product link
-    const stanStoreUrl = "https://stan.store/yourusername"; 
+    const stanStoreUrl = "https://stan.store/Facelessosapp/p/facelessos-bundle"; 
     window.location.href = stanStoreUrl; 
   };
 
