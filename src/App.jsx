@@ -111,13 +111,15 @@ const Profile = ({ data, setData, onBack, onRequiz }) => {
 };
 
 // --- Dashboard Component ---
-const Dashboard = ({ answers, setView }) => {
+const Dashboard = ({ answers, setView, setData }) => {
   const [activeTab, setActiveTab] = useState('strategy');
   const [isGenerating, setIsGenerating] = useState(true);
   const [postMap, setPostMap] = useState([]);
   const [strategy, setStrategy] = useState(null);
   const [isDownloading, setIsDownloading] = useState(false);
   const [downloadSuccess, setDownloadSuccess] = useState(false);
+  const [emailInput, setEmailInput] = useState('');
+  const [emailStatus, setEmailStatus] = useState('idle');
 
   useEffect(() => {
     setIsGenerating(true);
@@ -127,26 +129,29 @@ const Dashboard = ({ answers, setView }) => {
       setIsGenerating(false);
 
       // Automated Email Delivery for paid users
-      const hasSentEmail = sessionStorage.getItem(`sent_full_bundle_${answers?.email}`);
-      if (answers?.email && !hasSentEmail) {
-        fetch('/api/send-roadmap', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            email: answers?.email,
-            niche: answers?.niche,
-            name: answers?.name,
-            isFullBundle: true
-          })
-        }).then(() => {
-          sessionStorage.setItem(`sent_full_bundle_${answers?.email}`, 'true');
-        }).catch(err => console.error('Auto-email error:', err));
+      if (answers?.email) {
+        const hasSentEmail = sessionStorage.getItem(`sent_full_bundle_${answers?.email}`);
+        if (!hasSentEmail) {
+          fetch('/api/send-roadmap', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              email: answers?.email,
+              niche: answers?.niche,
+              name: answers?.name,
+              isFullBundle: true
+            })
+          }).then(() => {
+            sessionStorage.setItem(`sent_full_bundle_${answers?.email}`, 'true');
+          }).catch(err => console.error('Auto-email error:', err));
+        }
       }
     }, 2000);
     return () => clearTimeout(timer);
   }, [answers]);
 
   const handleDownload = async () => {
+    if (!answers?.email) return;
     setIsDownloading(true);
     try {
       await fetch('/api/send-roadmap', {
@@ -155,7 +160,8 @@ const Dashboard = ({ answers, setView }) => {
         body: JSON.stringify({
           email: answers?.email,
           niche: answers?.niche,
-          name: answers?.name
+          name: answers?.name,
+          isFullBundle: true
         })
       });
       setIsDownloading(false);
@@ -165,8 +171,33 @@ const Dashboard = ({ answers, setView }) => {
     } catch (err) {
       console.error(err);
       setIsDownloading(false);
-      // Fallback to print if email fails
       window.print();
+    }
+  };
+
+  const submitManualEmail = async () => {
+    if (!emailInput || !emailInput.includes('@')) return;
+    setEmailStatus('sending');
+    try {
+      const response = await fetch('/api/send-roadmap', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: emailInput,
+          niche: answers?.niche,
+          name: answers?.name,
+          isFullBundle: true
+        })
+      });
+      if (response.ok) {
+        setData({ ...answers, email: emailInput });
+        setEmailStatus('success');
+        sessionStorage.setItem(`sent_full_bundle_${emailInput}`, 'true');
+      } else {
+        setEmailStatus('error');
+      }
+    } catch (err) {
+      setEmailStatus('error');
     }
   };
 
@@ -309,18 +340,47 @@ const Dashboard = ({ answers, setView }) => {
           )}
         </div>
 
-        <div className="p-8 rounded-[3rem] bg-zinc-900/50 border border-white/5 flex flex-col md:flex-row items-center justify-between gap-6 group">
-          <div>
-            <h4 className="text-xl font-bold text-white uppercase italic tracking-tighter mb-1">Get your offline copy</h4>
-            <p className="text-zinc-500 text-sm font-light">We've generated a custom PDF roadmap for the <span className="text-white font-medium">{answers?.niche}</span> niche. Sent to: <span className="text-brand-primary">{answers?.email || 'your email'}</span></p>
-          </div>
-          <button 
-            onClick={handleDownload} 
-            disabled={isDownloading}
-            className={`px-8 py-4 rounded-2xl font-black text-xs uppercase tracking-widest transition-all shadow-brand ${downloadSuccess ? 'bg-green-500 text-white' : 'bg-white text-black hover:scale-105 active:scale-95'}`}
-          >
-            {isDownloading ? 'Processing...' : downloadSuccess ? 'Sent to Email! ✓' : 'Download PDF Roadmap'}
-          </button>
+        <div className="p-8 rounded-[3rem] bg-zinc-900/50 border border-white/5 flex flex-col items-center justify-between gap-6 group">
+          {answers?.email ? (
+            <div className="flex flex-col md:flex-row items-center justify-between w-full gap-6">
+              <div>
+                <h4 className="text-xl font-bold text-white uppercase italic tracking-tighter mb-1">Get your offline copy</h4>
+                <p className="text-zinc-500 text-sm font-light">We've generated a custom PDF roadmap for the <span className="text-white font-medium">{answers?.niche}</span> niche. Sent to: <span className="text-brand-primary">{answers?.email}</span></p>
+              </div>
+              <button 
+                onClick={handleDownload} 
+                disabled={isDownloading}
+                className={`px-8 py-4 rounded-2xl font-black text-xs uppercase tracking-widest transition-all shadow-brand ${downloadSuccess ? 'bg-green-500 text-white' : 'bg-white text-black hover:scale-105 active:scale-95'}`}
+              >
+                {isDownloading ? 'Processing...' : downloadSuccess ? 'Sent to Email! ✓' : 'Download PDF Roadmap'}
+              </button>
+            </div>
+          ) : (
+            <div className="w-full">
+              <div className="text-center mb-6">
+                <h4 className="text-xl font-bold text-white uppercase italic tracking-tighter mb-1">Where should we deliver your bundle?</h4>
+                <p className="text-zinc-500 text-sm font-light">You haven't set a delivery email yet. Enter it below to receive your full 30-day plan.</p>
+              </div>
+              <div className="flex flex-col sm:flex-row gap-3 max-w-xl mx-auto">
+                <input 
+                  type="email" 
+                  placeholder="you@example.com" 
+                  className="flex-1 bg-black/40 border border-zinc-800 rounded-xl px-6 py-4 outline-none focus:border-brand-primary transition-all font-light"
+                  value={emailInput}
+                  onChange={(e) => setEmailInput(e.target.value)}
+                />
+                <button 
+                  onClick={submitManualEmail}
+                  disabled={emailStatus === 'sending'}
+                  className="bg-brand-primary text-white px-8 py-4 rounded-xl text-xs font-black uppercase hover:bg-brand-secondary transition-all"
+                >
+                  {emailStatus === 'sending' ? 'Sending...' : 'Deliver My Bundle'}
+                </button>
+              </div>
+              {emailStatus === 'success' && <p className="text-green-500 text-[10px] mt-4 text-center font-bold uppercase tracking-widest">Sent! Check your inbox. ✓</p>}
+              {emailStatus === 'error' && <p className="text-red-500 text-[10px] mt-4 text-center font-bold uppercase tracking-widest">Failed to send. Please try again.</p>}
+            </div>
+          )}
         </div>
       </div>
     </div>
@@ -441,7 +501,7 @@ const Results = ({ answers, onEmailSubmit, onUnlock }) => {
         advice.subheading = `The ${answers?.niche} niche is perfect right now. You can grow very fast here.`;
         advice.strategy = niche.includes('ai') ? 'Share secret tools that save people time.' : 'Share bold ideas that challenge the norm.';
         advice.brand = 'Keep it simple, clean, and professional.';
-        advice.loop = 'Make videos that people want to save and watch later.';
+        advice.loop = 'Make videos that people want to watch later.';
       } else if (calculatedScore >= 8.0) {
         advice.subheading = `The ${answers?.niche} niche is popular but has lots of room for you to win.`;
         advice.strategy = 'Fix common mistakes that people in your niche make.';
@@ -539,6 +599,7 @@ const Results = ({ answers, onEmailSubmit, onUnlock }) => {
             {emailStatus === 'sending' ? 'Sending...' : emailStatus === 'success' ? 'Sent! ✓' : 'Get My Guide'}
           </button>
         </div>
+        <button onClick={onUnlock} className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest hover:text-white transition-colors mt-6 block mx-auto">No thanks, I'll skip to the bundle →</button>
         {emailStatus === 'error' && <p className="text-red-500 text-[10px] mt-4 font-bold uppercase tracking-widest">Error: {errorMsg}</p>}
       </div>
 
@@ -589,7 +650,19 @@ export default function App() {
     const params = new URLSearchParams(window.location.search);
     if (params.get('admin') === 'true') { setIsAdmin(true); setView('dashboard'); }
     if (params.get('paid') === 'true') { setIsPaid(true); setView('dashboard'); }
+
+    // Load persisted data
+    const savedData = localStorage.getItem('faceless_os_data');
+    if (savedData && !data) {
+      setData(JSON.parse(savedData));
+    }
   }, []);
+
+  useEffect(() => {
+    if (data) {
+      localStorage.setItem('faceless_os_data', JSON.stringify(data));
+    }
+  }, [data]);
 
   const handleUnlock = () => { window.location.href = "https://buy.stripe.com/dRm6oA2iq9Jm8z78RGeUU00"; };
 
@@ -616,7 +689,8 @@ export default function App() {
           <Results 
             answers={data} 
             onEmailSubmit={async (email) => { 
-              setData({ ...data, email }); 
+              const newData = { ...data, email };
+              setData(newData); 
               // Trigger email immediately
               try {
                 const response = await fetch('/api/send-roadmap', {
@@ -643,7 +717,7 @@ export default function App() {
           />
         )}
         {view === 'sales' && <SalesPage answers={data} onUnlock={handleUnlock} />}
-        {view === 'dashboard' && (isPaid || isAdmin ? <Dashboard answers={data} setView={setView} /> : <SalesPage answers={data} onUnlock={handleUnlock} />)}
+        {view === 'dashboard' && (isPaid || isAdmin ? <Dashboard answers={data} setView={setView} setData={setData} /> : <SalesPage answers={data} onUnlock={handleUnlock} />)}
         {view === 'profile' && <Profile data={data} setData={setData} onBack={() => setView('dashboard')} onRequiz={() => setView('quiz')} />}
       </main>
     </div>
