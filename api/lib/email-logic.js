@@ -40,11 +40,11 @@ const getNicheStrategy = (niche) => {
 
 const generate30DayMap = (niche) => {
   const categories = [
-    { type: 'Hook: Common Mistake', template: 'Stop doing [Mistake] if you want to win in {{niche}}.' },
-    { type: 'Easy Steps: How-To', template: 'How to get [Result] in {{niche}} using this 3-step plan.' },
-    { type: 'Viral: Hot Take', template: 'Most creators in {{niche}} are wrong about this one thing...' },
-    { type: 'Trust: Result Reveal', template: 'I looked at 100 accounts in {{niche}} and found this secret.' },
-    { type: 'Call to Action', template: 'If you want to master {{niche}}, I built this to help you.' }
+    { type: 'Hook: Common Mistake', template: 'Stop making this common {{niche}} mistake if you want to grow.' },
+    { type: 'Easy Steps: How-To', template: '3 easy steps to get [Result] in the {{niche}} space.' },
+    { type: 'Viral: Hot Take', template: 'The one thing most {{niche}} creators get wrong...' },
+    { type: 'Trust: Result Reveal', template: 'The "Secret" used by the top 1% of {{niche}} accounts.' },
+    { type: 'Call to Action', template: 'I built the ultimate system for {{niche}} creators. Link in bio.' }
   ];
   return Array.from({ length: 30 }, (_, i) => {
     const cat = categories[i % categories.length];

@@ -50,11 +50,11 @@ const getNicheStrategy = (niche) => {
 // --- Helper: Generate 30-Day Post Map ---
 const generate30DayMap = (niche) => {
   const categories = [
-    { type: 'Hook: Common Mistake', template: 'Stop doing [Mistake] if you want to win in {{niche}}.' },
-    { type: 'Easy Steps: How-To', template: 'How to get [Result] in {{niche}} using this 3-step plan.' },
-    { type: 'Viral: Hot Take', template: 'Most creators in {{niche}} are wrong about this one thing...' },
-    { type: 'Trust: Result Reveal', template: 'I looked at 100 accounts in {{niche}} and found this secret.' },
-    { type: 'Call to Action', template: 'If you want to master {{niche}}, I built this to help you.' }
+    { type: 'Hook: Common Mistake', template: 'Stop making this common {{niche}} mistake if you want to grow.' },
+    { type: 'Easy Steps: How-To', template: '3 easy steps to get [Result] in the {{niche}} space.' },
+    { type: 'Viral: Hot Take', template: 'The one thing most {{niche}} creators get wrong...' },
+    { type: 'Trust: Result Reveal', template: 'The "Secret" used by the top 1% of {{niche}} accounts.' },
+    { type: 'Call to Action', template: 'I built the ultimate system for {{niche}} creators. Link in bio.' }
   ];
   
   return Array.from({ length: 30 }, (_, i) => {
@@ -521,17 +521,17 @@ const Results = ({ answers, onEmailSubmit, onUnlock }) => {
       };
 
       if (calculatedScore >= 9.0) {
-        advice.subheading = `The ${answers?.niche} niche is perfect right now. You can grow very fast here.`;
+        advice.subheading = `The {{niche}} space is perfect right now. You can grow very fast here.`.replace('{{niche}}', answers?.niche);
         advice.strategy = niche.includes('ai') ? 'Share secret tools that save people time.' : 'Share bold ideas that challenge the norm.';
         advice.brand = 'Keep it simple, clean, and professional.';
         advice.loop = 'Make videos that people want to watch later.';
       } else if (calculatedScore >= 8.0) {
-        advice.subheading = `The ${answers?.niche} niche is popular but has lots of room for you to win.`;
+        advice.subheading = `The {{niche}} market is popular but has lots of room for you to win.`.replace('{{niche}}', answers?.niche);
         advice.strategy = 'Fix common mistakes that people in your niche make.';
         advice.brand = 'Use dark, moody colors and clear text.';
         advice.loop = 'Ask people to comment their opinion on your ideas.';
       } else {
-        advice.subheading = `The ${answers?.niche} niche is a hidden gem. You can become the go-to expert here.`;
+        advice.subheading = `The {{niche}} niche is a hidden gem. You can become the go-to expert here.`.replace('{{niche}}', answers?.niche);
         advice.strategy = 'Share detailed "case studies" of how things work.';
         advice.brand = 'Focus on big, bold text so people can read easily.';
         advice.loop = 'Ask people to send you a message for more help.';
