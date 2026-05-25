@@ -84,9 +84,8 @@ export default async function handler(req, res) {
     : `<p style="font-size: 12px; color: #666;">Note: This is your summary. Unlock the full bundle for all 30 scripts and assets.</p>`;
 
   try {
-    console.log('Attempting to send email to:', email);
     const result = await resend.emails.send({
-      from: 'FacelessOS <hello@facelessos.app>',
+      from: 'hello@facelessos.app',
       to: [email],
       subject: isFullBundle ? `[COMPLETED] Your Full FacelessOS Bundle: ${niche}` : `Your Faceless Roadmap: ${niche}`,
       html: `
@@ -120,27 +119,19 @@ export default async function handler(req, res) {
             </ul>
           </div>
 
-          <a href="https://facelessos.com/dashboard?paid=true" style="display: block; background: #ff3e00; color: white; text-align: center; padding: 20px; border-radius: 15px; text-decoration: none; font-weight: bold; margin-top: 40px; box-shadow: 0 10px 20px rgba(255, 62, 0, 0.2);">Access Full Dashboard & Assets</a>
+          <a href="https://facelessos.app/dashboard?paid=true" style="display: block; background: #ff3e00; color: white; text-align: center; padding: 20px; border-radius: 15px; text-decoration: none; font-weight: bold; margin-top: 40px; box-shadow: 0 10px 20px rgba(255, 62, 0, 0.2);">Access Full Dashboard & Assets</a>
           
           <hr style="border: none; border-top: 1px solid #eee; margin: 40px 0;" />
           <p style="font-size: 10px; color: #bbb; text-align: center;">&copy; 2026 FacelessOS. All rights reserved. Delivered to ${email}.</p>
         </div>
       `,
     });
-    console.log('Resend response:', result);
+
     if (result.error) {
-      console.error('Resend Error:', result.error);
-      return res.status(400).json({ error: result.error });
+      return res.status(400).json({ error: result.error.message || result.error });
     }
     res.status(200).json({ success: true, id: result.data?.id });
   } catch (err) {
-    console.error('Catch Error:', err);
     res.status(500).json({ error: err.message });
   }
 }
-/home/engine/.bashrc: line 1: syntax error near unexpected token `('
-/home/engine/.bashrc: line 1: `. /etc/profile.d/workload-containment.shn# ~/.bashrc: executed by bash(1) for non-login shells.'
-/home/engine/.bashrc: line 1: syntax error near unexpected token `('
-/home/engine/.bashrc: line 1: `. /etc/profile.d/workload-containment.shn# ~/.bashrc: executed by bash(1) for non-login shells.'
-/home/engine/.bashrc: line 1: syntax error near unexpected token `('
-/home/engine/.bashrc: line 1: `. /etc/profile.d/workload-containment.shn# ~/.bashrc: executed by bash(1) for non-login shells.'
