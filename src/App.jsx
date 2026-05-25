@@ -242,13 +242,6 @@ const Dashboard = ({ answers, setView, setData }) => {
           </button>
         ))}
 
-        <div className="mt-8 pt-8 border-t border-white/5">
-          <p className="text-[10px] font-bold text-zinc-600 uppercase tracking-widest mb-3 px-4">Support</p>
-          <a href="mailto:Facelessos.app@gmail.com" className="w-full flex items-center space-x-4 p-4 rounded-2xl text-zinc-500 hover:bg-white/5 hover:text-brand-primary transition-all">
-            <span className="text-sm">✉️</span>
-            <span className="font-bold text-[11px] uppercase tracking-widest">Need Help?</span>
-          </a>
-        </div>
       </div>
       <div className="lg:col-span-3 space-y-6">
         <div className="p-8 md:p-12 rounded-[3rem] bg-zinc-900/30 border border-white/5 backdrop-blur-xl min-h-[600px] relative overflow-hidden">
