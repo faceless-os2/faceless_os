@@ -241,6 +241,14 @@ const Dashboard = ({ answers, setView, setData }) => {
             <span className="font-bold text-[11px] uppercase tracking-widest">{tab.label}</span>
           </button>
         ))}
+
+        <div className="mt-8 pt-8 border-t border-white/5">
+          <p className="text-[10px] font-bold text-zinc-600 uppercase tracking-widest mb-3 px-4">Support</p>
+          <a href="mailto:hello@facelessos.app" className="w-full flex items-center space-x-4 p-4 rounded-2xl text-zinc-500 hover:bg-white/5 hover:text-brand-primary transition-all">
+            <span className="text-sm">✉️</span>
+            <span className="font-bold text-[11px] uppercase tracking-widest">Need Help?</span>
+          </a>
+        </div>
       </div>
       <div className="lg:col-span-3 space-y-6">
         <div className="p-8 md:p-12 rounded-[3rem] bg-zinc-900/30 border border-white/5 backdrop-blur-xl min-h-[600px] relative overflow-hidden">
@@ -248,7 +256,6 @@ const Dashboard = ({ answers, setView, setData }) => {
             <div className="animate-in fade-in slide-in-from-bottom-2 duration-500">
               <div className="flex justify-between items-start mb-8">
                 <h2 className="text-3xl font-bold italic uppercase tracking-tighter text-zinc-100">Growth <span className="text-brand-primary">Plan</span></h2>
-                <button onClick={() => setView('quiz')} className="text-[9px] font-black border border-zinc-800 px-4 py-2 rounded-full uppercase tracking-[0.2em] text-zinc-500 hover:text-white transition-colors">Edit Niche</button>
               </div>
               
               <div className="p-8 rounded-[2rem] bg-brand-primary/5 border border-white/5 mb-8">
