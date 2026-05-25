@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
 
 // --- Helper: Strategy Content by Niche ---
-const getNicheStrategy = (niche, vibe, platforms) => {
+const getNicheStrategy = (niche, vibe, platforms, schedule, experience) => {
   const n = niche?.toLowerCase() || '';
   const v = vibe?.toLowerCase() || '';
   const p = Array.isArray(platforms) ? platforms.join(', ').toLowerCase() : (platforms?.toLowerCase() || '');
+  const s = schedule?.toLowerCase() || '';
+  const e = experience?.toLowerCase() || '';
 
   // Platform specific advice overlays
   let platformAdvice = "";
@@ -12,10 +14,19 @@ const getNicheStrategy = (niche, vibe, platforms) => {
   if (p.includes('pinterest')) platformAdvice = "Optimize for search keywords in your titles and use vertical 'Idea Pin' formats.";
   if (p.includes('youtube')) platformAdvice = "Your hook needs to match your thumbnail exactly. Focus on the first 3 seconds.";
 
+  // Schedule advice
+  let scheduleAdvice = "";
+  if (s.includes('< 30')) scheduleAdvice = " Since you're short on time, use AI tools to generate B-roll and captions in batches.";
+  else if (s.includes('4+')) scheduleAdvice = " With your full-time focus, aim for high-production cinematic value and original B-roll.";
+
+  // Experience advice
+  let experienceAdvice = "";
+  if (e.includes('beginner')) experienceAdvice = " As a beginner, focus on quantity over quality for the first 10 posts to find your voice.";
+
   if (v.includes('aesthetic') || v.includes('minimalist') || v.includes('moody')) {
     return {
       title: 'The Atmosphere Architect',
-      description: `You're building an aesthetic world. ${platformAdvice} curated moments are your currency.`,
+      description: `You're building an aesthetic world. ${platformAdvice}${scheduleAdvice}${experienceAdvice} Curated moments are your currency.`,
       steps: [
         { t: 'The Hook', d: 'Use "POV" hooks that place the viewer in your aesthetic world.' },
         { t: 'The Value', d: 'Showcase the lifestyle/feeling of the {{niche}} space without over-explaining.'.replace('{{niche}}', niche || 'niche') },
@@ -27,7 +38,7 @@ const getNicheStrategy = (niche, vibe, platforms) => {
   if (n.includes('ai') || n.includes('tech')) {
     return {
       title: 'The "Secret Tool" Method',
-      description: `Position your page as the go-to resource for tools. ${platformAdvice}`,
+      description: `Position your page as the go-to resource for tools. ${platformAdvice}${scheduleAdvice}${experienceAdvice}`,
       steps: [
         { t: 'The Hook', d: 'Start every video with: "Stop doing [Task] manually."' },
         { t: 'The Value', d: 'Show exactly how the AI tool works in 5 seconds or less.' },
@@ -38,7 +49,7 @@ const getNicheStrategy = (niche, vibe, platforms) => {
   if (n.includes('wealth') || n.includes('money') || n.includes('saas')) {
     return {
       title: 'The Digital Wealth Map',
-      description: `You are the guide showing the path to digital income. ${platformAdvice}`,
+      description: `You are the guide showing the path to digital income. ${platformAdvice}${scheduleAdvice}${experienceAdvice}`,
       steps: [
         { t: 'The Hook', d: 'Focus on "Low effort, high reward" business ideas.' },
         { t: 'The Value', d: 'Break down the math. Show how $100/day is actually possible.' },
@@ -48,7 +59,7 @@ const getNicheStrategy = (niche, vibe, platforms) => {
   }
   return {
     title: 'The Value Specialist',
-    description: `Solve specific problems with simple advice. ${platformAdvice}`,
+    description: `Solve specific problems with simple advice. ${platformAdvice}${scheduleAdvice}${experienceAdvice}`,
     steps: [
       { t: 'The Hook', d: 'Identify a "Mistake" people are making and offer a fix.' },
       { t: 'The Value', d: 'Share a "Quick Win" that someone can do in under 60 seconds.' },
@@ -154,7 +165,7 @@ const Dashboard = ({ answers, setView, setData }) => {
     setIsGenerating(true);
     const timer = setTimeout(() => {
       setPostMap(generate30DayMap(answers?.niche, answers?.vibe, answers?.platform));
-      setStrategy(getNicheStrategy(answers?.niche, answers?.vibe, answers?.platform));
+      setStrategy(getNicheStrategy(answers?.niche, answers?.vibe, answers?.platform, answers?.schedule, answers?.experience));
       setIsGenerating(false);
 
       // Automated Email Delivery for paid users
@@ -273,7 +284,7 @@ const Dashboard = ({ answers, setView, setData }) => {
           { id: 'strategy', label: 'Master Strategy', icon: '🎯' },
           { id: 'scripts', label: '30-Day Map & Scripts', icon: '📅' },
           { id: 'visuals', label: 'Starter Brand Assets', icon: '🎨' },
-          { id: 'checklist', label: '1k Follower Checklist', icon: '🚀' },
+          { id: 'checklist', label: 'Your First Move (1k)', icon: '🚀' },
           { id: 'production', label: 'The Production System', icon: '⚙️' },
         ].map(tab => (
           <button key={tab.id} onClick={() => setActiveTab(tab.id)} className={`w-full flex items-center space-x-4 p-4 rounded-2xl transition-all ${activeTab === tab.id ? 'bg-gradient-brand text-white shadow-brand' : 'hover:bg-white/5 text-zinc-500'}`}>
@@ -346,7 +357,7 @@ const Dashboard = ({ answers, setView, setData }) => {
           )}
           {activeTab === 'checklist' && (
             <div className="animate-in fade-in slide-in-from-bottom-2 duration-500">
-              <h2 className="text-3xl font-bold italic uppercase tracking-tighter text-zinc-100 mb-8">1k Follower <span className="text-brand-primary">Checklist</span></h2>
+              <h2 className="text-3xl font-bold italic uppercase tracking-tighter text-zinc-100 mb-8">Your First Move: <span className="text-brand-primary">1k Checklist</span></h2>
               <div className="space-y-4">
                 {[
                   { t: 'Optimize Profile', d: 'Clear profile picture, keyword-rich bio, and a link in bio (even if it is just a newsletter).' },
@@ -838,6 +849,8 @@ const Quiz = ({ onComplete }) => {
     { id: 'name', text: 'What is your creator name?', type: 'text', placeholder: 'e.g. Stoic Soul...' },
     { id: 'niche', text: 'What is your niche?', type: 'text', placeholder: 'e.g. AI Tools, Stoicism...' },
     { id: 'goal', text: 'What is your goal?', type: 'multi-select', options: ['Affiliate Sales', 'Digital Product', 'Brand Deals', 'Followers Only', 'Other'] },
+    { id: 'experience', text: 'What is your experience level?', type: 'select', options: ['Total Beginner', 'Some Experience', 'Advanced Creator'] },
+    { id: 'schedule', text: 'How much time can you spend daily?', type: 'select', options: ['< 30 mins', '1-2 hours', '4+ hours (Full Time)'] },
     { id: 'platform', text: 'Where do you want to post?', type: 'multi-select', options: ['TikTok', 'Instagram', 'YouTube', 'Pinterest', 'Other'] },
     { id: 'vibe', text: 'What style do you like?', type: 'select', options: ['Aesthetic/Minimalist', 'Dark/Moody', 'Fast/Hype', 'Educational', 'Other'] },
   ];
@@ -878,19 +891,19 @@ const Quiz = ({ onComplete }) => {
             </span>
             
             <h1 className="text-4xl md:text-5xl font-black mb-6 tracking-tighter leading-[0.95] text-white">
-              Take the quiz for your <br />
-              <span className="text-brand-primary">viral niche score.</span>
+              Answer 7 questions. <br />
+              <span className="text-brand-primary">Get your entire faceless game plan.</span>
             </h1>
-            
+
             <p className="text-zinc-400 text-lg md:text-xl font-medium leading-relaxed mb-10 max-w-sm">
-              Get your Viral Niche Score + a custom 30-day creator plan.
+              No generic advice. Your answers build a roadmap made for your niche, your schedule, and your starting point.
             </p>
 
             <div className="space-y-4 mb-12">
               {[
-                'Get a Niche Viability Score',
-                'Custom Content Strategy',
-                '30-Day Growth Roadmap'
+                'Niche score',
+                '30-day posting map',
+                'Your first move'
               ].map(item => (
                 <div key={item} className="flex items-center space-x-3 text-sm font-bold text-zinc-300">
                   <div className="w-5 h-5 rounded-full bg-brand-primary/20 flex items-center justify-center">
@@ -900,6 +913,10 @@ const Quiz = ({ onComplete }) => {
                 </div>
               ))}
             </div>
+
+            <p className="text-[10px] font-black text-brand-secondary uppercase tracking-[0.2em] mb-12 italic">
+              The more honest your answers, the sharper your plan
+            </p>
 
             <div className="pt-8 border-t border-white/5">
               <p className="text-[10px] font-black text-zinc-500 uppercase tracking-[0.2em] mb-4">Let's get started</p>
