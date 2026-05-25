@@ -147,8 +147,8 @@ const Dashboard = ({ answers, setView, setData }) => {
   useEffect(() => {
     setIsGenerating(true);
     const timer = setTimeout(() => {
-      setPostMap(generate30DayMap(answers?.niche));
-      setStrategy(getNicheStrategy(answers?.niche));
+      setPostMap(generate30DayMap(answers?.niche, answers?.vibe));
+      setStrategy(getNicheStrategy(answers?.niche, answers?.vibe));
       setIsGenerating(false);
 
       // Automated Email Delivery for paid users
@@ -221,22 +221,27 @@ const Dashboard = ({ answers, setView, setData }) => {
     return (
       <div className="max-w-2xl mx-auto py-20 px-6 text-center">
         <h2 className="text-3xl font-black italic uppercase tracking-tighter mb-4">Rescue your <span className="text-gradient">Bundle</span></h2>
-        <p className="text-zinc-500 mb-10 font-light">It looks like you're on a new device. Enter your niche below to regenerate your full bundle instantly.</p>
-        <div className="flex flex-col gap-4">
+        <p className="text-zinc-500 mb-10 font-light">It looks like you're on a new device. Enter your details below to regenerate your full bundle instantly.</p>
+        <div className="flex flex-col gap-4 max-w-sm mx-auto">
           <input 
             type="text" 
-            placeholder="e.g. AI Tools, Stoicism..." 
+            placeholder="What is your niche?" 
             className="bg-zinc-900 border border-zinc-800 rounded-2xl px-6 py-5 outline-none focus:border-brand-primary"
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') setData({ ...answers, niche: e.currentTarget.value });
-            }}
+            onChange={(e) => setData({ ...answers, niche: e.target.value })}
           />
+          <select 
+            className="bg-zinc-900 border border-zinc-800 rounded-2xl px-6 py-5 outline-none focus:border-brand-primary text-zinc-400"
+            onChange={(e) => setData({ ...answers, vibe: e.target.value })}
+          >
+            <option value="">Select your style...</option>
+            <option value="Aesthetic/Minimalist">Aesthetic/Minimalist</option>
+            <option value="Dark/Moody">Dark/Moody</option>
+            <option value="Educational">Educational</option>
+            <option value="Fast/Hype">Fast/Hype</option>
+          </select>
           <button 
-            onClick={(e) => {
-              const input = e.currentTarget.previousSibling;
-              setData({ ...answers, niche: input.value });
-            }}
-            className="bg-white text-black py-5 rounded-2xl font-black uppercase tracking-widest text-xs"
+            onClick={() => window.location.reload()}
+            className="bg-white text-black py-5 rounded-2xl font-black uppercase tracking-widest text-xs mt-4"
           >
             Access My Bundle
           </button>
@@ -547,7 +552,14 @@ const Results = ({ answers, onEmailSubmit, onUnlock }) => {
         loop: ''
       };
 
-      if (calculatedScore >= 9.0) {
+      const vibe = answers?.vibe?.toLowerCase() || '';
+
+      if (vibe.includes('aesthetic') || vibe.includes('minimalist') || vibe.includes('moody')) {
+        advice.subheading = `The {{niche}} space is all about the 'vibe' right now. You can win with high-quality, curated content.`.replace('{{niche}}', answers?.niche);
+        advice.strategy = 'Use cinematic "POV" shots that pull viewers into your world.';
+        advice.brand = 'Keep it minimal with deep shadows and clean, elegant text.';
+        advice.loop = 'Make content that people want to save for inspiration.';
+      } else if (calculatedScore >= 9.0) {
         advice.subheading = `The {{niche}} space is perfect right now. You can grow very fast here.`.replace('{{niche}}', answers?.niche);
         advice.strategy = niche.includes('ai') ? 'Share secret tools that save people time.' : 'Share bold ideas that challenge the norm.';
         advice.brand = 'Keep it simple, clean, and professional.';
