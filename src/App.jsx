@@ -790,20 +790,14 @@ const Quiz = ({ onComplete }) => {
   ];
 
   const suggestedNiches = ['AI News & Tools', 'Stoic Philosophy', 'Digital Wealth / SaaS', 'Health & Biohacking', 'Travel Aesthetics', 'Motivation & Success', 'True Crime / Mysteries', 'Daily Facts & Trivia', 'Gaming News'];
-  const [currentStep, setCurrentStep] = useState(-1);
+  const [currentStep, setCurrentStep] = useState(0);
   const [answers, setAnswers] = useState({});
   const [inputValue, setInputValue] = useState('');
   const [selectedOptions, setSelectedOptions] = useState([]);
   const [showNicheSuggestions, setShowNicheSuggestions] = useState(false);
-  
-  // Prevent index error during intro state
-  const currentQuestion = currentStep >= 0 ? questions[currentStep] : null;
+  const currentQuestion = questions[currentStep];
 
   const handleNext = (val) => {
-    if (currentStep === -1) {
-      setCurrentStep(0);
-      return;
-    }
     let finalValue = val;
     if (currentQuestion.type === 'text') finalValue = inputValue;
     else if (currentQuestion.type === 'multi-select') finalValue = [...selectedOptions];
@@ -819,7 +813,7 @@ const Quiz = ({ onComplete }) => {
 
   return (
     <div className="max-w-xl mx-auto mt-12 md:mt-24 px-4 pb-20">
-      {currentStep === -1 ? (
+      {currentStep === 0 ? (
         <div className="relative p-10 md:p-12 rounded-[3.5rem] bg-zinc-900/40 border border-white/5 backdrop-blur-3xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-700">
           <div className="absolute top-0 right-0 p-8">
             <div className="w-20 h-20 bg-brand-primary/10 rounded-full blur-3xl animate-pulse"></div>
@@ -836,7 +830,7 @@ const Quiz = ({ onComplete }) => {
             </h1>
             
             <p className="text-zinc-400 text-lg md:text-xl font-medium leading-relaxed mb-10 max-w-sm">
-              Stop guessing. Score your niche idea and generate a custom 30-day roadmap to your first 10,000 followers.
+              Score your niche and get a custom 30-day roadmap to your first 10,000 followers.
             </p>
 
             <div className="space-y-4 mb-12">
@@ -854,17 +848,29 @@ const Quiz = ({ onComplete }) => {
               ))}
             </div>
 
-            <button 
-              onClick={() => setCurrentStep(0)}
-              className="group relative w-full py-6 bg-gradient-brand rounded-3xl font-black text-sm uppercase tracking-[0.2em] shadow-2xl transition-all hover:scale-[1.02] active:scale-[0.98]"
-            >
-              <span className="relative z-10">Start Free Assessment</span>
-              <div className="absolute inset-0 bg-white/20 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
-            </button>
-            
-            <p className="text-center mt-6 text-[10px] font-bold text-zinc-600 uppercase tracking-widest">
-              Takes less than 60 seconds
-            </p>
+            <div className="pt-8 border-t border-white/5">
+              <h2 className="text-xl font-bold mb-6 text-white">{currentQuestion.text}</h2>
+              <input 
+                autoFocus 
+                className="w-full bg-transparent border-b border-zinc-800 py-4 text-xl outline-none focus:border-brand-primary placeholder:text-zinc-800 font-light mb-8" 
+                placeholder={currentQuestion.placeholder}
+                value={inputValue} 
+                onChange={(e) => setInputValue(e.target.value)} 
+                onKeyDown={(e) => e.key === 'Enter' && handleNext()} 
+              />
+              
+              <button 
+                onClick={() => handleNext()}
+                className="group relative w-full py-6 bg-gradient-brand rounded-3xl font-black text-sm uppercase tracking-[0.2em] shadow-2xl transition-all hover:scale-[1.02] active:scale-[0.98]"
+              >
+                <span className="relative z-10">Continue</span>
+                <div className="absolute inset-0 bg-white/20 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
+              </button>
+              
+              <p className="text-center mt-6 text-[10px] font-bold text-zinc-600 uppercase tracking-widest">
+                Takes less than 60 seconds
+              </p>
+            </div>
           </div>
         </div>
       ) : (
