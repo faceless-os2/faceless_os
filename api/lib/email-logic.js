@@ -3,8 +3,22 @@ import { Resend } from 'resend';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-const getNicheStrategy = (niche) => {
+const getNicheStrategy = (niche, vibe) => {
   const n = niche?.toLowerCase() || '';
+  const v = vibe?.toLowerCase() || '';
+
+  if (v.includes('aesthetic') || v.includes('minimalist') || v.includes('moody')) {
+    return {
+      title: 'The Atmosphere Architect',
+      description: "You're building an aesthetic world. High-quality visuals and curated moments are your currency. People follow you for the 'vibe'.",
+      steps: [
+        { t: 'The Hook', d: 'Use "POV" hooks that place the viewer in your aesthetic world.' },
+        { t: 'The Value', d: 'Showcase the lifestyle/feeling of the {{niche}} space without over-explaining.'.replace('{{niche}}', niche || 'niche') },
+        { t: 'The Goal', d: 'Get people to save your video as "mood board" inspiration.' }
+      ]
+    };
+  }
+
   if (n.includes('ai') || n.includes('tech')) {
     return {
       title: 'The "Secret Tool" Method',
@@ -38,14 +52,26 @@ const getNicheStrategy = (niche) => {
   };
 };
 
-const generate30DayMap = (niche) => {
-  const categories = [
+const generate30DayMap = (niche, vibe) => {
+  const v = vibe?.toLowerCase() || '';
+  let categories = [
     { type: 'Hook: Common Mistake', template: 'Stop making this common {{niche}} mistake if you want to grow.' },
     { type: 'Easy Steps: How-To', template: '3 easy steps to get [Result] in the {{niche}} space.' },
     { type: 'Viral: Hot Take', template: 'The one thing most {{niche}} creators get wrong...' },
     { type: 'Trust: Result Reveal', template: 'The "Secret" used by the top 1% of {{niche}} accounts.' },
     { type: 'Call to Action', template: 'I built the ultimate system for {{niche}} creators. Link in bio.' }
   ];
+
+  if (v.includes('aesthetic') || v.includes('minimalist') || v.includes('moody')) {
+    categories = [
+      { type: 'Hook: POV', template: 'POV: You finally found the perfect {{niche}} routine.' },
+      { type: 'Mood: Atmosphere', template: 'This is your sign to start your {{niche}} journey today.' },
+      { type: 'Ritual: Habits', template: 'The small {{niche}} habits that changed my life.' },
+      { type: 'Trust: Aesthetic', template: 'A day in the life: {{niche}} creator edition.' },
+      { type: 'Call to Action', template: 'Join the {{niche}} community for more. Link in bio.' }
+    ];
+  }
+
   return Array.from({ length: 30 }, (_, i) => {
     const cat = categories[i % categories.length];
     return {
@@ -56,15 +82,15 @@ const generate30DayMap = (niche) => {
   });
 };
 
-export async function sendBundleEmail({ email, niche, name, isFullBundle }) {
-  console.log(`Sending Email: to=${email}, niche=${niche}, fullBundle=${isFullBundle}`);
+export async function sendBundleEmail({ email, niche, name, isFullBundle, vibe }) {
+  console.log(`Sending Email: to=${email}, niche=${niche}, fullBundle=${isFullBundle}, vibe=${vibe}`);
   if (!process.env.RESEND_API_KEY) {
     console.error('RESEND_API_KEY is missing');
     throw new Error('RESEND_API_KEY is missing');
   }
 
-  const strategy = getNicheStrategy(niche);
-  const postMap = generate30DayMap(niche);
+  const strategy = getNicheStrategy(niche, vibe);
+  const postMap = generate30DayMap(niche, vibe);
 
   const roadmapHtml = strategy.steps.map((s, i) => `
     <div style="margin-bottom: 15px;">

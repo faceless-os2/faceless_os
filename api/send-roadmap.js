@@ -3,11 +3,11 @@ import { sendBundleEmail } from './lib/email-logic.js';
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
-  const { email, niche, name, isFullBundle } = req.body;
-  console.log('Roadmap Request:', { email, niche, name, isFullBundle });
+  const { email, niche, name, isFullBundle, vibe } = req.body;
+  console.log('Roadmap Request:', { email, niche, name, isFullBundle, vibe });
 
   try {
-    const result = await sendBundleEmail({ email, niche, name, isFullBundle });
+    const result = await sendBundleEmail({ email, niche, name, isFullBundle, vibe });
 
     if (result.error) {
       return res.status(400).json({ error: result.error.message || result.error });
