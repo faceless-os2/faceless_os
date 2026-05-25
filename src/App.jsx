@@ -830,7 +830,7 @@ const Quiz = ({ onComplete }) => {
             </h1>
             
             <p className="text-zinc-400 text-lg md:text-xl font-medium leading-relaxed mb-10 max-w-sm">
-              Score your niche and get a custom 30-day roadmap to your first 10,000 followers.
+              Get your Viral Niche Score + a custom 30-day creator plan.
             </p>
 
             <div className="space-y-4 mb-12">
