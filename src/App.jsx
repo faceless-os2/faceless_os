@@ -392,6 +392,7 @@ const Results = ({ answers, onEmailSubmit, onUnlock }) => {
   const [email, setEmail] = useState('');
   const [error, setError] = useState(null);
   const [emailStatus, setEmailStatus] = useState('idle'); // idle, sending, success, error
+  const [errorMsg, setErrorMsg] = useState('');
 
   useEffect(() => {
     const isValidNiche = (n) => {
@@ -520,9 +521,15 @@ const Results = ({ answers, onEmailSubmit, onUnlock }) => {
               if (!email || !email.includes('@')) return;
               setEmailStatus('sending');
               try {
-                await onEmailSubmit(email);
-                setEmailStatus('success');
+                const res = await onEmailSubmit(email);
+                if (res && res.error) {
+                  setErrorMsg(typeof res.error === 'string' ? res.error : JSON.stringify(res.error));
+                  setEmailStatus('error');
+                } else {
+                  setEmailStatus('success');
+                }
               } catch (err) {
+                setErrorMsg(err.message || 'Failed to send');
                 setEmailStatus('error');
               }
             }} 
@@ -532,7 +539,7 @@ const Results = ({ answers, onEmailSubmit, onUnlock }) => {
             {emailStatus === 'sending' ? 'Sending...' : emailStatus === 'success' ? 'Sent! ✓' : 'Get My Guide'}
           </button>
         </div>
-        {emailStatus === 'error' && <p className="text-red-500 text-[10px] mt-4 font-bold uppercase tracking-widest">Failed to send. Please try again.</p>}
+        {emailStatus === 'error' && <p className="text-red-500 text-[10px] mt-4 font-bold uppercase tracking-widest">Error: {errorMsg}</p>}
       </div>
 
       <div className="max-w-2xl mx-auto p-10 md:p-12 rounded-[3rem] bg-gradient-to-b from-brand-primary/10 to-transparent border border-brand-primary/20 text-center shadow-2xl mb-20 relative overflow-hidden group">
@@ -610,10 +617,9 @@ export default function App() {
             answers={data} 
             onEmailSubmit={async (email) => { 
               setData({ ...data, email }); 
-              setView('sales'); 
               // Trigger email immediately
               try {
-                await fetch('/api/send-roadmap', {
+                const response = await fetch('/api/send-roadmap', {
                   method: 'POST',
                   headers: { 'Content-Type': 'application/json' },
                   body: JSON.stringify({
@@ -622,7 +628,16 @@ export default function App() {
                     name: data?.name
                   })
                 });
-              } catch (err) { console.error(err); }
+                const result = await response.json();
+                if (!response.ok) {
+                  return { error: result.error || 'Server error' };
+                }
+                setView('sales'); 
+                return result;
+              } catch (err) { 
+                console.error(err); 
+                return { error: err.message };
+              }
             }} 
             onUnlock={() => setView('sales')} 
           />
