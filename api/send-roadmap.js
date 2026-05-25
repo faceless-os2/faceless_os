@@ -68,7 +68,7 @@ export default async function handler(req, res) {
 
   const roadmapHtml = strategy.steps.map((s, i) => `
     <div style="margin-bottom: 15px;">
-      <strong style="color: #ff3e00;">Step ${i+1}: ${s.t}</strong><br/>
+      <strong style="color: #8b5cf6;">Step ${i+1}: ${s.t}</strong><br/>
       <span style="color: #666; font-size: 13px;">${s.d}</span>
     </div>
   `).join('');
@@ -85,12 +85,12 @@ export default async function handler(req, res) {
 
   try {
     const result = await resend.emails.send({
-      from: 'hello@facelessos.app',
+      from: 'FacelessOS <hello@facelessos.app>',
       to: [email],
       subject: isFullBundle ? `[COMPLETED] Your Full FacelessOS Bundle: ${niche}` : `Your Faceless Roadmap: ${niche}`,
       html: `
         <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 30px; border: 1px solid #eee; border-radius: 30px; color: #111;">
-          <h1 style="font-style: italic; text-transform: uppercase; letter-spacing: -2px; margin-bottom: 30px;">FACELESS<span style="color: #ff3e00;">OS</span></h1>
+          <h1 style="font-style: italic; text-transform: uppercase; letter-spacing: -2px; margin-bottom: 30px;">FACELESS<span style="color: #6366f1;">OS</span></h1>
           
           <p style="font-size: 16px; line-height: 1.6;">Hi ${name || 'Creator'},</p>
           <p style="font-size: 16px; line-height: 1.6;">Your <strong>${niche}</strong> growth engine is ready. ${isFullBundle ? "Below is your full 30-day posting plan and master strategy." : "Here is your starter roadmap."}</p>
@@ -98,19 +98,19 @@ export default async function handler(req, res) {
           ${fullBundleNote}
 
           <div style="margin-top: 40px; padding: 25px; background: #fafafa; border-radius: 20px;">
-            <h2 style="font-size: 12px; text-transform: uppercase; color: #ff3e00; letter-spacing: 1px; margin-bottom: 15px;">Master Strategy: ${strategy.title}</h2>
+            <h2 style="font-size: 12px; text-transform: uppercase; color: #8b5cf6; letter-spacing: 1px; margin-bottom: 15px;">Master Strategy: ${strategy.title}</h2>
             <p style="font-style: italic; font-size: 15px; margin-bottom: 20px;">"${strategy.description}"</p>
             ${roadmapHtml}
           </div>
 
           <div style="margin-top: 30px; padding: 25px; background: #fafafa; border-radius: 20px;">
-            <h2 style="font-size: 12px; text-transform: uppercase; color: #ff3e00; letter-spacing: 1px; margin-bottom: 15px;">Week 1 Posting Plan</h2>
+            <h2 style="font-size: 12px; text-transform: uppercase; color: #8b5cf6; letter-spacing: 1px; margin-bottom: 15px;">Week 1 Posting Plan</h2>
             ${postMapHtml}
             <p style="font-size: 11px; color: #999; margin-top: 15px;">+ 23 more days in your dashboard.</p>
           </div>
 
           <div style="margin-top: 30px; padding: 25px; background: #fafafa; border-radius: 20px;">
-            <h2 style="font-size: 12px; text-transform: uppercase; color: #ff3e00; letter-spacing: 1px; margin-bottom: 15px;">The 1k Checklist</h2>
+            <h2 style="font-size: 12px; text-transform: uppercase; color: #8b5cf6; letter-spacing: 1px; margin-bottom: 15px;">The 1k Checklist</h2>
             <ul style="font-size: 13px; color: #444; line-height: 1.8; padding-left: 20px;">
               <li>Optimize Profile (Bio & Link)</li>
               <li>Post 1-2x Daily</li>
@@ -119,7 +119,12 @@ export default async function handler(req, res) {
             </ul>
           </div>
 
-          <a href="https://facelessos.app/dashboard?paid=true" style="display: block; background: #ff3e00; color: white; text-align: center; padding: 20px; border-radius: 15px; text-decoration: none; font-weight: bold; margin-top: 40px; box-shadow: 0 10px 20px rgba(255, 62, 0, 0.2);">Access Full Dashboard & Assets</a>
+          <div style="margin-top: 40px; padding: 30px; background: #EEF2FF; border: 1px solid #C7D2FE; border-radius: 25px; text-align: center;">
+            <h3 style="font-size: 20px; font-weight: 800; text-transform: uppercase; font-style: italic; letter-spacing: -1px; margin-bottom: 10px; color: #1e1b4b;">Unlock the Full Bundle</h3>
+            <p style="font-size: 14px; color: #4338ca; margin-bottom: 25px; font-weight: 400; line-height: 1.4;">Don't spend weeks figuring out the setup. We built the scripts, the visual brand, and the posting plan for you.</p>
+            <a href="https://facelessos.app/dashboard?paid=true" style="display: inline-block; background: #6366f1; color: white; text-align: center; padding: 18px 35px; border-radius: 100px; text-decoration: none; font-weight: bold; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; box-shadow: 0 10px 20px rgba(99, 102, 241, 0.3);">Get My Full Bundle Now</a>
+            <p style="font-size: 10px; color: #6366f1; margin-top: 15px; text-transform: uppercase; font-weight: bold; letter-spacing: 1px;">Instant Access • One-time Payment</p>
+          </div>
           
           <hr style="border: none; border-top: 1px solid #eee; margin: 40px 0;" />
           <p style="font-size: 10px; color: #bbb; text-align: center;">&copy; 2026 FacelessOS. All rights reserved. Delivered to ${email}.</p>
