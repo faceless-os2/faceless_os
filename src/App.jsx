@@ -331,12 +331,12 @@ const Quiz = ({ onComplete }) => {
             </span>
             
             <h1 className="text-4xl md:text-5xl font-black mb-6 tracking-tighter leading-[0.95] text-white">
-              Answer 7 questions. <br />
-              <span className="text-brand-primary">Get your entire faceless game plan.</span>
+              Find your faceless niche — <br />
+              <span className="text-brand-primary">and get a 30-day plan to grow it.</span>
             </h1>
             
             <p className="text-zinc-400 text-lg md:text-xl font-medium leading-relaxed mb-10 max-w-sm">
-              No generic advice. Your answers build a roadmap made for your niche, your schedule, and your starting point.
+              Answer 7 quick questions and get your personalized niche score, your best content strategy, and a roadmap for your first 30 days built around your answers.
             </p>
 
             <div className="space-y-4 mb-12">
