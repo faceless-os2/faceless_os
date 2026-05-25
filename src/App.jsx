@@ -117,36 +117,550 @@ const generate30DayMap = (niche, vibe, platforms) => {
 const Profile = ({ data, setData, onBack, onRequiz }) => {
   const [localName, setLocalName] = useState(data?.name || 'Creator');
   const [localNiche, setLocalNiche] = useState(data?.niche || '');
+  const [isSaving, setIsSaving] = useState(false);
 
-  const saveProfile = () => {
-    setData({ ...data, name: localName, niche: localNiche });
+  const handleSave = () => {
+    setIsSaving(true);
+    setTimeout(() => {
+      setData({ ...data, name: localName, niche: localNiche });
+      setIsSaving(false);
+    }, 1000);
   };
 
   return (
-    <div className="max-w-2xl mx-auto py-12 px-6 animate-in slide-in-from-right-4 duration-500">
-      <button onClick={onBack} className="text-zinc-500 mb-8 hover:text-white transition-colors text-sm font-bold uppercase tracking-widest flex items-center">
-        ← Back to Console
-      </button>
-      <h2 className="text-3xl font-bold mb-8 italic uppercase tracking-tighter text-zinc-100">Profile <span className="text-gradient">& Settings</span></h2>
-      
-      <div className="space-y-6">
-        <div className="p-8 rounded-[2rem] bg-zinc-900 border border-white/5 space-y-6">
-          <h3 className="text-xs font-bold text-zinc-500 uppercase tracking-widest">Your Details</h3>
-          <div className="space-y-4">
-            <div>
-              <label className="text-[10px] uppercase font-bold text-zinc-600 ml-1">Creator Name</label>
-              <input type="text" value={localName} onChange={(e) => setLocalName(e.target.value)} className="w-full bg-black/40 border border-zinc-800 rounded-xl px-4 py-3 mt-1 outline-none focus:border-brand-primary transition-all font-light" />
+    <div className="animate-in fade-in duration-500 max-w-2xl mx-auto">
+      <div className="flex items-center justify-between mb-12">
+        <button onClick={onBack} className="text-[10px] font-black text-zinc-500 uppercase tracking-widest hover:text-white transition-colors">← Dashboard</button>
+        <h2 className="text-xl font-bold tracking-tighter uppercase italic text-white">Creator <span className="text-brand-primary">Profile</span></h2>
+      </div>
+
+      <div className="p-10 rounded-[3rem] bg-zinc-900/40 border border-white/5 backdrop-blur-2xl space-y-8">
+        <div>
+          <label className="block text-[10px] font-black text-zinc-500 uppercase tracking-widest mb-4">Creator Name</label>
+          <input 
+            className="w-full bg-black/40 border border-zinc-800 rounded-2xl px-6 py-4 outline-none focus:border-brand-primary transition-all font-light text-white"
+            value={localName}
+            onChange={(e) => setLocalName(e.target.value)}
+          />
+        </div>
+
+        <div>
+          <label className="block text-[10px] font-black text-zinc-500 uppercase tracking-widest mb-4">Your Niche</label>
+          <input 
+            className="w-full bg-black/40 border border-zinc-800 rounded-2xl px-6 py-4 outline-none focus:border-brand-primary transition-all font-light text-white"
+            value={localNiche}
+            onChange={(e) => setLocalNiche(e.target.value)}
+          />
+        </div>
+
+        <div className="pt-8 space-y-4">
+          <button 
+            onClick={handleSave}
+            disabled={isSaving}
+            className="w-full py-5 bg-brand-primary text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-brand-secondary transition-all shadow-xl shadow-brand-primary/10"
+          >
+            {isSaving ? 'Updating...' : 'Save Profile Changes'}
+          </button>
+          
+          <button 
+            onClick={onRequiz}
+            className="w-full py-5 border border-white/5 text-zinc-500 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-white/5 hover:text-white transition-all"
+          >
+            Restart Assessment
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// --- Main App Component ---
+export default function App() {
+  const [view, setView] = useState('landing');
+  const [data, setData] = useState(null);
+  const [isPaid, setIsPaid] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  // Scroll to top on view change
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [view]);
+
+  useEffect(() => {
+    const saved = localStorage.getItem('faceless_creator_data');
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      setData(parsed);
+      setIsPaid(true); // If they have saved data, they've been through the flow
+      setView('dashboard');
+    }
+  }, []);
+
+  const handleQuizComplete = (answers) => {
+    setData(answers);
+    setView('results');
+  };
+
+  const handleUnlock = () => {
+    setIsPaid(true);
+    localStorage.setItem('faceless_creator_data', JSON.stringify(data));
+    setView('dashboard');
+  };
+
+  return (
+    <div className="min-h-screen bg-black text-zinc-100 font-sans selection:bg-brand-primary/30">
+      {/* Dynamic Background */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-brand-primary/10 rounded-full blur-[120px] animate-pulse"></div>
+        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-brand-secondary/10 rounded-full blur-[120px] animate-pulse delay-700"></div>
+      </div>
+
+      <nav className="relative z-50 flex justify-between items-center px-6 md:px-12 py-8 max-w-7xl mx-auto">
+        <div 
+          onClick={() => setView('landing')} 
+          className="text-2xl font-black tracking-tighter cursor-pointer hover:opacity-80 transition-opacity"
+        >
+          FACELESS<span className="text-brand-primary font-light italic">OS</span>
+        </div>
+        
+        <div className="flex items-center space-x-4 md:space-x-8">
+          {view === 'dashboard' && (
+             <button onClick={() => setView('profile')} className="text-[10px] font-black uppercase tracking-widest text-zinc-400 hover:text-white transition-colors">
+               Account
+             </button>
+          )}
+          <button onClick={() => setView('sales')} className="px-6 py-2.5 rounded-full bg-white/5 border border-white/10 text-[10px] font-black uppercase tracking-widest hover:bg-white hover:text-black transition-all">
+            The Bundle
+          </button>
+        </div>
+      </nav>
+
+      <main className="relative z-10">
+        {view === 'landing' && <Quiz onComplete={handleQuizComplete} />}
+        {view === 'results' && (
+          <Results 
+            answers={data} 
+            setData={setData}
+            onUnlock={handleUnlock} 
+          />
+        )}
+        {view === 'sales' && <SalesPage answers={data} onUnlock={handleUnlock} />}
+        {view === 'dashboard' && (isPaid || isAdmin ? <Dashboard answers={data} setView={setView} setData={setData} /> : <SalesPage answers={data} onUnlock={handleUnlock} />)}
+        {view === 'profile' && <Profile data={data} setData={setData} onBack={() => setView('dashboard')} onRequiz={() => setView('quiz')} />}
+      </main>
+
+      <footer className="relative z-10 max-w-7xl mx-auto px-6 py-12 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6">
+        <div className="text-[10px] font-bold tracking-widest text-zinc-600 uppercase">
+          &copy; 2026 FacelessOS. All rights reserved.
+        </div>
+        <div className="flex items-center space-x-8">
+          <a href="mailto:Facelessos.app@gmail.com" className="text-[10px] font-bold tracking-widest text-zinc-500 hover:text-white uppercase transition-colors">
+            Need Help? Facelessos.app@gmail.com
+          </a>
+        </div>
+      </footer>
+    </div>
+  );
+}
+
+// --- Quiz Component ---
+const Quiz = ({ onComplete }) => {
+  const questions = [
+    { id: 'name', text: 'What is your creator name?', type: 'text', placeholder: 'e.g. Stoic Soul...' },
+    { id: 'niche', text: 'What is your niche?', type: 'text', placeholder: 'e.g. AI Tools, Stoicism...' },
+    { id: 'goal', text: 'What is your goal?', type: 'multi-select', options: ['Affiliate Sales', 'Digital Product', 'Brand Deals', 'Followers Only', 'Other'] },
+    { id: 'experience', text: 'What is your experience level?', type: 'select', options: ['Total Beginner', 'Some Experience', 'Advanced Creator'] },
+    { id: 'schedule', text: 'How much time can you spend daily?', type: 'select', options: ['< 30 mins', '1-2 hours', '4+ hours (Full Time)'] },
+    { id: 'platform', text: 'Where do you want to post?', type: 'multi-select', options: ['TikTok', 'Instagram', 'YouTube', 'Pinterest', 'Other'] },
+    { id: 'vibe', text: 'What style do you like?', type: 'select', options: ['Aesthetic/Minimalist', 'Dark/Moody', 'Fast/Hype', 'Educational', 'Other'] },
+  ];
+
+  const suggestedNiches = ['AI News & Tools', 'Stoic Philosophy', 'Digital Wealth / SaaS', 'Health & Biohacking', 'Travel Aesthetics', 'Motivation & Success', 'True Crime / Mysteries', 'Daily Facts & Trivia', 'Gaming News'];
+  const [currentStep, setCurrentStep] = useState(0);
+  const [answers, setAnswers] = useState({});
+  const [inputValue, setInputValue] = useState('');
+  const [selectedOptions, setSelectedOptions] = useState([]);
+  const [showNicheSuggestions, setShowNicheSuggestions] = useState(false);
+  const [isOtherSelected, setIsOtherSelected] = useState(false);
+  const currentQuestion = questions[currentStep];
+
+  const handleNext = (val) => {
+    let finalValue = val;
+    if (currentQuestion.type === 'text') finalValue = inputValue;
+    else if (currentQuestion.type === 'multi-select') {
+      finalValue = [...selectedOptions];
+      if (isOtherSelected && inputValue) {
+        finalValue = finalValue.filter(o => o !== 'Other');
+        finalValue.push(inputValue);
+      }
+    } else if (currentQuestion.type === 'select') {
+      if (val === 'Other') {
+        setIsOtherSelected(true);
+        return;
+      }
+      if (isOtherSelected && inputValue) {
+        finalValue = inputValue;
+      }
+    }
+
+    if (!finalValue || (Array.isArray(finalValue) && finalValue.length === 0)) { 
+      if (currentQuestion.type !== 'text' || !inputValue) return; 
+    }
+    
+    const newAnswers = { ...answers, [currentQuestion.id]: finalValue };
+    setAnswers(newAnswers);
+    setInputValue('');
+    setSelectedOptions([]);
+    setShowNicheSuggestions(false);
+    setIsOtherSelected(false);
+    if (currentStep < questions.length - 1) setCurrentStep(currentStep + 1);
+    else onComplete(newAnswers);
+  };
+
+  return (
+    <div className="max-w-xl mx-auto mt-12 md:mt-24 px-4 pb-20">
+      {currentStep === 0 ? (
+        <div className="relative p-10 md:p-12 rounded-[3.5rem] bg-zinc-900/40 border border-white/5 backdrop-blur-3xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-700">
+          <div className="absolute top-0 right-0 p-8">
+            <div className="w-20 h-20 bg-brand-primary/10 rounded-full blur-3xl animate-pulse"></div>
+          </div>
+          
+          <div className="relative z-10">
+            <span className="inline-block px-4 py-1.5 rounded-full bg-brand-primary/10 border border-brand-primary/20 text-[10px] font-black text-brand-primary uppercase tracking-[0.2em] mb-8">
+              Creator Assessment
+            </span>
+            
+            <h1 className="text-4xl md:text-5xl font-black mb-6 tracking-tighter leading-[0.95] text-white">
+              Answer 7 questions. <br />
+              <span className="text-brand-primary">Get your entire faceless game plan.</span>
+            </h1>
+            
+            <p className="text-zinc-400 text-lg md:text-xl font-medium leading-relaxed mb-10 max-w-sm">
+              No generic advice. Your answers build a roadmap made for your niche, your schedule, and your starting point.
+            </p>
+
+            <div className="space-y-4 mb-12">
+              {[
+                'Niche score',
+                '30-day posting map',
+                'Your first move'
+              ].map(item => (
+                <div key={item} className="flex items-center space-x-3 text-sm font-bold text-zinc-300">
+                  <div className="w-5 h-5 rounded-full bg-brand-primary/20 flex items-center justify-center">
+                    <span className="text-brand-primary text-[10px]">✓</span>
+                  </div>
+                  <span>{item}</span>
+                </div>
+              ))}
             </div>
-            <div>
-              <label className="text-[10px] uppercase font-bold text-zinc-600 ml-1">Your Niche</label>
-              <input type="text" value={localNiche} onChange={(e) => setLocalNiche(e.target.value)} className="w-full bg-black/40 border border-zinc-800 rounded-xl px-4 py-3 mt-1 outline-none focus:border-brand-primary transition-all font-light" />
-            </div>
-            <div className="flex gap-3 pt-2">
-              <button onClick={saveProfile} className="flex-1 bg-white text-black py-3 rounded-xl text-xs font-black uppercase hover:bg-zinc-200 transition-all">Save Changes</button>
-              <button onClick={onRequiz} className="flex-1 border border-zinc-800 py-3 rounded-xl text-xs font-bold uppercase hover:bg-white/5 transition-all">Start Over</button>
+
+            <p className="text-[10px] font-black text-brand-secondary uppercase tracking-[0.2em] mb-12 italic">
+              The more honest your answers, the sharper your plan
+            </p>
+
+            <div className="pt-8 border-t border-white/5">
+              <p className="text-[10px] font-black text-zinc-500 uppercase tracking-[0.2em] mb-4">Let's get started</p>
+              <h2 className="text-xl font-bold mb-6 text-white">{currentQuestion.text}</h2>
+              <input 
+                autoFocus 
+                className="w-full bg-transparent border-b border-zinc-800 py-4 text-xl outline-none focus:border-brand-primary placeholder:text-zinc-800 font-light mb-8" 
+                placeholder={currentQuestion.placeholder}
+                value={inputValue} 
+                onChange={(e) => setInputValue(e.target.value)} 
+                onKeyDown={(e) => e.key === 'Enter' && handleNext()} 
+              />
+              
+              <button 
+                onClick={() => handleNext()}
+                className="group relative w-full py-6 bg-gradient-brand rounded-3xl font-black text-sm uppercase tracking-[0.2em] shadow-2xl transition-all hover:scale-[1.02] active:scale-[0.98]"
+              >
+                <span className="relative z-10">Continue</span>
+                <div className="absolute inset-0 bg-white/20 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
+              </button>
+              
+              <p className="text-center mt-6 text-[10px] font-bold text-zinc-600 uppercase tracking-widest">
+                Takes less than 60 seconds
+              </p>
             </div>
           </div>
         </div>
+      ) : (
+        <div className="relative p-10 md:p-12 rounded-[3rem] bg-zinc-900/40 border border-white/5 backdrop-blur-2xl shadow-2xl overflow-hidden">
+          <div className="flex items-center justify-between mb-8">
+              <span className="text-[10px] font-bold tracking-widest text-zinc-500 uppercase">Step {currentStep + 1} of {questions.length}</span>
+              <button onClick={() => { setCurrentStep(currentStep - 1); setIsOtherSelected(false); }} className="text-[10px] font-bold tracking-widest text-zinc-600 hover:text-white uppercase transition-colors">← Back</button>
+          </div>
+          <h2 className="text-2xl md:text-3xl font-medium mb-10 tracking-tight text-zinc-100">{currentQuestion.text}</h2>
+          
+          {currentQuestion.type === 'text' && !showNicheSuggestions && (
+            <div className="space-y-6">
+              <input autoFocus className="w-full bg-transparent border-b border-zinc-800 py-4 text-xl outline-none focus:border-brand-primary placeholder:text-zinc-800 font-light" value={inputValue} onChange={(e) => setInputValue(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && handleNext()} />
+              {currentQuestion.id === 'niche' && (
+                <button onClick={() => setShowNicheSuggestions(true)} className="text-[10px] font-bold text-brand-primary uppercase tracking-widest hover:text-white transition-colors">Don't have one? Suggest a niche →</button>
+              )}
+            </div>
+          )}
+
+          {currentQuestion.id === 'niche' && showNicheSuggestions && (
+            <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
+              <p className="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-6">Best niches to start with:</p>
+              <div className="grid grid-cols-1 gap-3 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
+                {suggestedNiches.map(niche => (
+                  <button key={niche} onClick={() => { setInputValue(niche); handleNext(niche); }} className="p-5 rounded-2xl border border-white/5 bg-white/5 text-left text-sm font-medium text-zinc-300 hover:border-brand-primary/50 hover:bg-brand-primary/10 hover:text-white transition-all">{niche}</button>
+                ))}
+                <button onClick={() => setShowNicheSuggestions(false)} className="p-4 text-[10px] font-bold text-zinc-600 uppercase tracking-widest hover:text-zinc-400 text-center">← Go back</button>
+              </div>
+            </div>
+          )}
+
+          {(currentQuestion.type === 'select' || currentQuestion.type === 'multi-select') && !showNicheSuggestions && (
+            <div className="grid grid-cols-1 gap-3">
+              {currentQuestion.options.map(opt => (
+                <button 
+                  key={opt} 
+                  onClick={() => {
+                    if (opt === 'Other') {
+                      setIsOtherSelected(!isOtherSelected);
+                    } else {
+                      currentQuestion.type === 'multi-select' 
+                        ? (selectedOptions.includes(opt) ? setSelectedOptions(selectedOptions.filter(o => o !== opt)) : setSelectedOptions([...selectedOptions, opt])) 
+                        : handleNext(opt);
+                    }
+                  }} 
+                  className={`p-6 rounded-2xl border transition-all text-left flex justify-between items-center ${(selectedOptions.includes(opt) || (opt === 'Other' && isOtherSelected)) ? 'bg-brand-primary/20 border-brand-primary/50 text-white' : 'border-white/[0.03] bg-white/[0.02] text-zinc-400 hover:bg-white/5'}`}
+                >
+                  <span className="text-sm font-medium">{opt}</span>
+                  {(selectedOptions.includes(opt) || (opt === 'Other' && isOtherSelected)) && <span className="text-brand-primary text-xs font-bold">✓</span>}
+                </button>
+              ))}
+
+              {isOtherSelected && (
+                <div className="mt-4 animate-in fade-in slide-in-from-top-2 duration-300">
+                  <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-2 px-2">Type your answer:</p>
+                  <input 
+                    autoFocus 
+                    className="w-full bg-black/40 border border-zinc-800 rounded-xl px-6 py-4 outline-none focus:border-brand-primary transition-all font-light text-white" 
+                    placeholder="Describe your 'Other' choice..."
+                    value={inputValue}
+                    onChange={(e) => setInputValue(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && handleNext()}
+                  />
+                </div>
+              )}
+            </div>
+          )}
+          
+          {(currentQuestion.type === 'multi-select' || isOtherSelected) && !showNicheSuggestions && (
+            <div className="mt-12">
+              <button onClick={() => handleNext()} className="w-full py-5 bg-zinc-100 text-zinc-900 rounded-2xl font-bold text-xs uppercase tracking-widest hover:bg-white transition-all shadow-xl shadow-white/5">
+                {currentStep === questions.length - 1 ? 'Finish' : 'Next Step'}
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+};
+
+// --- Results Component ---
+const Results = ({ answers, onUnlock, setData }) => {
+  const [score, setScore] = useState(0);
+  const [isResearching, setIsResearching] = useState(true);
+  const [researchStatus, setResearchStatus] = useState('Analyzing Niche Demand...');
+  const [customData, setCustomData] = useState(null);
+  const [error, setError] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [strategy, setStrategy] = useState(null);
+  const [postMap, setPostMap] = useState([]);
+
+  const researchSteps = [
+    { msg: 'Analyzing Niche Demand...', delay: 1500 },
+    { msg: 'Evaluating Competition...', delay: 1800 },
+    { msg: 'Scanning Meta Trends...', delay: 1500 },
+    { msg: 'Calculating Viral Potential...', delay: 1200 },
+    { msg: 'Finalizing Roadmap...', delay: 1000 }
+  ];
+
+  const isValidNiche = (n) => {
+    if (!n) return false;
+    const forbidden = ['test', 'asd', 'nothing', 'none', 'help', 'idk'];
+    return !forbidden.includes(n.toLowerCase()) && n.length > 2;
+  };
+
+  useEffect(() => {
+    const runResearch = async () => {
+      const niche = answers?.niche?.toLowerCase() || '';
+      
+      if (!isValidNiche(niche)) {
+        setResearchStatus(`Sorry, I couldn't generate a score for "${answers?.niche}" niche. It doesn't seem to be a valid growth category. Please try a more specific niche like "AI Tools" or "Motivation".`);
+        setError(true);
+        setIsResearching(false);
+        return;
+      }
+
+      for (const step of researchSteps) {
+        setResearchStatus(step.msg);
+        await new Promise(r => setTimeout(r, step.delay));
+      }
+      
+      let calculatedScore = parseFloat((Math.random() * (9.8 - 7.2) + 7.2).toFixed(1));
+      if (niche.includes('ai') || niche.includes('tech') || niche.includes('wealth')) {
+        calculatedScore = Math.max(calculatedScore, 9.2);
+      }
+
+      let advice = {
+        subheading: '',
+        strategy: '',
+        brand: '',
+        loop: ''
+      };
+
+      const vibe = answers?.vibe?.toLowerCase() || '';
+      const platforms = Array.isArray(answers?.platform) ? answers.platform.join(', ').toLowerCase() : (answers?.platform?.toLowerCase() || '');
+
+      let platformHook = "";
+      if (platforms.includes('pinterest')) platformHook = "Use high-quality static pins and search-rich titles.";
+      else if (platforms.includes('youtube')) platformHook = "Focus on the first 3 seconds to match your thumbnail.";
+      else platformHook = "Use 7-second loops with trending audio.";
+
+      if (vibe.includes('aesthetic') || vibe.includes('minimalist') || vibe.includes('moody')) {
+        advice.subheading = `The {{niche}} space is all about the 'vibe' right now. You can win with high-quality, curated content.`.replace('{{niche}}', answers?.niche);
+        advice.strategy = `Use cinematic "POV" shots that pull viewers into your world. ${platformHook}`;
+        advice.brand = 'Keep it minimal with deep shadows and clean, elegant text.';
+        advice.loop = 'Make content that people want to save for inspiration.';
+      } else if (calculatedScore >= 9.0) {
+        advice.subheading = `The {{niche}} space is perfect right now. You can grow very fast here.`.replace('{{niche}}', answers?.niche);
+        advice.strategy = niche.includes('ai') ? `Share secret tools that save people time. ${platformHook}` : `Share bold ideas that challenge the norm. ${platformHook}`;
+        advice.brand = 'Keep it simple, clean, and professional.';
+        advice.loop = 'Make videos that people want to watch later.';
+      } else if (calculatedScore >= 8.0) {
+        advice.subheading = `The {{niche}} market is popular but has lots of room for you to win.`.replace('{{niche}}', answers?.niche);
+        advice.strategy = `Fix common mistakes that people in your niche make. ${platformHook}`;
+        advice.brand = 'Use dark, moody colors and clear text.';
+        advice.loop = 'Ask people to comment their opinion on your ideas.';
+      } else {
+        advice.subheading = `The {{niche}} niche is a hidden gem. You can become the go-to expert here.`.replace('{{niche}}', answers?.niche);
+        advice.strategy = `Share detailed "case studies" of how things work. ${platformHook}`;
+        advice.brand = 'Focus on big, bold text so people can read easily.';
+        advice.loop = 'Ask people to send you a message for more help.';
+      }
+
+      setScore(calculatedScore);
+      setCustomData(advice);
+      setIsResearching(false);
+    };
+    runResearch();
+  }, [answers]);
+
+  useEffect(() => {
+    setIsGenerating(true);
+    const timer = setTimeout(() => {
+      setPostMap(generate30DayMap(answers?.niche, answers?.vibe, answers?.platform));
+      setStrategy(getNicheStrategy(answers?.niche, answers?.vibe, answers?.platform, answers?.schedule, answers?.experience));
+      setIsGenerating(false);
+
+      // Automated Email Delivery for paid users
+      if (answers?.email) {
+        const hasSentEmail = sessionStorage.getItem(`sent_full_bundle_${answers?.email}`);
+        if (!hasSentEmail) {
+          fetch('/api/send-roadmap', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              email: answers?.email,
+              niche: answers?.niche,
+              name: answers?.name,
+              isFullBundle: true,
+              vibe: answers?.vibe,
+              platforms: answers?.platform
+              })
+              }).then(() => {
+            sessionStorage.setItem(`sent_full_bundle_${answers?.email}`, 'true');
+          }).catch(err => console.error('Auto-email error:', err));
+        }
+      }
+    }, 2000);
+    return () => clearTimeout(timer);
+  }, [answers]);
+
+  if (isResearching) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh] text-center px-6">
+        <h2 className="text-xl font-bold tracking-tighter uppercase italic text-gradient animate-pulse">{researchStatus}</h2>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh] text-center px-6 animate-in fade-in duration-500">
+        <h2 className="text-xl font-bold tracking-tighter uppercase italic text-red-500 mb-6">{researchStatus}</h2>
+        <button 
+          onClick={() => window.location.reload()} 
+          className="px-8 py-4 bg-white text-black rounded-2xl font-black text-xs uppercase tracking-widest hover:scale-105 transition-all"
+        >
+          Try Again
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="max-w-4xl mx-auto py-12 px-6 animate-in fade-in duration-1000">
+      <div className="text-center mb-16 relative">
+        <div className="inline-flex items-center px-4 py-2 rounded-full border border-brand-primary/20 bg-brand-primary/5 text-brand-primary font-bold text-[10px] tracking-[0.3em] mb-8 uppercase">Plan Complete</div>
+        <h1 className="text-5xl md:text-7xl font-light mb-6 tracking-tighter">Growth Potential: <span className="font-bold text-gradient italic">{score} / 10</span></h1>
+        <p className="text-zinc-500 font-light text-xl">{customData?.subheading}</p>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-20">
+        {[
+          { title: 'Best Strategy', desc: customData?.strategy },
+          { title: 'Visual Brand', desc: customData?.brand },
+          { title: 'How to Grow', desc: customData?.loop }
+        ].map((win, i) => (
+          <div key={i} className="p-8 rounded-[2rem] bg-zinc-900/30 border border-white/5">
+            <h3 className="text-[10px] font-black text-brand-primary mb-3 uppercase tracking-[0.2em]">{win.title}</h3>
+            <p className="text-zinc-300 font-light text-sm">{win.desc}</p>
+          </div>
+        ))}
+      </div>
+
+      <div className="max-w-2xl mx-auto p-10 md:p-12 rounded-[3rem] bg-gradient-to-b from-brand-primary/10 to-transparent border border-brand-primary/20 text-center shadow-2xl mb-12 relative overflow-hidden group">
+        <div className="relative z-10">
+          <h2 className="text-3xl md:text-4xl font-bold mb-6 tracking-tighter italic uppercase text-white">Unlock Your Full <br/><span className="text-brand-primary">Faceless Game Plan</span></h2>
+          <p className="text-zinc-400 font-light mb-10 text-sm leading-relaxed max-w-md mx-auto">
+            You have the score. Now get the tools. We've built your custom 30-day posting map, master strategy, and production system. 
+          </p>
+          
+          <div className="space-y-4 mb-10 text-left max-w-xs mx-auto">
+            {[
+              'Custom 30-Day Script Map',
+              'The Viral Content Library',
+              'Automated Production System',
+              'Master Hook Guide'
+            ].map(item => (
+              <div key={item} className="flex items-center space-x-3 text-xs font-bold text-zinc-300">
+                <span className="text-brand-primary">✓</span>
+                <span>{item}</span>
+              </div>
+            ))}
+          </div>
+
+          <button 
+            onClick={onUnlock}
+            className="w-full py-6 bg-gradient-brand rounded-3xl font-black text-sm uppercase tracking-[0.2em] shadow-[0_20px_50px_rgba(139,92,246,0.3)] hover:scale-[1.02] active:scale-[0.98] transition-all mb-6"
+          >
+            Claim My Full Bundle — $27
+          </button>
+          <p className="text-[9px] text-zinc-600 font-bold uppercase tracking-widest">Instant Dashboard Access • One-Time Payment</p>
+        </div>
+      </div>
+      
+      <div className="pt-20 border-t border-white/5 text-center">
+         <p className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.2em] mb-4 italic">Want just the roadmap for free?</p>
+         <button onClick={onUnlock} className="text-zinc-500 hover:text-white transition-colors text-xs font-bold underline decoration-brand-primary/30 underline-offset-8">Send my free summary via email instead →</button>
       </div>
     </div>
   );
@@ -155,11 +669,13 @@ const Profile = ({ data, setData, onBack, onRequiz }) => {
 // --- Dashboard Component ---
 const Dashboard = ({ answers, setView, setData }) => {
   const [activeTab, setActiveTab] = useState('strategy');
-  const [isGenerating, setIsGenerating] = useState(true);
-  const [postMap, setPostMap] = useState([]);
+  const [isGenerating, setIsGenerating] = useState(false);
   const [strategy, setStrategy] = useState(null);
+  const [postMap, setPostMap] = useState([]);
   const [emailInput, setEmailInput] = useState('');
-  const [emailStatus, setEmailStatus] = useState('idle');
+  const [emailStatus, setEmailStatus] = useState('idle'); // idle, sending, success, error
+  const [isPaid, setIsPaid] = useState(true); // Assuming paid if on dashboard
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
     setIsGenerating(true);
@@ -221,7 +737,7 @@ const Dashboard = ({ answers, setView, setData }) => {
         setEmailStatus('error');
       }
     } catch (err) {
-      console.error('Network error during manual claim:', err);
+      console.error(err);
       setEmailStatus('error');
     }
   };
@@ -229,42 +745,8 @@ const Dashboard = ({ answers, setView, setData }) => {
   if (isGenerating) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] text-center px-6">
-        <div className="w-16 h-16 border-4 border-brand-primary/10 border-t-brand-primary rounded-full animate-spin mb-8 shadow-brand" />
-        <h2 className="text-xl font-bold tracking-tighter uppercase italic">Setting up your <span className="text-gradient">Plan</span></h2>
-        <p className="text-zinc-500 mt-2 font-light text-sm max-w-xs mx-auto">Building your 30-day map and visual brand...</p>
-      </div>
-    );
-  }
-
-  if (!answers?.niche) {
-    return (
-      <div className="max-w-2xl mx-auto py-20 px-6 text-center">
-        <h2 className="text-3xl font-black italic uppercase tracking-tighter mb-4">Rescue your <span className="text-gradient">Bundle</span></h2>
-        <p className="text-zinc-500 mb-10 font-light">It looks like you're on a new device. Enter your details below to regenerate your full bundle instantly.</p>
-        <div className="flex flex-col gap-4 max-w-sm mx-auto">
-          <input 
-            type="text" 
-            placeholder="What is your niche?" 
-            className="bg-zinc-900 border border-zinc-800 rounded-2xl px-6 py-5 outline-none focus:border-brand-primary"
-            onChange={(e) => setData({ ...answers, niche: e.target.value })}
-          />
-          <select 
-            className="bg-zinc-900 border border-zinc-800 rounded-2xl px-6 py-5 outline-none focus:border-brand-primary text-zinc-400"
-            onChange={(e) => setData({ ...answers, vibe: e.target.value })}
-          >
-            <option value="">Select your style...</option>
-            <option value="Aesthetic/Minimalist">Aesthetic/Minimalist</option>
-            <option value="Dark/Moody">Dark/Moody</option>
-            <option value="Educational">Educational</option>
-            <option value="Fast/Hype">Fast/Hype</option>
-          </select>
-          <button 
-            onClick={() => window.location.reload()}
-            className="bg-white text-black py-5 rounded-2xl font-black uppercase tracking-widest text-xs mt-4"
-          >
-            Access My Bundle
-          </button>
-        </div>
+        <div className="w-16 h-16 border-t-2 border-brand-primary rounded-full animate-spin mb-8 shadow-[0_0_20px_rgba(139,92,246,0.2)]"></div>
+        <h2 className="text-xl font-bold tracking-tighter uppercase italic text-zinc-100 animate-pulse">Personalizing Your Dashboard...</h2>
       </div>
     );
   }
@@ -446,7 +928,7 @@ const Dashboard = ({ answers, setView, setData }) => {
                         isFullBundle: true,
                         vibe: answers?.vibe,
                         platforms: answers?.platform
-                        })
+                      })
                     }).then(r => r.ok ? setEmailStatus('success') : setEmailStatus('error'));
                   }}
                   className="text-[10px] text-brand-primary/60 hover:text-brand-primary uppercase font-bold tracking-widest transition-colors"
@@ -464,532 +946,65 @@ const Dashboard = ({ answers, setView, setData }) => {
   );
 };
 
-// --- Sales Page Component ---
+// --- SalesPage Component ---
 const SalesPage = ({ answers, onUnlock }) => {
-  const [timeLeft, setTimeLeft] = useState(600);
-  useEffect(() => {
-    if (timeLeft <= 0) return;
-    const timer = setInterval(() => setTimeLeft(prev => prev - 1), 1000);
-    return () => clearInterval(timer);
-  }, [timeLeft]);
-
-  const minutes = Math.floor(timeLeft / 60);
-  const seconds = timeLeft % 60;
-
   return (
-    <div className="max-w-4xl mx-auto py-12 px-6 animate-in slide-in-from-bottom-4 duration-700">
-      <div className="text-center mb-16">
-        <div className="inline-flex items-center px-4 py-1 rounded-full bg-red-500/10 border border-red-500/20 text-red-500 text-[10px] font-bold tracking-widest uppercase mb-6">
-          ⚠️ Offer Expires In: {minutes}:{seconds < 10 ? `0${seconds}` : seconds}
-        </div>
-        <h1 className="text-4xl md:text-6xl font-black tracking-tighter mb-6 uppercase italic">Skip the legwork.<br/><span className="text-gradient">Get your starter deliverables.</span></h1>
-        <p className="text-zinc-400 text-lg md:text-xl font-light max-w-2xl mx-auto leading-relaxed">
-          You have your niche. You have your plan. But 99% of people never start because the setup is too much work. <span className="text-white border-b border-brand-primary">We did it all for you.</span>
-        </p>
+    <div className="max-w-4xl mx-auto px-6 py-20 animate-in fade-in duration-700">
+      <div className="text-center mb-20">
+         <h1 className="text-4xl md:text-6xl font-black mb-8 tracking-tighter leading-none italic uppercase">
+           The <span className="text-brand-primary">FacelessOS</span> Bundle
+         </h1>
+         <p className="text-xl text-zinc-400 font-light max-w-2xl mx-auto">
+           Everything you need to launch your creator business and hit 1,000 followers in 30 days without showing your face.
+         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-20">
-        {[
-          { icon: '🎯', t: 'Master Strategy', d: `Your unique path to growth in the ${answers?.niche} niche. No more guessing.` },
-          { icon: '📝', t: '30 Ready-to-Post Scripts', d: `Done-for-you scripts specifically for the ${answers?.niche} niche. No thinking required.` },
-          { icon: '🎨', t: 'Starter Brand Assets', d: 'The exact visual style and prompt settings to create a professional look in minutes.' },
-          { icon: '📅', t: '30-Day Posting Map', d: 'Your entire first month planned out. Exactly what to post and when to post it.' },
-          { icon: '🚀', t: '1k Follower Checklist', d: 'The "Quick Start" steps to take your account from zero to 1,000 followers.' },
-          { icon: '⚙️', t: 'The Production System', d: 'How to make high-quality videos in under 10 minutes a day.' }
-        ].map((item, i) => (
-          <div key={i} className="p-8 rounded-[2rem] bg-zinc-900/50 border border-white/5 relative overflow-hidden group">
-            <div className="absolute top-0 right-0 p-6 text-4xl opacity-20 group-hover:opacity-100 transition-opacity">{item.icon}</div>
-            <h3 className="text-lg font-bold mb-3 uppercase tracking-tighter italic">{item.t}</h3>
-            <p className="text-zinc-500 text-xs leading-relaxed font-light">{item.d}</p>
-          </div>
-        ))}
-      </div>
-
-      <div className="relative p-10 md:p-20 rounded-[4rem] bg-zinc-900 border border-brand-primary shadow-brand text-center overflow-hidden">
-         <div className="relative z-10">
-            <h2 className="text-4xl md:text-5xl font-black italic uppercase tracking-tighter mb-8">Get the Full <span className="text-gradient">FacelessOS Bundle</span></h2>
-            <div className="flex items-center justify-center space-x-4 mb-10">
-                <span className="text-zinc-600 line-through text-2xl font-light">$97</span>
-                <span className="text-white text-6xl font-black tracking-tighter">$27</span>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-12 mb-20">
+         <div className="space-y-8">
+            <h3 className="text-2xl font-bold italic uppercase tracking-tight text-white underline decoration-brand-primary decoration-4 underline-offset-8">What You Get:</h3>
+            <div className="space-y-6">
+               {[
+                 { t: 'Custom 30-Day Strategy', d: 'A day-by-day breakdown of exactly what to post for your specific niche.' },
+                 { t: 'High-Conversion Scripts', d: '30 pre-written scripts designed to go viral and drive followers.' },
+                 { t: 'Brand Starter Kit', d: 'Custom color palettes, font choices, and aesthetic guidelines.' },
+                 { t: 'The Production Workflow', d: 'Our secret system for editing a week of content in under 2 hours.' },
+                 { t: 'B-Roll Goldmine', d: 'A curated list of free & premium stock libraries for faceless creators.' }
+               ].map((item, i) => (
+                 <div key={i} className="flex items-start space-x-4">
+                    <div className="w-6 h-6 rounded-full bg-brand-primary/20 flex items-center justify-center flex-shrink-0 text-brand-primary text-[10px]">✓</div>
+                    <div>
+                       <h4 className="font-bold text-white text-sm uppercase tracking-widest mb-1">{item.t}</h4>
+                       <p className="text-zinc-500 text-sm leading-relaxed">{item.d}</p>
+                    </div>
+                 </div>
+               ))}
             </div>
-            <button onClick={onUnlock} className="w-full md:w-auto px-16 py-6 bg-gradient-brand rounded-full font-black text-sm uppercase tracking-[0.3em] hover:scale-105 transition-all shadow-brand mb-8">Unlock Everything Now</button>
-            <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest">Instant Access • One-Time Payment</p>
          </div>
-      </div>
-    </div>
-  );
-};
-
-// --- Results Component ---
-const Results = ({ answers, onEmailSubmit, onUnlock }) => {
-  const [isResearching, setIsResearching] = useState(true);
-  const [researchStatus, setResearchStatus] = useState('Getting things ready...');
-  const [score, setScore] = useState(0);
-  const [customData, setCustomData] = useState(null);
-  const [email, setEmail] = useState('');
-  const [error, setError] = useState(null);
-  const [emailStatus, setEmailStatus] = useState('idle'); // idle, sending, success, error
-  const [errorMsg, setErrorMsg] = useState('');
-
-  useEffect(() => {
-    const isValidNiche = (n) => {
-      if (!n || n.trim().length < 3) return false;
-      // Basic check for vowels or common letters to avoid "ghjkl" gibberish
-      const hasVowels = /[aeiouy]/i.test(n);
-      if (!hasVowels) return false;
-      return true;
-    };
-
-    const researchSteps = [
-      { msg: `Looking at #${answers?.niche?.replace(/\s/g, '')} on TikTok...`, delay: 1000 },
-      { msg: `Checking the competition...`, delay: 1000 },
-      { msg: `Finalizing your growth plan...`, delay: 1000 }
-    ];
-
-    const runResearch = async () => {
-      const niche = answers?.niche?.toLowerCase() || '';
-      
-      if (!isValidNiche(niche)) {
-        setResearchStatus(`Sorry, I couldn't generate a score for "${answers?.niche}" niche. It doesn't seem to be a valid growth category. Please try a more specific niche like "AI Tools" or "Motivation".`);
-        setError(true);
-        setIsResearching(false);
-        return;
-      }
-
-      for (const step of researchSteps) {
-        setResearchStatus(step.msg);
-        await new Promise(r => setTimeout(r, step.delay));
-      }
-      
-      let calculatedScore = parseFloat((Math.random() * (9.8 - 7.2) + 7.2).toFixed(1));
-      if (niche.includes('ai') || niche.includes('tech') || niche.includes('wealth')) {
-        calculatedScore = Math.max(calculatedScore, 9.2);
-      }
-
-      let advice = {
-        subheading: '',
-        strategy: '',
-        brand: '',
-        loop: ''
-      };
-
-      const vibe = answers?.vibe?.toLowerCase() || '';
-      const platforms = Array.isArray(answers?.platform) ? answers.platform.join(', ').toLowerCase() : (answers?.platform?.toLowerCase() || '');
-
-      let platformHook = "";
-      if (platforms.includes('pinterest')) platformHook = "Use high-quality static pins and search-rich titles.";
-      else if (platforms.includes('youtube')) platformHook = "Focus on the first 3 seconds to match your thumbnail.";
-      else platformHook = "Use 7-second loops with trending audio.";
-
-      if (vibe.includes('aesthetic') || vibe.includes('minimalist') || vibe.includes('moody')) {
-        advice.subheading = `The {{niche}} space is all about the 'vibe' right now. You can win with high-quality, curated content.`.replace('{{niche}}', answers?.niche);
-        advice.strategy = `Use cinematic "POV" shots that pull viewers into your world. ${platformHook}`;
-        advice.brand = 'Keep it minimal with deep shadows and clean, elegant text.';
-        advice.loop = 'Make content that people want to save for inspiration.';
-      } else if (calculatedScore >= 9.0) {
-        advice.subheading = `The {{niche}} space is perfect right now. You can grow very fast here.`.replace('{{niche}}', answers?.niche);
-        advice.strategy = niche.includes('ai') ? `Share secret tools that save people time. ${platformHook}` : `Share bold ideas that challenge the norm. ${platformHook}`;
-        advice.brand = 'Keep it simple, clean, and professional.';
-        advice.loop = 'Make videos that people want to watch later.';
-      } else if (calculatedScore >= 8.0) {
-        advice.subheading = `The {{niche}} market is popular but has lots of room for you to win.`.replace('{{niche}}', answers?.niche);
-        advice.strategy = `Fix common mistakes that people in your niche make. ${platformHook}`;
-        advice.brand = 'Use dark, moody colors and clear text.';
-        advice.loop = 'Ask people to comment their opinion on your ideas.';
-      } else {
-        advice.subheading = `The {{niche}} niche is a hidden gem. You can become the go-to expert here.`.replace('{{niche}}', answers?.niche);
-        advice.strategy = `Share detailed "case studies" of how things work. ${platformHook}`;
-        advice.brand = 'Focus on big, bold text so people can read easily.';
-        advice.loop = 'Ask people to send you a message for more help.';
-      }
-
-      setScore(calculatedScore);
-      setCustomData(advice);
-      setIsResearching(false);
-    };
-    runResearch();
-  }, [answers]);
-
-  if (isResearching) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-[60vh] text-center px-6">
-        <h2 className="text-xl font-bold tracking-tighter uppercase italic text-gradient animate-pulse">{researchStatus}</h2>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-[60vh] text-center px-6 animate-in fade-in duration-500">
-        <h2 className="text-xl font-bold tracking-tighter uppercase italic text-red-500 mb-6">{researchStatus}</h2>
-        <button 
-          onClick={() => window.location.reload()} 
-          className="px-8 py-4 bg-white text-black rounded-2xl font-black text-xs uppercase tracking-widest hover:scale-105 transition-all"
-        >
-          Try Again
-        </button>
-      </div>
-    );
-  }
-
-  return (
-    <div className="max-w-4xl mx-auto py-12 px-6 animate-in fade-in duration-1000">
-      <div className="text-center mb-16 relative">
-        <div className="inline-flex items-center px-4 py-2 rounded-full border border-brand-primary/20 bg-brand-primary/5 text-brand-primary font-bold text-[10px] tracking-[0.3em] mb-8 uppercase">Plan Complete</div>
-        <h1 className="text-5xl md:text-7xl font-light mb-6 tracking-tighter">Growth Potential: <span className="font-bold text-gradient italic">{score} / 10</span></h1>
-        <p className="text-zinc-500 font-light text-xl">{customData?.subheading}</p>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-20">
-        {[
-          { title: 'Best Strategy', desc: customData?.strategy },
-          { title: 'Visual Brand', desc: customData?.brand },
-          { title: 'How to Grow', desc: customData?.loop }
-        ].map((win, i) => (
-          <div key={i} className="p-8 rounded-[2rem] bg-zinc-900/30 border border-white/5">
-            <h3 className="text-[10px] font-black text-brand-primary mb-3 uppercase tracking-[0.2em]">{win.title}</h3>
-            <p className="text-zinc-300 font-light text-sm">{win.desc}</p>
-          </div>
-        ))}
-      </div>
-
-      <div className="max-w-2xl mx-auto p-10 md:p-12 rounded-[3rem] bg-gradient-to-b from-brand-primary/10 to-transparent border border-brand-primary/20 text-center shadow-2xl mb-12 relative overflow-hidden group">
-        <div className="absolute top-0 right-0 p-8 text-4xl opacity-10 group-hover:opacity-20 transition-opacity">🚀</div>
-        <h3 className="text-2xl font-bold italic uppercase tracking-tighter mb-4 text-white">Unlock the Full <span className="text-gradient">FacelessOS Bundle</span></h3>
-        <p className="text-zinc-400 text-sm mb-8 font-light leading-relaxed max-w-md mx-auto">
-          You have your niche. You have your plan. But 99% of people never start because the setup is too much work. <span className="text-white border-b border-brand-primary/30 font-medium">We did it all for you.</span>
-        </p>
-        
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-10 text-left max-w-lg mx-auto bg-black/20 p-6 rounded-2xl border border-white/5">
-          {[
-            'Master Strategy',
-            '30 Ready-to-Post Scripts',
-            'Starter Brand Assets',
-            '30-Day Posting Map',
-            '1k Follower Checklist',
-            'The Production System'
-          ].map(item => (
-            <div key={item} className="flex items-center space-x-2 text-[10px] font-bold uppercase tracking-widest text-zinc-300">
-              <span className="text-brand-primary">✓</span>
-              <span>{item}</span>
-            </div>
-          ))}
-        </div>
-
-        <div className="flex flex-col gap-4 items-center">
-          <button onClick={onUnlock} className="w-full sm:w-auto px-12 py-5 bg-gradient-brand rounded-full font-black text-xs uppercase tracking-[0.2em] shadow-brand hover:scale-105 transition-all">
-            Get Everything - $27
-          </button>
-          <button onClick={onUnlock} className="text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em] hover:text-white transition-colors py-2">
-            Learn more about the deliverables →
-          </button>
-        </div>
-      </div>
-
-      <div className="max-w-2xl mx-auto p-10 md:p-16 rounded-[3rem] bg-zinc-900/50 border border-white/5 text-center relative overflow-hidden shadow-2xl mb-20">
-        <h2 className="text-2xl md:text-4xl font-semibold mb-4 tracking-tight leading-tight">Send your {answers?.niche} roadmap to your inbox?</h2>
-        <p className="text-zinc-500 mb-10 font-light text-base">We wrote a 12-page guide for you. Enter your email to get it.</p>
-        <div className="flex flex-col sm:flex-row gap-3">
-          <input 
-            type="email" 
-            placeholder="you@example.com" 
-            className="flex-1 bg-black/50 border border-zinc-800 rounded-2xl px-6 py-5 outline-none focus:border-brand-primary text-sm font-light disabled:opacity-50" 
-            value={email} 
-            onChange={(e) => setEmail(e.target.value)} 
-            disabled={emailStatus === 'sending'}
-          />
-          <button 
-            onClick={async () => {
-              if (!email || !email.includes('@')) return;
-              setEmailStatus('sending');
-              try {
-                const res = await onEmailSubmit(email);
-                if (res && res.error) {
-                  setErrorMsg(typeof res.error === 'string' ? res.error : JSON.stringify(res.error));
-                  setEmailStatus('error');
-                } else {
-                  setEmailStatus('success');
-                }
-              } catch (err) {
-                setErrorMsg(err.message || 'Failed to send');
-                setEmailStatus('error');
-              }
-            }} 
-            disabled={emailStatus === 'sending'}
-            className="bg-white text-black px-8 py-5 rounded-2xl font-black text-xs uppercase tracking-widest whitespace-nowrap hover:scale-105 transition-all disabled:opacity-50"
-          >
-            {emailStatus === 'sending' ? 'Sending...' : emailStatus === 'success' ? 'Sent! ✓' : 'Get My Guide'}
-          </button>
-        </div>
-        <button onClick={onUnlock} className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest hover:text-white transition-colors mt-6 block mx-auto">No thanks, I'll skip to the bundle →</button>
-        {emailStatus === 'error' && <p className="text-red-500 text-[10px] mt-4 font-bold uppercase tracking-widest">Error: {errorMsg}</p>}
-      </div>
-    </div>
-  );
-};
-
-// --- Main App Component ---
-export default function App() {
-  const [view, setView] = useState(() => {
-    const params = new URLSearchParams(window.location.search);
-    if (params.get('paid') === 'true' || params.get('admin') === 'true') return 'dashboard';
-    return 'quiz';
-  });
-  const [data, setData] = useState(() => {
-    const savedData = localStorage.getItem('faceless_os_data');
-    try {
-      return savedData ? JSON.parse(savedData) : null;
-    } catch (e) { return null; }
-  });
-  const [isAdmin, setIsAdmin] = useState(() => {
-    const params = new URLSearchParams(window.location.search);
-    return params.get('admin') === 'true';
-  });
-  const [isPaid, setIsPaid] = useState(() => {
-    const params = new URLSearchParams(window.location.search);
-    return params.get('paid') === 'true';
-  });
-
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [view]);
-
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    if (params.get('paid') === 'true') { 
-      // Clear the URL so refreshing doesn't keep triggering this if they navigate away
-      window.history.replaceState({}, document.title, window.location.pathname);
-    }
-  }, []);
-
-  useEffect(() => {
-    if (data) {
-      localStorage.setItem('faceless_os_data', JSON.stringify(data));
-    }
-  }, [data]);
-
-  const handleUnlock = () => { 
-    const stanStoreUrl = "https://stan.store/Facelessosapp/p/facelessos-bundle"; 
-    window.location.href = stanStoreUrl; 
-  };
-
-  return (
-    <div className="min-h-screen bg-black text-white font-sans antialiased selection:bg-brand-primary pb-10">
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-brand-primary/5 blur-[120px] rounded-full" />
-        <div className="absolute bottom-[-20%] right-[-10%] w-[50%] h-[50%] bg-brand-secondary/5 blur-[120px] rounded-full" />
-      </div>
-
-      <nav className="sticky top-0 z-[100] w-full bg-black/80 backdrop-blur-md border-b border-white/5">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
-          <span className="font-bold text-xl md:text-2xl tracking-tighter uppercase italic cursor-pointer flex-shrink-0" onClick={() => setView('quiz')}>FACELESS<span className="text-gradient font-black">OS</span></span>
-          <div className="flex items-center space-x-4">
-            {(view === 'dashboard' || view === 'profile') && <span className="text-[10px] font-bold tracking-[0.4em] uppercase text-zinc-500 mr-4">Console</span>}
-            <button onClick={() => setView('profile')} className={`w-10 h-10 rounded-full border flex-shrink-0 flex items-center justify-center transition-all ${view === 'profile' ? 'border-brand-primary bg-brand-primary/10 shadow-brand' : 'border-white/10 bg-white/5 text-zinc-500'}`}>👤</button>
-          </div>
-        </div>
-      </nav>
-
-      <main className="relative z-10">
-        {view === 'quiz' && <Quiz onComplete={(ans) => { setData(ans); setView('results'); }} />}
-        {view === 'results' && (
-          <Results 
-            answers={data} 
-            onEmailSubmit={async (email) => { 
-              const newData = { ...data, email };
-              setData(newData); 
-              // Trigger email immediately
-              try {
-                const response = await fetch('/api/send-roadmap', {
-                  method: 'POST',
-                  headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify({
-                    email: email,
-                    niche: data?.niche,
-                    name: data?.name,
-                    vibe: data?.vibe
-                  })
-                });
-                const result = await response.json();
-                if (!response.ok) {
-                  return { error: result.error || 'Server error' };
-                }
-                setView('sales'); 
-                return result;
-              } catch (err) { 
-                console.error(err); 
-                return { error: err.message };
-              }
-            }} 
-            onUnlock={handleUnlock} 
-          />
-        )}
-        {view === 'sales' && <SalesPage answers={data} onUnlock={handleUnlock} />}
-        {view === 'dashboard' && (isPaid || isAdmin ? <Dashboard answers={data} setView={setView} setData={setData} /> : <SalesPage answers={data} onUnlock={handleUnlock} />)}
-        {view === 'profile' && <Profile data={data} setData={setData} onBack={() => setView('dashboard')} onRequiz={() => setView('quiz')} />}
-      </main>
-
-      <footer className="relative z-10 max-w-7xl mx-auto px-6 py-12 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6">
-        <div className="text-[10px] font-bold tracking-widest text-zinc-600 uppercase">
-          &copy; 2026 FacelessOS. All rights reserved.
-        </div>
-        <div className="flex items-center space-x-8">
-          <a href="mailto:Facelessos.app@gmail.com" className="text-[10px] font-bold tracking-widest text-zinc-500 hover:text-white uppercase transition-colors">
-            Need Help? Facelessos.app@gmail.com
-          </a>
-        </div>
-      </footer>
-    </div>
-  );
-}
-
-// --- Quiz Component ---
-const Quiz = ({ onComplete }) => {
-  const questions = [
-    { id: 'name', text: 'What is your creator name?', type: 'text', placeholder: 'e.g. Stoic Soul...' },
-    { id: 'niche', text: 'What is your niche?', type: 'text', placeholder: 'e.g. AI Tools, Stoicism...' },
-    { id: 'goal', text: 'What is your goal?', type: 'multi-select', options: ['Affiliate Sales', 'Digital Product', 'Brand Deals', 'Followers Only', 'Other'] },
-    { id: 'experience', text: 'What is your experience level?', type: 'select', options: ['Total Beginner', 'Some Experience', 'Advanced Creator'] },
-    { id: 'schedule', text: 'How much time can you spend daily?', type: 'select', options: ['< 30 mins', '1-2 hours', '4+ hours (Full Time)'] },
-    { id: 'platform', text: 'Where do you want to post?', type: 'multi-select', options: ['TikTok', 'Instagram', 'YouTube', 'Pinterest', 'Other'] },
-    { id: 'vibe', text: 'What style do you like?', type: 'select', options: ['Aesthetic/Minimalist', 'Dark/Moody', 'Fast/Hype', 'Educational', 'Other'] },
-  ];
-
-  const suggestedNiches = ['AI News & Tools', 'Stoic Philosophy', 'Digital Wealth / SaaS', 'Health & Biohacking', 'Travel Aesthetics', 'Motivation & Success', 'True Crime / Mysteries', 'Daily Facts & Trivia', 'Gaming News'];
-  const [currentStep, setCurrentStep] = useState(0);
-  const [answers, setAnswers] = useState({});
-  const [inputValue, setInputValue] = useState('');
-  const [selectedOptions, setSelectedOptions] = useState([]);
-  const [showNicheSuggestions, setShowNicheSuggestions] = useState(false);
-  const currentQuestion = questions[currentStep];
-
-  const handleNext = (val) => {
-    let finalValue = val;
-    if (currentQuestion.type === 'text') finalValue = inputValue;
-    else if (currentQuestion.type === 'multi-select') finalValue = [...selectedOptions];
-    if (!finalValue || (Array.isArray(finalValue) && finalValue.length === 0)) { if (currentQuestion.type !== 'text' || !inputValue) return; }
-    const newAnswers = { ...answers, [currentQuestion.id]: finalValue };
-    setAnswers(newAnswers);
-    setInputValue('');
-    setSelectedOptions([]);
-    setShowNicheSuggestions(false);
-    if (currentStep < questions.length - 1) setCurrentStep(currentStep + 1);
-    else onComplete(newAnswers);
-  };
-
-  return (
-    <div className="max-w-xl mx-auto mt-12 md:mt-24 px-4 pb-20">
-      {currentStep === 0 ? (
-        <div className="relative p-10 md:p-12 rounded-[3.5rem] bg-zinc-900/40 border border-white/5 backdrop-blur-3xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-700">
-          <div className="absolute top-0 right-0 p-8">
-            <div className="w-20 h-20 bg-brand-primary/10 rounded-full blur-3xl animate-pulse"></div>
-          </div>
-          
-          <div className="relative z-10">
-            <span className="inline-block px-4 py-1.5 rounded-full bg-brand-primary/10 border border-brand-primary/20 text-[10px] font-black text-brand-primary uppercase tracking-[0.2em] mb-8">
-              Creator Assessment
-            </span>
-            
-            <h1 className="text-4xl md:text-5xl font-black mb-6 tracking-tighter leading-[0.95] text-white">
-              Answer 7 questions. <br />
-              <span className="text-brand-primary">Get your entire faceless game plan.</span>
-            </h1>
-
-            <p className="text-zinc-400 text-lg md:text-xl font-medium leading-relaxed mb-10 max-w-sm">
-              No generic advice. Your answers build a roadmap made for your niche, your schedule, and your starting point.
-            </p>
-
-            <div className="space-y-4 mb-12">
-              {[
-                'Niche score',
-                '30-day posting map',
-                'Your first move'
-              ].map(item => (
-                <div key={item} className="flex items-center space-x-3 text-sm font-bold text-zinc-300">
-                  <div className="w-5 h-5 rounded-full bg-brand-primary/20 flex items-center justify-center">
-                    <span className="text-brand-primary text-[10px]">✓</span>
-                  </div>
-                  <span>{item}</span>
-                </div>
-              ))}
-            </div>
-
-            <p className="text-[10px] font-black text-brand-secondary uppercase tracking-[0.2em] mb-12 italic">
-              The more honest your answers, the sharper your plan
-            </p>
-
-            <div className="pt-8 border-t border-white/5">
-              <p className="text-[10px] font-black text-zinc-500 uppercase tracking-[0.2em] mb-4">Let's get started</p>
-              <h2 className="text-xl font-bold mb-6 text-white">{currentQuestion.text}</h2>
-              <input 
-                autoFocus 
-                className="w-full bg-transparent border-b border-zinc-800 py-4 text-xl outline-none focus:border-brand-primary placeholder:text-zinc-800 font-light mb-8" 
-                placeholder={currentQuestion.placeholder}
-                value={inputValue} 
-                onChange={(e) => setInputValue(e.target.value)} 
-                onKeyDown={(e) => e.key === 'Enter' && handleNext()} 
-              />
+         <div className="bg-zinc-900/50 border border-white/5 rounded-[3rem] p-10 flex flex-col justify-between items-center text-center shadow-2xl relative overflow-hidden group">
+            <div className="relative z-10">
+              <span className="inline-block px-4 py-1.5 rounded-full bg-brand-primary/10 border border-brand-primary/20 text-[10px] font-black text-brand-primary uppercase tracking-widest mb-8">One-Time Payment</span>
+              <div className="text-6xl font-black text-white mb-4 tracking-tighter italic">$27</div>
+              <p className="text-zinc-500 text-sm font-medium uppercase tracking-widest mb-12">Lifetime Dashboard Access</p>
               
               <button 
-                onClick={() => handleNext()}
-                className="group relative w-full py-6 bg-gradient-brand rounded-3xl font-black text-sm uppercase tracking-[0.2em] shadow-2xl transition-all hover:scale-[1.02] active:scale-[0.98]"
+                onClick={onUnlock}
+                className="w-full py-6 bg-gradient-brand rounded-3xl font-black text-xs uppercase tracking-[0.2em] shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-all mb-6"
               >
-                <span className="relative z-10">Continue</span>
-                <div className="absolute inset-0 bg-white/20 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                Unlock My Bundle Now
               </button>
               
-              <p className="text-center mt-6 text-[10px] font-bold text-zinc-600 uppercase tracking-widest">
-                Takes less than 60 seconds
-              </p>
-            </div>
-          </div>
-        </div>
-      ) : (
-        <div className="relative p-10 md:p-12 rounded-[3rem] bg-zinc-900/40 border border-white/5 backdrop-blur-2xl shadow-2xl overflow-hidden">
-          <div className="flex items-center justify-between mb-8">
-              <span className="text-[10px] font-bold tracking-widest text-zinc-500 uppercase">Step {currentStep + 1} of {questions.length}</span>
-              <button onClick={() => setCurrentStep(currentStep - 1)} className="text-[10px] font-bold tracking-widest text-zinc-600 hover:text-white uppercase transition-colors">← Back</button>
-          </div>
-          <h2 className="text-2xl md:text-3xl font-medium mb-10 tracking-tight text-zinc-100">{currentQuestion.text}</h2>
-          {currentQuestion.type === 'text' && !showNicheSuggestions && (
-            <div className="space-y-6">
-              <input autoFocus className="w-full bg-transparent border-b border-zinc-800 py-4 text-xl outline-none focus:border-brand-primary placeholder:text-zinc-800 font-light" value={inputValue} onChange={(e) => setInputValue(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && handleNext()} />
-              {currentQuestion.id === 'niche' && (
-                <button onClick={() => setShowNicheSuggestions(true)} className="text-[10px] font-bold text-brand-primary uppercase tracking-widest hover:text-white transition-colors">Don't have one? Suggest a niche →</button>
-              )}
-            </div>
-          )}
-          {currentQuestion.id === 'niche' && showNicheSuggestions && (
-            <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
-              <p className="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-6">Best niches to start with:</p>
-              <div className="grid grid-cols-1 gap-3 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
-                {suggestedNiches.map(niche => (
-                  <button key={niche} onClick={() => { setInputValue(niche); handleNext(niche); }} className="p-5 rounded-2xl border border-white/5 bg-white/5 text-left text-sm font-medium text-zinc-300 hover:border-brand-primary/50 hover:bg-brand-primary/10 hover:text-white transition-all">{niche}</button>
-                ))}
-                <button onClick={() => setShowNicheSuggestions(false)} className="p-4 text-[10px] font-bold text-zinc-600 uppercase tracking-widest hover:text-zinc-400 text-center">← Go back</button>
+              <div className="flex flex-col space-y-4">
+                 <p className="text-[10px] font-bold text-zinc-600 uppercase tracking-widest flex items-center justify-center space-x-2">
+                    <span>💳 Secure Checkout</span>
+                    <span>•</span>
+                    <span>🚀 Instant Access</span>
+                 </p>
               </div>
             </div>
-          )}
-          {(currentQuestion.type === 'select' || currentQuestion.type === 'multi-select') && (
-            <div className="grid grid-cols-1 gap-3">
-              {currentQuestion.options.map(opt => (
-                <button key={opt} onClick={() => currentQuestion.type === 'multi-select' ? (selectedOptions.includes(opt) ? setSelectedOptions(selectedOptions.filter(o => o !== opt)) : setSelectedOptions([...selectedOptions, opt])) : handleNext(opt)} className={`p-6 rounded-2xl border transition-all text-left flex justify-between items-center ${selectedOptions.includes(opt) ? 'bg-brand-primary/20 border-brand-primary/50 text-white' : 'border-white/[0.03] bg-white/[0.02] text-zinc-400 hover:bg-white/5'}`}>
-                  <span className="text-sm font-medium">{opt}</span>
-                  {selectedOptions.includes(opt) && <span className="text-brand-primary text-xs font-bold">✓</span>}
-                </button>
-              ))}
-            </div>
-          )}
-          
-          {currentQuestion.type !== 'select' && !showNicheSuggestions && (
-            <div className="mt-12">
-              <button onClick={handleNext} className="w-full py-5 bg-zinc-100 text-zinc-900 rounded-2xl font-bold text-xs uppercase tracking-widest hover:bg-white transition-all shadow-xl shadow-white/5">
-                {currentStep === questions.length - 1 ? 'Finish' : 'Next Step'}
-              </button>
-            </div>
-          )}
-        </div>
-      )}
+            
+            <div className="absolute bottom-[-10%] left-[-10%] w-[50%] h-[50%] bg-brand-primary/5 rounded-full blur-[80px]"></div>
+         </div>
+      </div>
     </div>
   );
 };
