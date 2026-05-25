@@ -949,11 +949,11 @@ const SalesPage = ({ answers, onUnlock }) => {
   return (
     <div className="max-w-4xl mx-auto px-6 py-20 animate-in fade-in duration-700">
       <div className="text-center mb-20">
-         <h1 className="text-4xl md:text-6xl font-black mb-8 tracking-tighter leading-none italic uppercase">
+         <h1 className="text-4xl md:text-6xl font-black mb-8 tracking-tighter leading-none italic uppercase text-white">
            The <span className="text-brand-primary">FacelessOS</span> Bundle
          </h1>
          <p className="text-xl text-zinc-400 font-light max-w-2xl mx-auto">
-           Everything you need to launch your creator business and hit 1,000 followers in 30 days without showing your face.
+           Skip the legwork. Everything you need to launch your faceless account today. The strategy, 30 scripts, your brand look, and a day-by-day plan for your first month.
          </p>
       </div>
 
