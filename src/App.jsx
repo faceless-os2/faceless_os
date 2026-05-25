@@ -962,11 +962,11 @@ const SalesPage = ({ answers, onUnlock }) => {
             <h3 className="text-2xl font-bold italic uppercase tracking-tight text-white underline decoration-brand-primary decoration-4 underline-offset-8">What You Get:</h3>
             <div className="space-y-6">
                {[
-                 { t: 'Custom 30-Day Strategy', d: 'A day-by-day breakdown of exactly what to post for your specific niche.' },
-                 { t: 'High-Conversion Scripts', d: '30 pre-written scripts designed to go viral and drive followers.' },
-                 { t: 'Brand Starter Kit', d: 'Custom color palettes, font choices, and aesthetic guidelines.' },
-                 { t: 'The Production Workflow', d: 'Our secret system for editing a week of content in under 2 hours.' },
-                 { t: 'B-Roll Goldmine', d: 'A curated list of free & premium stock libraries for faceless creators.' }
+                 { t: 'Master Strategy', d: 'A complete game plan for your niche, built to drive engagement and authority.' },
+                 { t: '30-Day Map & Scripts', d: '30 pre-written, high-conversion scripts tailored to your specific platform and style.' },
+                 { t: 'Starter Brand Assets', d: 'Custom visual guidelines, color palettes, and fonts for a professional "ghost" look.' },
+                 { t: 'Your First Move: 1k Checklist', d: 'A step-by-step roadmap to hit your first 1,000 followers as fast as possible.' },
+                 { t: 'The Production System', d: 'Our streamlined workflow for batching, editing, and posting content in record time.' }
                ].map((item, i) => (
                  <div key={i} className="flex items-start space-x-4">
                     <div className="w-6 h-6 rounded-full bg-brand-primary/20 flex items-center justify-center flex-shrink-0 text-brand-primary text-[10px]">✓</div>

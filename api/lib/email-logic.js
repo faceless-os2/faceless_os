@@ -190,10 +190,10 @@ export async function sendBundleEmail({ email, niche, name, isFullBundle, vibe, 
         </div>
 
         <div style="margin-top: 30px; padding: 25px; background: #fafafa; border-radius: 20px;">
-          <h2 style="font-size: 12px; text-transform: uppercase; color: #8b5cf6; letter-spacing: 1px; margin-bottom: 15px;">1k Follower Checklist</h2>
+          <h2 style="font-size: 12px; text-transform: uppercase; color: #8b5cf6; letter-spacing: 1px; margin-bottom: 15px;">Your First Move: 1k Checklist</h2>
           <ul style="font-size: 13px; color: #444; line-height: 1.8; padding-left: 20px;">
             <li>Optimize Profile (Bio & Link)</li>
-            <li>Post 1-2x Daily</li>
+            <li>Post 1-2x Daily for 30 Days</li>
             <li>Engage with 10 competitors daily</li>
             <li>Analyze hooks after 10 posts</li>
           </ul>
