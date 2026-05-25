@@ -1,14 +1,21 @@
 import { useState, useEffect } from 'react';
 
 // --- Helper: Strategy Content by Niche ---
-const getNicheStrategy = (niche, vibe) => {
+const getNicheStrategy = (niche, vibe, platforms) => {
   const n = niche?.toLowerCase() || '';
   const v = vibe?.toLowerCase() || '';
+  const p = Array.isArray(platforms) ? platforms.join(', ').toLowerCase() : (platforms?.toLowerCase() || '');
+
+  // Platform specific advice overlays
+  let platformAdvice = "";
+  if (p.includes('tiktok') || p.includes('instagram')) platformAdvice = "Focus on 7-second loops and high-contrast text overlays to stop the scroll.";
+  if (p.includes('pinterest')) platformAdvice = "Optimize for search keywords in your titles and use vertical 'Idea Pin' formats.";
+  if (p.includes('youtube')) platformAdvice = "Your hook needs to match your thumbnail exactly. Focus on the first 3 seconds.";
 
   if (v.includes('aesthetic') || v.includes('minimalist') || v.includes('moody')) {
     return {
       title: 'The Atmosphere Architect',
-      description: "You're building an aesthetic world. High-quality visuals and curated moments are your currency. People follow you for the 'vibe'.",
+      description: `You're building an aesthetic world. ${platformAdvice} curated moments are your currency.`,
       steps: [
         { t: 'The Hook', d: 'Use "POV" hooks that place the viewer in your aesthetic world.' },
         { t: 'The Value', d: 'Showcase the lifestyle/feeling of the {{niche}} space without over-explaining.'.replace('{{niche}}', niche || 'niche') },
@@ -20,7 +27,7 @@ const getNicheStrategy = (niche, vibe) => {
   if (n.includes('ai') || n.includes('tech')) {
     return {
       title: 'The "Secret Tool" Method',
-      description: "You're going to position your page as the place people go to find tools that save them time. People love efficiency.",
+      description: `Position your page as the go-to resource for tools. ${platformAdvice}`,
       steps: [
         { t: 'The Hook', d: 'Start every video with: "Stop doing [Task] manually."' },
         { t: 'The Value', d: 'Show exactly how the AI tool works in 5 seconds or less.' },
@@ -31,7 +38,7 @@ const getNicheStrategy = (niche, vibe) => {
   if (n.includes('wealth') || n.includes('money') || n.includes('saas')) {
     return {
       title: 'The Digital Wealth Map',
-      description: "People want to know how to make money online without showing their face. You are the guide showing them the path.",
+      description: `You are the guide showing the path to digital income. ${platformAdvice}`,
       steps: [
         { t: 'The Hook', d: 'Focus on "Low effort, high reward" business ideas.' },
         { t: 'The Value', d: 'Break down the math. Show how $100/day is actually possible.' },
@@ -39,20 +46,9 @@ const getNicheStrategy = (niche, vibe) => {
       ]
     };
   }
-  if (n.includes('stoic') || n.includes('philosophy') || n.includes('motivation')) {
-    return {
-      title: 'The Wisdom Architect',
-      description: "Your page is a calm place in a loud world. High-quality visuals and deep thoughts are your best friends.",
-      steps: [
-        { t: 'The Hook', d: 'Use "Statue-bust" hooks or deep questions about life.' },
-        { t: 'The Value', d: 'Share one quote or idea that changes how someone sees their day.' },
-        { t: 'The Goal', d: 'Get people to comment their thoughts to boost your reach.' }
-      ]
-    };
-  }
   return {
     title: 'The Value Specialist',
-    description: "You are here to help people solve a specific problem in your niche using simple, easy-to-follow advice.",
+    description: `Solve specific problems with simple advice. ${platformAdvice}`,
     steps: [
       { t: 'The Hook', d: 'Identify a "Mistake" people are making and offer a fix.' },
       { t: 'The Value', d: 'Share a "Quick Win" that someone can do in under 60 seconds.' },
@@ -62,8 +58,10 @@ const getNicheStrategy = (niche, vibe) => {
 };
 
 // --- Helper: Generate 30-Day Post Map ---
-const generate30DayMap = (niche, vibe) => {
+const generate30DayMap = (niche, vibe, platforms) => {
   const v = vibe?.toLowerCase() || '';
+  const p = Array.isArray(platforms) ? platforms.join(', ').toLowerCase() : (platforms?.toLowerCase() || '');
+  
   let categories = [
     { type: 'Hook: Common Mistake', template: 'Stop making this common {{niche}} mistake if you want to grow.' },
     { type: 'Easy Steps: How-To', template: '3 easy steps to get [Result] in the {{niche}} space.' },
@@ -81,6 +79,14 @@ const generate30DayMap = (niche, vibe) => {
       { type: 'Call to Action', template: 'Join the {{niche}} community for more. Link in bio.' }
     ];
   }
+
+  // Final template adjustment based on platform
+  const adjustForPlatform = (template) => {
+    let t = template;
+    if (p.includes('pinterest')) t = t.replace('POV:', 'Ideal:').replace('Link in bio', 'Link in description');
+    if (p.includes('youtube')) t = t.replace('Link in bio', 'Check the pinned comment');
+    return t;
+  };
   
   return Array.from({ length: 30 }, (_, i) => {
     const cat = categories[i % categories.length];
@@ -90,7 +96,7 @@ const generate30DayMap = (niche, vibe) => {
       week,
       time: i % 2 === 0 ? 'Morning (8AM)' : 'Evening (6PM)',
       type: cat.type,
-      script: cat.template.replace('{{niche}}', niche || 'your niche'),
+      script: adjustForPlatform(cat.template).replace('{{niche}}', niche || 'your niche'),
       status: 'Ready to Post'
     };
   });
@@ -147,8 +153,8 @@ const Dashboard = ({ answers, setView, setData }) => {
   useEffect(() => {
     setIsGenerating(true);
     const timer = setTimeout(() => {
-      setPostMap(generate30DayMap(answers?.niche, answers?.vibe));
-      setStrategy(getNicheStrategy(answers?.niche, answers?.vibe));
+      setPostMap(generate30DayMap(answers?.niche, answers?.vibe, answers?.platform));
+      setStrategy(getNicheStrategy(answers?.niche, answers?.vibe, answers?.platform));
       setIsGenerating(false);
 
       // Automated Email Delivery for paid users
@@ -163,9 +169,10 @@ const Dashboard = ({ answers, setView, setData }) => {
               niche: answers?.niche,
               name: answers?.name,
               isFullBundle: true,
-              vibe: answers?.vibe
-            })
-          }).then(() => {
+              vibe: answers?.vibe,
+              platforms: answers?.platform
+              })
+              }).then(() => {
             sessionStorage.setItem(`sent_full_bundle_${answers?.email}`, 'true');
           }).catch(err => console.error('Auto-email error:', err));
         }
@@ -189,9 +196,10 @@ const Dashboard = ({ answers, setView, setData }) => {
           niche: answers?.niche || 'Creator', // Fallback if data was lost
           name: answers?.name || 'Creator',
           isFullBundle: true, // Since they are on the dashboard, they likely paid or are testing
-          vibe: answers?.vibe
-        })
-      });
+          vibe: answers?.vibe,
+          platforms: answers?.platform
+          })
+          });
       if (response.ok) {
         setData({ ...answers, email: emailInput });
         setEmailStatus('success');
@@ -424,8 +432,10 @@ const Dashboard = ({ answers, setView, setData }) => {
                         email: emailInput,
                         niche: answers?.niche,
                         name: answers?.name,
-                        isFullBundle: true
-                      })
+                        isFullBundle: true,
+                        vibe: answers?.vibe,
+                        platforms: answers?.platform
+                        })
                     }).then(r => r.ok ? setEmailStatus('success') : setEmailStatus('error'));
                   }}
                   className="text-[10px] text-brand-primary/60 hover:text-brand-primary uppercase font-bold tracking-widest transition-colors"
@@ -553,25 +563,31 @@ const Results = ({ answers, onEmailSubmit, onUnlock }) => {
       };
 
       const vibe = answers?.vibe?.toLowerCase() || '';
+      const platforms = Array.isArray(answers?.platform) ? answers.platform.join(', ').toLowerCase() : (answers?.platform?.toLowerCase() || '');
+
+      let platformHook = "";
+      if (platforms.includes('pinterest')) platformHook = "Use high-quality static pins and search-rich titles.";
+      else if (platforms.includes('youtube')) platformHook = "Focus on the first 3 seconds to match your thumbnail.";
+      else platformHook = "Use 7-second loops with trending audio.";
 
       if (vibe.includes('aesthetic') || vibe.includes('minimalist') || vibe.includes('moody')) {
         advice.subheading = `The {{niche}} space is all about the 'vibe' right now. You can win with high-quality, curated content.`.replace('{{niche}}', answers?.niche);
-        advice.strategy = 'Use cinematic "POV" shots that pull viewers into your world.';
+        advice.strategy = `Use cinematic "POV" shots that pull viewers into your world. ${platformHook}`;
         advice.brand = 'Keep it minimal with deep shadows and clean, elegant text.';
         advice.loop = 'Make content that people want to save for inspiration.';
       } else if (calculatedScore >= 9.0) {
         advice.subheading = `The {{niche}} space is perfect right now. You can grow very fast here.`.replace('{{niche}}', answers?.niche);
-        advice.strategy = niche.includes('ai') ? 'Share secret tools that save people time.' : 'Share bold ideas that challenge the norm.';
+        advice.strategy = niche.includes('ai') ? `Share secret tools that save people time. ${platformHook}` : `Share bold ideas that challenge the norm. ${platformHook}`;
         advice.brand = 'Keep it simple, clean, and professional.';
         advice.loop = 'Make videos that people want to watch later.';
       } else if (calculatedScore >= 8.0) {
         advice.subheading = `The {{niche}} market is popular but has lots of room for you to win.`.replace('{{niche}}', answers?.niche);
-        advice.strategy = 'Fix common mistakes that people in your niche make.';
+        advice.strategy = `Fix common mistakes that people in your niche make. ${platformHook}`;
         advice.brand = 'Use dark, moody colors and clear text.';
         advice.loop = 'Ask people to comment their opinion on your ideas.';
       } else {
         advice.subheading = `The {{niche}} niche is a hidden gem. You can become the go-to expert here.`.replace('{{niche}}', answers?.niche);
-        advice.strategy = 'Share detailed "case studies" of how things work.';
+        advice.strategy = `Share detailed "case studies" of how things work. ${platformHook}`;
         advice.brand = 'Focus on big, bold text so people can read easily.';
         advice.loop = 'Ask people to send you a message for more help.';
       }

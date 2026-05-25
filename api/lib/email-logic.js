@@ -3,14 +3,21 @@ import { Resend } from 'resend';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-const getNicheStrategy = (niche, vibe) => {
+const getNicheStrategy = (niche, vibe, platforms) => {
   const n = niche?.toLowerCase() || '';
   const v = vibe?.toLowerCase() || '';
+  const p = Array.isArray(platforms) ? platforms.join(', ').toLowerCase() : (platforms?.toLowerCase() || '');
+
+  // Platform specific advice overlays
+  let platformAdvice = "";
+  if (p.includes('tiktok') || p.includes('instagram')) platformAdvice = "Focus on 7-second loops and high-contrast text overlays to stop the scroll.";
+  if (p.includes('pinterest')) platformAdvice = "Optimize for search keywords in your titles and use vertical 'Idea Pin' formats.";
+  if (p.includes('youtube')) platformAdvice = "Your hook needs to match your thumbnail exactly. Focus on the first 3 seconds.";
 
   if (v.includes('aesthetic') || v.includes('minimalist') || v.includes('moody')) {
     return {
       title: 'The Atmosphere Architect',
-      description: "You're building an aesthetic world. High-quality visuals and curated moments are your currency. People follow you for the 'vibe'.",
+      description: `You're building an aesthetic world. ${platformAdvice} curated moments are your currency.`,
       steps: [
         { t: 'The Hook', d: 'Use "POV" hooks that place the viewer in your aesthetic world.' },
         { t: 'The Value', d: 'Showcase the lifestyle/feeling of the {{niche}} space without over-explaining.'.replace('{{niche}}', niche || 'niche') },
@@ -22,7 +29,7 @@ const getNicheStrategy = (niche, vibe) => {
   if (n.includes('ai') || n.includes('tech')) {
     return {
       title: 'The "Secret Tool" Method',
-      description: "Position your page as the place people go to find tools that save them time.",
+      description: `Position your page as the go-to resource for tools. ${platformAdvice}`,
       steps: [
         { t: 'The Hook', d: 'Start every video with: "Stop doing [Task] manually."' },
         { t: 'The Value', d: 'Show exactly how the AI tool works in 5 seconds or less.' },
@@ -33,7 +40,7 @@ const getNicheStrategy = (niche, vibe) => {
   if (n.includes('wealth') || n.includes('money') || n.includes('saas')) {
     return {
       title: 'The Digital Wealth Map',
-      description: "You are the guide showing people how to make money online without showing their face.",
+      description: `You are the guide showing the path to digital income. ${platformAdvice}`,
       steps: [
         { t: 'The Hook', d: 'Focus on "Low effort, high reward" business ideas.' },
         { t: 'The Value', d: 'Break down the math. Show how $100/day is actually possible.' },
@@ -43,7 +50,7 @@ const getNicheStrategy = (niche, vibe) => {
   }
   return {
     title: 'The Value Specialist',
-    description: "Solve a specific problem in your niche using simple, easy-to-follow advice.",
+    description: `Solve specific problems with simple advice. ${platformAdvice}`,
     steps: [
       { t: 'The Hook', d: 'Identify a "Mistake" people are making and offer a fix.' },
       { t: 'The Value', d: 'Share a "Quick Win" that someone can do in under 60 seconds.' },
@@ -52,8 +59,10 @@ const getNicheStrategy = (niche, vibe) => {
   };
 };
 
-const generate30DayMap = (niche, vibe) => {
+const generate30DayMap = (niche, vibe, platforms) => {
   const v = vibe?.toLowerCase() || '';
+  const p = Array.isArray(platforms) ? platforms.join(', ').toLowerCase() : (platforms?.toLowerCase() || '');
+
   let categories = [
     { type: 'Hook: Common Mistake', template: 'Stop making this common {{niche}} mistake if you want to grow.' },
     { type: 'Easy Steps: How-To', template: '3 easy steps to get [Result] in the {{niche}} space.' },
@@ -72,25 +81,33 @@ const generate30DayMap = (niche, vibe) => {
     ];
   }
 
+  // Final template adjustment based on platform
+  const adjustForPlatform = (template) => {
+    let t = template;
+    if (p.includes('pinterest')) t = t.replace('POV:', 'Ideal:').replace('Link in bio', 'Link in description');
+    if (p.includes('youtube')) t = t.replace('Link in bio', 'Check the pinned comment');
+    return t;
+  };
+
   return Array.from({ length: 30 }, (_, i) => {
     const cat = categories[i % categories.length];
     return {
       day: i + 1,
       type: cat.type,
-      script: cat.template.replace('{{niche}}', niche || 'your niche')
+      script: adjustForPlatform(cat.template).replace('{{niche}}', niche || 'your niche')
     };
   });
 };
 
-export async function sendBundleEmail({ email, niche, name, isFullBundle, vibe }) {
-  console.log(`Sending Email: to=${email}, niche=${niche}, fullBundle=${isFullBundle}, vibe=${vibe}`);
+export async function sendBundleEmail({ email, niche, name, isFullBundle, vibe, platforms }) {
+  console.log(`Sending Email: to=${email}, niche=${niche}, fullBundle=${isFullBundle}, vibe=${vibe}, platforms=${platforms}`);
   if (!process.env.RESEND_API_KEY) {
     console.error('RESEND_API_KEY is missing');
     throw new Error('RESEND_API_KEY is missing');
   }
 
-  const strategy = getNicheStrategy(niche, vibe);
-  const postMap = generate30DayMap(niche, vibe);
+  const strategy = getNicheStrategy(niche, vibe, platforms);
+  const postMap = generate30DayMap(niche, vibe, platforms);
 
   const roadmapHtml = strategy.steps.map((s, i) => `
     <div style="margin-bottom: 15px;">
