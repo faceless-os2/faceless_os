@@ -125,7 +125,7 @@ export async function sendBundleEmail({ email, niche, name, isFullBundle, vibe, 
 
   const fullBundleHeader = isFullBundle 
     ? `<div style="background: #e0e7ff; color: #4338ca; padding: 15px; border-radius: 12px; font-size: 14px; font-weight: bold; text-align: center; margin-bottom: 30px;">
-        ✓ PURCHASE CONFIRMED: Your Complete FacelessOS Bundle is Below
+        ✓ PURCHASE CONFIRMED: Your Complete Faceless Creator Bundle is Below
        </div>`
     : `<p style="font-size: 12px; color: #666;">Note: This is your summary roadmap. Unlock the full bundle for all 30 scripts and assets.</p>`;
 
@@ -165,7 +165,7 @@ export async function sendBundleEmail({ email, niche, name, isFullBundle, vibe, 
   return await resend.emails.send({
     from: 'FacelessOS <hello@facelessos.app>',
     to: [email],
-    subject: isFullBundle ? `[DELIVERED] Your Full FacelessOS Bundle: ${niche}` : `Your Faceless Roadmap: ${niche}`,
+    subject: isFullBundle ? `[DELIVERED] Your Full Faceless Creator Bundle: ${niche}` : `Your Faceless Roadmap: ${niche}`,
     html: `
       <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 30px; border: 1px solid #eee; border-radius: 30px; color: #111;">
         <h1 style="font-style: italic; text-transform: uppercase; letter-spacing: -2px; margin-bottom: 30px;">FACELESS<span style="color: #6366f1;">OS</span></h1>
