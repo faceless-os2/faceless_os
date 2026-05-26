@@ -218,7 +218,7 @@ export default function App() {
           onClick={() => setView('landing')} 
           className="text-2xl font-black tracking-tighter cursor-pointer hover:opacity-80 transition-opacity"
         >
-          FACELESS<span className="text-brand-primary font-light italic">OS</span>
+          Faceless<span className="text-brand-primary font-light italic">Method</span>
         </div>
         
         <div className="flex items-center space-x-4 md:space-x-8">
@@ -249,7 +249,7 @@ export default function App() {
 
       <footer className="relative z-10 max-w-7xl mx-auto px-6 py-12 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6">
         <div className="text-[10px] font-bold tracking-widest text-zinc-600 uppercase">
-          &copy; 2026 FacelessOS. All rights reserved.
+          &copy; 2026 Faceless Method. All rights reserved.
         </div>
         <div className="flex items-center space-x-8">
           <a href="mailto:Facelessos.app@gmail.com" className="text-[10px] font-bold tracking-widest text-zinc-500 hover:text-white uppercase transition-colors">

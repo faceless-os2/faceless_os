@@ -163,12 +163,12 @@ export async function sendBundleEmail({ email, niche, name, isFullBundle, vibe, 
   `;
 
   return await resend.emails.send({
-    from: 'FacelessOS <hello@facelessos.app>',
+    from: 'Faceless Method <hello@facelessos.app>',
     to: [email],
     subject: isFullBundle ? `[DELIVERED] Your Full Faceless Creator Bundle: ${niche}` : `Your Faceless Roadmap: ${niche}`,
     html: `
       <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 30px; border: 1px solid #eee; border-radius: 30px; color: #111;">
-        <h1 style="font-style: italic; text-transform: uppercase; letter-spacing: -2px; margin-bottom: 30px;">FACELESS<span style="color: #6366f1;">OS</span></h1>
+        <h1 style="font-style: italic; text-transform: uppercase; letter-spacing: -2px; margin-bottom: 30px;">Faceless <span style="color: #6366f1;">Method</span></h1>
         
         <p style="font-size: 16px; line-height: 1.6;">Hi ${name || 'Creator'},</p>
         <p style="font-size: 16px; line-height: 1.6;">Your <strong>${niche}</strong> growth engine is ready. ${isFullBundle ? "Your full bundle deliverables are detailed below." : "Here is your starter roadmap."}</p>
@@ -204,7 +204,7 @@ export async function sendBundleEmail({ email, niche, name, isFullBundle, vibe, 
         ${upsellCta}
         
         <hr style="border: none; border-top: 1px solid #eee; margin: 40px 0;" />
-        <p style="font-size: 10px; color: #bbb; text-align: center;">&copy; 2026 FacelessOS. All rights reserved. Delivered to ${email}.</p>
+        <p style="font-size: 10px; color: #bbb; text-align: center;">&copy; 2026 Faceless Method. All rights reserved. Delivered to ${email}.</p>
       </div>
     `,
   });
