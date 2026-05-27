@@ -187,6 +187,12 @@ export default function App() {
   }, [view]);
 
   useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('paid') === 'true') {
+      setView('rescue');
+      return;
+    }
+
     const saved = localStorage.getItem('faceless_creator_data');
     if (saved) {
       const parsed = JSON.parse(saved);
@@ -202,6 +208,12 @@ export default function App() {
   };
 
   const handleUnlock = () => {
+    setView('dashboard');
+    setIsPaid(true);
+    localStorage.setItem('faceless_creator_data', JSON.stringify(data));
+  };
+
+  const handleStoreRedirect = () => {
     window.location.href = "https://stan.store/Facelessosapp/p/facelessos-bundle";
   };
 
@@ -235,15 +247,16 @@ export default function App() {
 
       <main className="relative z-10">
         {view === 'landing' && <Quiz onComplete={handleQuizComplete} />}
+        {view === 'rescue' && <RescuePage onComplete={handleUnlock} setData={setData} />}
         {view === 'results' && (
           <Results 
             answers={data} 
             setData={setData}
-            onUnlock={handleUnlock} 
+            onUnlock={handleStoreRedirect} 
           />
         )}
-        {view === 'sales' && <SalesPage answers={data} onUnlock={handleUnlock} />}
-        {view === 'dashboard' && (isPaid || isAdmin ? <Dashboard answers={data} setView={setView} setData={setData} /> : <SalesPage answers={data} onUnlock={handleUnlock} />)}
+        {view === 'sales' && <SalesPage answers={data} onUnlock={handleStoreRedirect} />}
+        {view === 'dashboard' && (isPaid || isAdmin ? <Dashboard answers={data} setView={setView} setData={setData} /> : <SalesPage answers={data} onUnlock={handleStoreRedirect} />)}
         {view === 'profile' && <Profile data={data} setData={setData} onBack={() => setView('dashboard')} onRequiz={() => setView('quiz')} />}
       </main>
 
@@ -939,6 +952,101 @@ const Dashboard = ({ answers, setView, setData }) => {
             </div>
           )}
         </div>
+      </div>
+    </div>
+  );
+};
+
+// --- Rescue Component ---
+const RescuePage = ({ onComplete, setData }) => {
+  const [email, setEmail] = useState('');
+  const [niche, setNiche] = useState('');
+  const [style, setStyle] = useState('Aesthetic/Minimalist');
+  const [status, setStatus] = useState('idle');
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!email || !niche) return alert('Email and Niche are required.');
+    
+    setStatus('loading');
+    try {
+      const response = await fetch('/api/send-roadmap', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email,
+          niche,
+          vibe: style,
+          isFullBundle: true,
+          name: 'Creator'
+        })
+      });
+
+      if (response.ok) {
+        setData({ email, niche, vibe: style, name: 'Creator', platform: 'TikTok' });
+        onComplete();
+      } else {
+        alert('Something went wrong. Please try again.');
+        setStatus('idle');
+      }
+    } catch (err) {
+      console.error(err);
+      setStatus('idle');
+    }
+  };
+
+  return (
+    <div className="max-w-xl mx-auto py-20 px-6 animate-in fade-in zoom-in duration-700">
+      <div className="p-10 md:p-12 rounded-[3.5rem] bg-zinc-900/40 border border-white/5 backdrop-blur-3xl shadow-2xl text-center">
+        <h2 className="text-3xl font-black mb-6 tracking-tighter italic uppercase text-white">Rescue My <span className="text-brand-primary">Bundle</span></h2>
+        <p className="text-zinc-400 text-sm font-medium mb-10 leading-relaxed">
+          Welcome back! Enter your details below to claim your Faceless Creator Bundle. We'll send the files to your inbox and unlock your dashboard immediately.
+        </p>
+
+        <form onSubmit={handleSubmit} className="space-y-4 text-left">
+          <div>
+            <label className="block text-[10px] font-black text-zinc-500 uppercase tracking-widest mb-2 px-2">Purchase Email</label>
+            <input 
+              required
+              type="email" 
+              className="w-full bg-black/40 border border-zinc-800 rounded-2xl px-6 py-4 outline-none focus:border-brand-primary transition-all font-light text-white" 
+              placeholder="you@example.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          </div>
+          <div>
+            <label className="block text-[10px] font-black text-zinc-500 uppercase tracking-widest mb-2 px-2">Your Niche</label>
+            <input 
+              required
+              className="w-full bg-black/40 border border-zinc-800 rounded-2xl px-6 py-4 outline-none focus:border-brand-primary transition-all font-light text-white" 
+              placeholder="e.g. AI News, Stoicism..."
+              value={niche}
+              onChange={(e) => setNiche(e.target.value)}
+            />
+          </div>
+          <div>
+            <label className="block text-[10px] font-black text-zinc-500 uppercase tracking-widest mb-2 px-2">Your Style</label>
+            <select 
+              className="w-full bg-black/40 border border-zinc-800 rounded-2xl px-6 py-4 outline-none focus:border-brand-primary transition-all font-light text-white appearance-none"
+              value={style}
+              onChange={(e) => setStyle(e.target.value)}
+            >
+              <option>Aesthetic/Minimalist</option>
+              <option>Dark/Moody</option>
+              <option>Fast/Hype</option>
+              <option>Educational</option>
+            </select>
+          </div>
+
+          <button 
+            type="submit"
+            disabled={status === 'loading'}
+            className="w-full py-6 bg-gradient-brand rounded-3xl font-black text-sm uppercase tracking-[0.2em] shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-all mt-6"
+          >
+            {status === 'loading' ? 'Verifying...' : 'Unlock My Dashboard'}
+          </button>
+        </form>
       </div>
     </div>
   );
