@@ -501,9 +501,9 @@ const Quiz = ({ onComplete, isAccessFlow = false }) => {
             </div>
           )}
           
-          {(currentQuestion.type === 'multi-select' || isOtherSelected || currentQuestion.id === 'email') && !showNicheSuggestions && (
+          {(currentQuestion.type === 'multi-select' || currentQuestion.type === 'text' || isOtherSelected) && !showNicheSuggestions && (
             <div className="mt-12">
-              <button onClick={() => handleNext()} className="w-full py-5 bg-zinc-100 text-zinc-900 rounded-2xl font-bold text-xs uppercase tracking-widest hover:bg-white transition-all shadow-xl shadow-white/5">
+              <button onClick={() => handleNext()} className="w-full py-5 bg-gradient-brand text-white rounded-2xl font-bold text-xs uppercase tracking-widest hover:opacity-90 transition-all shadow-xl shadow-brand/20">
                 {currentStep === allQuestions.length - 1 ? 'Finish' : 'Next Step'}
               </button>
             </div>
