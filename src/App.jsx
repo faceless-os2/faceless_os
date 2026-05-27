@@ -207,10 +207,14 @@ export default function App() {
     setView('results');
   };
 
-  const handleUnlock = () => {
-    setView('dashboard');
+  const handleUnlock = (incomingData) => {
+    const finalData = incomingData || data;
+    if (finalData) {
+      setData(finalData);
+      localStorage.setItem('faceless_creator_data', JSON.stringify(finalData));
+    }
     setIsPaid(true);
-    localStorage.setItem('faceless_creator_data', JSON.stringify(data));
+    setView('dashboard');
   };
 
   const handleStoreRedirect = () => {
@@ -265,8 +269,7 @@ export default function App() {
                 console.error('Email trigger error:', err);
               }
               // Set data and go to dashboard
-              setData(answers);
-              handleUnlock();
+              handleUnlock(answers);
             }} 
           />
         )}
