@@ -247,7 +247,29 @@ export default function App() {
 
       <main className="relative z-10">
         {view === 'landing' && <Quiz onComplete={handleQuizComplete} />}
-        {view === 'access' && <AccessPage onComplete={handleUnlock} setData={setData} />}
+        {view === 'access' && (
+          <Quiz 
+            isAccessFlow={true}
+            onComplete={async (answers) => {
+              // Trigger the bundle email
+              try {
+                await fetch('/api/send-roadmap', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({
+                    ...answers,
+                    isFullBundle: true
+                  })
+                });
+              } catch (err) {
+                console.error('Email trigger error:', err);
+              }
+              // Set data and go to dashboard
+              setData(answers);
+              handleUnlock();
+            }} 
+          />
+        )}
         {view === 'results' && (
           <Results 
             answers={data} 
@@ -275,7 +297,7 @@ export default function App() {
 }
 
 // --- Quiz Component ---
-const Quiz = ({ onComplete }) => {
+const Quiz = ({ onComplete, isAccessFlow = false }) => {
   const questions = [
     { id: 'name', text: 'What is your creator name?', type: 'text', placeholder: 'e.g. Stoic Soul...' },
     { id: 'niche', text: 'What is your niche?', type: 'text', placeholder: 'e.g. AI Tools, Stoicism...' },
@@ -286,6 +308,11 @@ const Quiz = ({ onComplete }) => {
     { id: 'vibe', text: 'What style do you like?', type: 'select', options: ['Aesthetic/Minimalist', 'Dark/Moody', 'Fast/Hype', 'Educational', 'Other'] },
   ];
 
+  // Add email question if it's the access flow
+  const allQuestions = isAccessFlow 
+    ? [...questions, { id: 'email', text: 'Where should we send your bundle?', type: 'text', placeholder: 'you@example.com' }]
+    : questions;
+
   const suggestedNiches = ['AI News & Tools', 'Stoic Philosophy', 'Digital Wealth / SaaS', 'Health & Biohacking', 'Travel Aesthetics', 'Motivation & Success', 'True Crime / Mysteries', 'Daily Facts & Trivia', 'Gaming News'];
   const [currentStep, setCurrentStep] = useState(0);
   const [answers, setAnswers] = useState({});
@@ -293,7 +320,7 @@ const Quiz = ({ onComplete }) => {
   const [selectedOptions, setSelectedOptions] = useState([]);
   const [showNicheSuggestions, setShowNicheSuggestions] = useState(false);
   const [isOtherSelected, setIsOtherSelected] = useState(false);
-  const currentQuestion = questions[currentStep];
+  const currentQuestion = allQuestions[currentStep];
 
   const handleNext = (val) => {
     let finalValue = val;
@@ -318,13 +345,19 @@ const Quiz = ({ onComplete }) => {
       if (currentQuestion.type !== 'text' || !inputValue) return; 
     }
     
+    // Basic email validation if it's the email step
+    if (currentQuestion.id === 'email' && !finalValue.includes('@')) {
+      alert('Please enter a valid email.');
+      return;
+    }
+
     const newAnswers = { ...answers, [currentQuestion.id]: finalValue };
     setAnswers(newAnswers);
     setInputValue('');
     setSelectedOptions([]);
     setShowNicheSuggestions(false);
     setIsOtherSelected(false);
-    if (currentStep < questions.length - 1) setCurrentStep(currentStep + 1);
+    if (currentStep < allQuestions.length - 1) setCurrentStep(currentStep + 1);
     else onComplete(newAnswers);
   };
 
@@ -338,32 +371,36 @@ const Quiz = ({ onComplete }) => {
           
           <div className="relative z-10">
             <span className="inline-block px-4 py-1.5 rounded-full bg-brand-primary/10 border border-brand-primary/20 text-[10px] font-black text-brand-primary uppercase tracking-[0.2em] mb-8">
-              Creator Assessment
+              {isAccessFlow ? 'Bundle Access' : 'Creator Assessment'}
             </span>
             
             <h1 className="text-4xl md:text-5xl font-black mb-6 tracking-tighter leading-[0.95] text-white">
-              Find your faceless niche — <br />
-              <span className="text-brand-primary">and get a 30-day plan to grow it.</span>
+              {isAccessFlow ? 'Access My' : 'Find your faceless niche —'} <br />
+              <span className="text-brand-primary">{isAccessFlow ? 'Bundle.' : 'and get a 30-day plan to grow it.'}</span>
             </h1>
             
             <p className="text-zinc-400 text-lg md:text-xl font-medium leading-relaxed mb-10 max-w-sm">
-              Answer 7 quick questions and get your personalized niche score, your best content strategy, and a roadmap for your first 30 days built around your answers.
+              {isAccessFlow 
+                ? "Answer these 7 quick questions to personalize your dashboard. We'll send your files to your email immediately after."
+                : "Answer 7 quick questions and get your personalized niche score, your best content strategy, and a roadmap for your first 30 days built around your answers."}
             </p>
 
-            <div className="space-y-4 mb-12">
-              {[
-                'Niche score',
-                '30-day posting map',
-                'Your first move'
-              ].map(item => (
-                <div key={item} className="flex items-center space-x-3 text-sm font-bold text-zinc-300">
-                  <div className="w-5 h-5 rounded-full bg-brand-primary/20 flex items-center justify-center">
-                    <span className="text-brand-primary text-[10px]">✓</span>
+            {!isAccessFlow && (
+              <div className="space-y-4 mb-12">
+                {[
+                  'Niche score',
+                  '30-day posting map',
+                  'Your first move'
+                ].map(item => (
+                  <div key={item} className="flex items-center space-x-3 text-sm font-bold text-zinc-300">
+                    <div className="w-5 h-5 rounded-full bg-brand-primary/20 flex items-center justify-center">
+                      <span className="text-brand-primary text-[10px]">✓</span>
+                    </div>
+                    <span>{item}</span>
                   </div>
-                  <span>{item}</span>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
 
             <p className="text-[10px] font-black text-brand-secondary uppercase tracking-[0.2em] mb-12 italic">
               The more honest your answers, the sharper your plan
@@ -398,7 +435,7 @@ const Quiz = ({ onComplete }) => {
       ) : (
         <div className="relative p-10 md:p-12 rounded-[3rem] bg-zinc-900/40 border border-white/5 backdrop-blur-2xl shadow-2xl overflow-hidden">
           <div className="flex items-center justify-between mb-8">
-              <span className="text-[10px] font-bold tracking-widest text-zinc-500 uppercase">Step {currentStep + 1} of {questions.length}</span>
+              <span className="text-[10px] font-bold tracking-widest text-zinc-500 uppercase">Step {currentStep + 1} of {allQuestions.length}</span>
               <button onClick={() => { setCurrentStep(currentStep - 1); setIsOtherSelected(false); }} className="text-[10px] font-bold tracking-widest text-zinc-600 hover:text-white uppercase transition-colors">← Back</button>
           </div>
           <h2 className="text-2xl md:text-3xl font-medium mb-10 tracking-tight text-zinc-100">{currentQuestion.text}</h2>
@@ -461,10 +498,10 @@ const Quiz = ({ onComplete }) => {
             </div>
           )}
           
-          {(currentQuestion.type === 'multi-select' || isOtherSelected) && !showNicheSuggestions && (
+          {(currentQuestion.type === 'multi-select' || isOtherSelected || currentQuestion.id === 'email') && !showNicheSuggestions && (
             <div className="mt-12">
               <button onClick={() => handleNext()} className="w-full py-5 bg-zinc-100 text-zinc-900 rounded-2xl font-bold text-xs uppercase tracking-widest hover:bg-white transition-all shadow-xl shadow-white/5">
-                {currentStep === questions.length - 1 ? 'Finish' : 'Next Step'}
+                {currentStep === allQuestions.length - 1 ? 'Finish' : 'Next Step'}
               </button>
             </div>
           )}
@@ -952,101 +989,6 @@ const Dashboard = ({ answers, setView, setData }) => {
             </div>
           )}
         </div>
-      </div>
-    </div>
-  );
-};
-
-// --- Access Component ---
-const AccessPage = ({ onComplete, setData }) => {
-  const [email, setEmail] = useState('');
-  const [niche, setNiche] = useState('');
-  const [style, setStyle] = useState('Aesthetic/Minimalist');
-  const [status, setStatus] = useState('idle');
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!email || !niche) return alert('Email and Niche are required.');
-    
-    setStatus('loading');
-    try {
-      const response = await fetch('/api/send-roadmap', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          email,
-          niche,
-          vibe: style,
-          isFullBundle: true,
-          name: 'Creator'
-        })
-      });
-
-      if (response.ok) {
-        setData({ email, niche, vibe: style, name: 'Creator', platform: 'TikTok' });
-        onComplete();
-      } else {
-        alert('Something went wrong. Please try again.');
-        setStatus('idle');
-      }
-    } catch (err) {
-      console.error(err);
-      setStatus('idle');
-    }
-  };
-
-  return (
-    <div className="max-w-xl mx-auto py-20 px-6 animate-in fade-in zoom-in duration-700">
-      <div className="p-10 md:p-12 rounded-[3.5rem] bg-zinc-900/40 border border-white/5 backdrop-blur-3xl shadow-2xl text-center">
-        <h2 className="text-3xl font-black mb-6 tracking-tighter italic uppercase text-white">Access My <span className="text-brand-primary">Bundle</span></h2>
-        <p className="text-zinc-400 text-sm font-medium mb-10 leading-relaxed">
-          Welcome back! Enter your details below to claim your Faceless Creator Bundle. We'll send the files to your inbox and unlock your dashboard immediately.
-        </p>
-
-        <form onSubmit={handleSubmit} className="space-y-4 text-left">
-          <div>
-            <label className="block text-[10px] font-black text-zinc-500 uppercase tracking-widest mb-2 px-2">Purchase Email</label>
-            <input 
-              required
-              type="email" 
-              className="w-full bg-black/40 border border-zinc-800 rounded-2xl px-6 py-4 outline-none focus:border-brand-primary transition-all font-light text-white" 
-              placeholder="you@example.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-          </div>
-          <div>
-            <label className="block text-[10px] font-black text-zinc-500 uppercase tracking-widest mb-2 px-2">Your Niche</label>
-            <input 
-              required
-              className="w-full bg-black/40 border border-zinc-800 rounded-2xl px-6 py-4 outline-none focus:border-brand-primary transition-all font-light text-white" 
-              placeholder="e.g. AI News, Stoicism..."
-              value={niche}
-              onChange={(e) => setNiche(e.target.value)}
-            />
-          </div>
-          <div>
-            <label className="block text-[10px] font-black text-zinc-500 uppercase tracking-widest mb-2 px-2">Your Style</label>
-            <select 
-              className="w-full bg-black/40 border border-zinc-800 rounded-2xl px-6 py-4 outline-none focus:border-brand-primary transition-all font-light text-white appearance-none"
-              value={style}
-              onChange={(e) => setStyle(e.target.value)}
-            >
-              <option>Aesthetic/Minimalist</option>
-              <option>Dark/Moody</option>
-              <option>Fast/Hype</option>
-              <option>Educational</option>
-            </select>
-          </div>
-
-          <button 
-            type="submit"
-            disabled={status === 'loading'}
-            className="w-full py-6 bg-gradient-brand rounded-3xl font-black text-sm uppercase tracking-[0.2em] shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-all mt-6"
-          >
-            {status === 'loading' ? 'Verifying...' : 'Unlock My Dashboard'}
-          </button>
-        </form>
       </div>
     </div>
   );
