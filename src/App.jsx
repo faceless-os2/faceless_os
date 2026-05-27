@@ -189,7 +189,7 @@ export default function App() {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     if (params.get('paid') === 'true') {
-      setView('rescue');
+      setView('access');
       return;
     }
 
@@ -247,7 +247,7 @@ export default function App() {
 
       <main className="relative z-10">
         {view === 'landing' && <Quiz onComplete={handleQuizComplete} />}
-        {view === 'rescue' && <RescuePage onComplete={handleUnlock} setData={setData} />}
+        {view === 'access' && <AccessPage onComplete={handleUnlock} setData={setData} />}
         {view === 'results' && (
           <Results 
             answers={data} 
@@ -957,8 +957,8 @@ const Dashboard = ({ answers, setView, setData }) => {
   );
 };
 
-// --- Rescue Component ---
-const RescuePage = ({ onComplete, setData }) => {
+// --- Access Component ---
+const AccessPage = ({ onComplete, setData }) => {
   const [email, setEmail] = useState('');
   const [niche, setNiche] = useState('');
   const [style, setStyle] = useState('Aesthetic/Minimalist');
@@ -998,7 +998,7 @@ const RescuePage = ({ onComplete, setData }) => {
   return (
     <div className="max-w-xl mx-auto py-20 px-6 animate-in fade-in zoom-in duration-700">
       <div className="p-10 md:p-12 rounded-[3.5rem] bg-zinc-900/40 border border-white/5 backdrop-blur-3xl shadow-2xl text-center">
-        <h2 className="text-3xl font-black mb-6 tracking-tighter italic uppercase text-white">Rescue My <span className="text-brand-primary">Bundle</span></h2>
+        <h2 className="text-3xl font-black mb-6 tracking-tighter italic uppercase text-white">Access My <span className="text-brand-primary">Bundle</span></h2>
         <p className="text-zinc-400 text-sm font-medium mb-10 leading-relaxed">
           Welcome back! Enter your details below to claim your Faceless Creator Bundle. We'll send the files to your inbox and unlock your dashboard immediately.
         </p>
